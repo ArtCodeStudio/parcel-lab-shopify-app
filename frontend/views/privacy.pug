@@ -1,0 +1,11 @@
+extends layouts/info
+block content
+  .container
+    .row
+      .col-12.pt-5
+        h1#privacy-policy-en Privacy Policy
+        p #[a(href="#privacy-policy-de") Jump to the privacy policy in German]
+        include partials/privacy-en.pug
+        h1#privacy-policy-de Datenschutzerklärung
+        p #[a(href="#privacy-policy-en") Jump to the privacy policy in English]
+        include partials/privacy-de.pug

@@ -1,0 +1,10 @@
+.dropdown-menu-dark {
+  background-color: $dark;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  .dropdown-item {
+    color: $gray-400;
+    &:hover, &:focus {
+      background-color: #323435;
+    }
+  }
+}

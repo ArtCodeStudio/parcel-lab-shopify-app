@@ -1,0 +1,7 @@
+extends ../../layouts/app.pug
+
+block content
+  .row.content-blogs-articles
+    .col-12
+      h1.mb-5(rv-i18n-text="dataset.title | handleize | prepend 'titles.'")
+      rv-content-article(blog-id=dataset.blog.id article-id=dataset.article.id)

@@ -1,5 +1,7 @@
 # compiled output
 /dist
+/public/scripts/
+
 /node_modules
 
 # Logs
@@ -43,3 +45,5 @@ lerna-debug.log*
 
 # Config
 src/config.service.ts
+src/config.ts
+ormconfig.js

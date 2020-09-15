@@ -1,0 +1,16 @@
+extends ../../layouts/app.pug
+
+block content
+  .api-webhooks
+    .row
+      .col-12
+        h1.mb-5(rv-i18n-text="dataset.title | handleize | prepend 'titles.'")
+    .row.mb-3
+      .card.col-12
+        .card-body
+          h2.card-title(rv-i18n-text="'api.webhooks.title'")
+          .card-text(rv-i18n-html="'api.webhooks.description_html'")
+    section.row.my-3
+      .card.col-12
+        .card-body
+          rv-api-socket-explorer.col-12.mx-auto

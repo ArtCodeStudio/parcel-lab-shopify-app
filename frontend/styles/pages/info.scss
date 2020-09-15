@@ -1,0 +1,25 @@
+body#info {
+  background: radial-gradient($white, lighten($primary, 15%));
+  a {
+    color: $primary;
+  }
+  &.install {
+    .install-text {
+      font-size: 1.5rem;
+    }
+    .form-control, .btn {
+      border-radius: 0;
+    }
+    .form-control {
+      background-color: transparent;
+      border-color: $primary;
+      border-width: 2px;
+      &::placeholder {
+        font-size: 80%;
+      }
+    }
+    .btn-primary {
+      color: $white;
+    }
+  }
+}

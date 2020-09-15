@@ -1,0 +1,36 @@
+rv-sidebar {
+  z-index: $zindex-fixed;
+  // width: 288px;
+  @extend .border-left;
+
+  // make the site to a overflowing sidebar
+  background-color: $body-bg;
+  position: absolute !important;
+  right: 0;
+  height: calc(100vh); // minus rv-shopify-easdk-bar in fallback mode
+  
+
+  // make the site to a not overflowing sidebar
+  @include media-breakpoint-up(xl) {
+    // background-color: transparent;
+    position: relative !important;
+    // height: auto;
+  }
+
+  .list-group-item {
+    font-weight: $font-weight-bold;
+    rv-icon {
+      color: $gray-600;
+    }
+    &:hover {
+      rv-icon {
+        color: $gray-700;
+      }
+    }
+    &.active {
+      rv-icon {
+        color: $list-group-action-active-color !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+// bootstrap
+@import 'charset';
+@import 'bootstrap-variables';
+@import 'app-variables';
+@import '../node_modules/bootstrap/scss/bootstrap';
+
+// custom extensions
+@import 'extensions/extensions';
+
+// changes on bootstrap
+@import 'card';
+@import 'dropdown';
+@import 'list-group';
+
+// pages and templates
+@import 'pages/info';
+
+// components
+@import '../scripts/components/index';
+
+// binders
+[rv-show], [rv-hide], [rv-if], [rv-each] {
+  display: none;
+}
+
+// fix rv-show, rv-hide on bootstrap
+[hidden] {
+  &.d-flex, &.d-block {
+    display: none !important;
+  }
+}

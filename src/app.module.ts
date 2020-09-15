@@ -1,16 +1,23 @@
 import { Module, DynamicModule, CacheModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ViewController } from './view/view.controller';
+import { ViewService } from './view/view.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import config from './config';
 
 import { ShopifyModule, ShopifyModuleOptions } from 'nest-shopify';
 import { Mongoose } from 'mongoose';
 import { PassportStatic } from 'passport';
+
 @Module({
   imports: [
-
+    ConfigModule.forRoot({
+      load: [config],
+    }),
+    TypeOrmModule.forRoot()
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [ViewController],
+  providers: [ViewService],
 })
 
 export class AppModule {

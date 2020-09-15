@@ -7,14 +7,17 @@ import * as expressSession from 'express-session';
 // import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as passport from 'passport';
-import { NestShopifyModuleOptions, ConfigService } from './config.service';
-// import { RedisSessionIoAdapter } from './adapter/redis-session-io.adapter';
+import findRoot = require("find-root");
+const root = findRoot(process.cwd());
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import config from './config';
 
 import * as mongoose from 'mongoose';
+const conf = config();
 
-const assetsDir = join(__dirname, '..', 'public');
-const viewsDir = join(__dirname, '..', 'frontend/views');
-const stylesSrc = join(__dirname, '..', 'frontend/styles');
+const assetsDir = join(root, 'public');
+const viewsDir = join(root, 'frontend/views');
+const stylesSrc = join(root, 'frontend/styles');
 const stylesDest = join(assetsDir, 'styles');
 
 async function bootstrap() {
@@ -24,12 +27,12 @@ async function bootstrap() {
     bodyParser: false,
   };
 
-  const mongooseConnection: typeof mongoose = await mongoose.connect(NestShopifyModuleOptions.mongodb.url);
+  const mongooseConnection: typeof mongoose = await mongoose.connect(conf.mongodb.url);
 
   // const expressServer = express();
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule.forRoot(
-      NestShopifyModuleOptions,
+      conf.NestShopifyModuleOptions,
       mongooseConnection,
       passport,
     ),
@@ -44,7 +47,7 @@ async function bootstrap() {
   /**
    * Init express sesion
    */
-  const session = expressSession(ConfigService.session);
+  const session = expressSession(conf.session);
  
   /**
    * Set express sesion
@@ -89,7 +92,7 @@ async function bootstrap() {
   app.useStaticAssets(assetsDir);
   app.setBaseViewsDir(viewsDir);
 
-  await app.listen(ConfigService.app.port);
+  await app.listen(conf.app.port);
 
   // see https://docs.nestjs.com/techniques/hot-reload
   // if (module.hot) {

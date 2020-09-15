@@ -1,0 +1,15 @@
+rv-sidebar-toggler {
+  display: block;
+  position: absolute;
+  right: 0;
+  .toggler-button {
+    &.active {
+      rv-icon {
+        color: white;
+        @include media-breakpoint-up(xl) {
+          color: inherit;
+        }
+      }
+    }
+  }
+}

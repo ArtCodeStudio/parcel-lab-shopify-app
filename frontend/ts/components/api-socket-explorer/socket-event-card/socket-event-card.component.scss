@@ -1,0 +1,16 @@
+rv-socket-event-card {
+  &.col-auto {
+    width: 50vw;
+  }
+  .monaco-editor-card {
+    rv-monaco-editor {
+      height: 300px;
+    }
+    rv-icon.close {
+      position: absolute;
+      right: 0;
+      top: 0;
+      color: $orange;
+    }
+  }
+}

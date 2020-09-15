@@ -1,0 +1,37 @@
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    link(rel='stylesheet', type='text/css', href='/styles/app.css')
+    link(rel="apple-touch-icon", sizes="180x180", href="/favicon/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/favicon/favicon-32x32.png")
+    link(rel="icon" type="image/png", sizes="16x16", href="/favicon/favicon-16x16.png")
+    link(rel="manifest", href="/favicon/site.webmanifest")
+    script.
+      window.ENVIRONMENT = '#{app.environment}';
+      window.apiKey = '#{shopify.apiKey}';
+      window.redirectUri = '#{shopify.redirectUri}';
+      window.shop = '#{shopify.shop}';
+      if (!shop || !shop.length) {
+        var urlParams = new URLSearchParams(window.location.search);
+        var _shop = urlParams.get('shop');
+        if (_shop) {
+          window.shop = _shop;
+        }
+      }
+    script(src='https://cdn.shopify.com/s/assets/external/app.js')
+    script(src='/scripts/app.bundle.js')
+    title= page.title
+  body
+    .container-fluid
+      .row
+        .col-12(style="min-height: 0")
+          rv-shopify-easdk-bar
+      .row.d-flex.flex-nowrap
+        .col.py-3(rv-view='{"listenAllLinks": false, "datasetToModel": true}' id="main")
+          .container(data-namespace=dataset.namespace, data-title=dataset.title, data-environment=dataset.environment)
+            block content
+        rv-sidebar-mask
+        rv-sidebar-toggler
+        rv-sidebar(environment=app.environment).col-auto.py-3

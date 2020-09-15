@@ -1,0 +1,17 @@
+.list-group-item {
+  &.list-group-item-action {
+    color: $list-group-action-color !important;
+    &.active {
+      color: $list-group-action-active-color !important;
+      @extend .cursor-default;
+    }
+    &:hover {
+      color: $list-group-action-hover-color  !important;
+    }
+    &.active {
+      &:hover {
+        color: $list-group-action-active-color !important;
+      }
+    }
+  }
+}

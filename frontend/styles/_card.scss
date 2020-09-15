@@ -1,0 +1,35 @@
+.card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  &.overview-card {
+    a.media {
+      color: #007ace;
+      min-height: 84px;
+      .description {
+        color:$gray-700
+      }
+      rv-icon {
+        background-color: #f4f6f8;
+        color: #919eab;
+        padding: 10px;
+        border-radius: $border-radius;
+      }
+      &:hover {
+        color: #084e8a;
+        background-color: #f9fafb;
+        text-decoration: none;
+        rv-icon {
+          background-color: #dfe3e8;
+        }
+      }
+    }
+  }
+  .api {
+    &.overview-card {
+      a.media {
+        rv-icon {
+          padding: 5px;
+        }
+      }
+    }
+  }
+}

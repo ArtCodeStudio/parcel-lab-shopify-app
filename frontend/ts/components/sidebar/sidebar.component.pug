@@ -1,0 +1,23 @@
+.sidebar-content.list-group
+  if environment !== 'production'
+    a.list-group-item.list-group-item-action.d-flex.align-items-center.cursor-pointer(rv-on-click="reload")
+      rv-icon.mr-3(src="/icons/jumplink-iconset_icon_refresh.svg" size="20")
+      | Reload
+  a.list-group-item.list-group-item-action.d-flex.align-items-center(rv-route="'/view/settings'" rv-route-class-active="'/view/settings'")
+    rv-icon.mr-3(src="/icons/jumplink-iconset_icon_cog.svg" size="20")
+    span(rv-i18n-text="'titles.settings'")
+  a.list-group-item.list-group-item-action.d-flex.align-items-center(rv-route="'/view/api'" rv-route-class-active="'/view/api'")
+    rv-icon.mr-3(src="/icons/jumplink-iconset_icon_cogs.svg" size="20")
+    span(rv-i18n-text="'titles.api'")
+  a.list-group-item.list-group-item-action.d-flex.align-items-center(rv-route="'/view/i18n'" rv-route-class-active="'/view/i18n'")
+    rv-icon.mr-3(src="/icons/jumplink-iconset_icon_globe.svg" size="20")
+    span(rv-i18n-text="'titles.i18n'")
+  a.list-group-item.list-group-item-action.d-flex.align-items-center(rv-route="'/view/content'" rv-route-class-active="'/view/content'")
+    rv-icon.mr-3(src="/icons/jumplink-iconset_icon_pencil-edit.svg" size="20")
+    span(rv-i18n-text="'titles.content'")
+  .list-group-item.list-group-item-action
+    rv-i18n-switcher
+      .btn-group.btn-group-toggle(data-toggle="buttons")
+        label.btn.btn-outline-primary(rv-each-langcode="langcodes" rv-class-active="langcode.active")
+          input(type="radio" name="langs" id="langcode.code" autocomplete="off" rv-on-click="switch | args langcode" rv-checked="langcode.active")
+          span(rv-text="langcode.code")

@@ -1,0 +1,9 @@
+extends ../../layouts/app.pug
+
+block content
+  .api-shopify
+    .row
+      .col-12
+        h1.mb-5(rv-i18n-text="dataset.title | handleize | prepend 'titles.'")
+    section.row
+      rv-api-explorer-shopify.col-12.mx-auto

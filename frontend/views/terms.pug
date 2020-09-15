@@ -1,0 +1,12 @@
+extends layouts/info
+block content
+  .container
+    .row
+      .col-12.pt-5
+        h1#terms-and-conditions-en General terms and conditions
+        p #[a(href="#terms-and-conditions-de") Jump to the general terms and conditions in German]
+        include partials/conditions-en.pug
+      .col-12.pt-5
+        h1#terms-and-conditions-de Allgemeine Geschäftsbedingungen
+        p #[a(href="#terms-and-conditions-en") Jump to the general terms and conditions in English]
+        include partials/conditions-de.pug

@@ -1,0 +1,127 @@
+/**
+ * Mixin to customize scrollbars
+ * Beware, this does not work in all browsers
+ *
+ * @author Hugo Giraudel
+ *
+ * @param {Length} $size - Horizontal scrollbar's height and vertical scrollbar's width
+ * @param {Color} $foreground-color - Scrollbar's color
+ * @param {Color} $background-color [mix($foreground-color, white, 50%)] - Scrollbar's color
+ * @example scss - Scrollbar styling
+ *   @include scrollbars($scrollbar-size, slategray);
+ *
+ * @see https://css-tricks.com/snippets/sass/custom-scrollbars-mixin/
+ */
+ @mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
+  // For Google Chrome
+  &::-webkit-scrollbar {
+    width:  $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $foreground-color;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color;
+  }
+
+  // For Internet Explorer
+  scrollbar-face-color: $foreground-color;
+  scrollbar-track-color: $background-color;
+}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+  @include media-breakpoint-up($breakpoint) {
+
+    .scrollbar#{$infix}-default {
+      &::-webkit-scrollbar, &::-webkit-scrollbar-thumb, &::-webkit-scrollbar-track {
+          all: unset;
+      }
+      scrollbar-face-color: unset;
+      scrollbar-track-color: unset;
+    }
+    
+    .scrollbar#{$infix}-black {
+      @include scrollbars($scrollbar-size, $black, transparent);
+    }
+    
+    .scrollbar#{$infix}-primary {
+      @include scrollbars($scrollbar-size, theme-color(primary), transparent);
+    }
+    
+    .scrollbar#{$infix}-secondary {
+      @include scrollbars($scrollbar-size, theme-color(secondary), transparent);
+    }
+    
+    .scrollbar#{$infix}-success {
+      @include scrollbars($scrollbar-size, theme-color(success), transparent);
+    }
+    
+    .scrollbar#{$infix}-danger {
+      @include scrollbars($scrollbar-size, theme-color(danger), transparent);
+    }
+    
+    .scrollbar#{$infix}-warning {
+      @include scrollbars($scrollbar-size, theme-color(warning), transparent);
+    }
+    
+    .scrollbar#{$infix}-info {
+      @include scrollbars($scrollbar-size, theme-color(info), transparent);
+    }
+    
+    .scrollbar#{$infix}-light {
+      @include scrollbars($scrollbar-size, theme-color(light), transparent);
+    }
+    
+    .scrollbar#{$infix}-white {
+      @include scrollbars($scrollbar-size, $white, transparent);
+    }
+    
+    .scrollbar#{$infix}-invisible {
+      @include scrollbars(0, transparent, transparent);
+    }
+    
+    .scrollbar#{$infix}-x-auto {
+      overflow-x: auto;
+    }
+    
+    .scrollbar#{$infix}-y-auto {
+      overflow-y: auto;
+    }
+    
+    .scrollbar#{$infix}-x-hidden {
+      overflow-x: hidden;
+    }
+    
+    .scrollbar#{$infix}-y-hidden {
+      overflow-y: hidden;
+    }
+
+    .scrollbar#{$infix}-x-visible {
+      overflow-x: visible;
+    }
+    
+    .scrollbar#{$infix}-y-visible {
+      overflow-y: visible;
+    }
+    
+    .scrollbar#{$infix}-x-scroll-on-hover {
+      overflow-x: hidden;
+      &:hover {
+        overflow-x: scroll;
+        margin-bottom: 0px !important;
+      }
+    }
+    
+    .scrollbar#{$infix}-y-scroll-on-hover {
+      overflow-y: hidden;
+      &:hover {
+        overflow-y: scroll;
+        margin-right: 0px !important;
+      }
+    }
+  }
+}
