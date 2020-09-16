@@ -48,4 +48,3 @@ yarn.lock
 # Config
 .env
 *.env
-ormconfig.js
