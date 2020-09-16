@@ -2,7 +2,7 @@
 @import 'charset';
 @import 'bootstrap-variables';
 @import 'app-variables';
-@import '../node_modules/bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap';
 
 // custom extensions
 @import 'extensions/extensions';
@@ -16,7 +16,7 @@
 @import 'pages/info';
 
 // components
-@import '../scripts/components/index';
+@import '../ts/components/index';
 
 // binders
 [rv-show], [rv-hide], [rv-if], [rv-each] {

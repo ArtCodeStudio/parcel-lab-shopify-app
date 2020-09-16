@@ -7,12 +7,14 @@ import * as expressSession from 'express-session';
 // import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as passport from 'passport';
+import scssImporter from './scss-importer.service';
 import findRoot = require("find-root");
 const root = findRoot(process.cwd());
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import config from './config';
 
 import * as mongoose from 'mongoose';
+import { pathToFileURL } from 'url';
 const conf = config();
 
 const assetsDir = join(root, 'public');
@@ -88,6 +90,7 @@ async function bootstrap() {
     debug: true,
     outputStyle: 'compressed',
     prefix:  '/styles', // Where prefix is at <link rel="stylesheets" href="styles/app.css"/>
+    importer: scssImporter,
   }));
   app.useStaticAssets(assetsDir);
   app.setBaseViewsDir(viewsDir);
