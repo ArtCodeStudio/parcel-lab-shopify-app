@@ -8,18 +8,14 @@ import * as expressSession from 'express-session';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as passport from 'passport';
 import scssImporter from './scss-importer.service';
-import findRoot = require("find-root");
-const root = findRoot(process.cwd());
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 import config from './config';
-
 import * as mongoose from 'mongoose';
-import { pathToFileURL } from 'url';
+
 const conf = config();
 
-const assetsDir = join(root, 'public');
-const viewsDir = join(root, 'frontend/views');
-const stylesSrc = join(root, 'frontend/styles');
+const assetsDir = join(conf.app.root, 'public');
+const viewsDir = join(conf.app.root, 'frontend/views');
+const stylesSrc = join(conf.app.root, 'frontend/styles');
 const stylesDest = join(assetsDir, 'styles');
 
 async function bootstrap() {

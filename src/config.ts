@@ -9,6 +9,8 @@ import Redis from 'ioredis';
 import * as expressSession from 'express-session';
 import * as connectRedis from 'connect-redis';
 import { ConfigApp, ConfigShopify, ConfigCharges, ConfigCache, ConfigRedis, ConfigMongoDB, ShopifyModuleOptions  } from 'nest-shopify';
+import findRoot = require("find-root");
+
 dotenv.config();
 
 const redis: ConfigRedis = {
@@ -19,6 +21,7 @@ const RedisStore = connectRedis(expressSession);
 const redisInstance = new Redis(redis.url);
 
 const app: ConfigApp = {
+  root: findRoot(process.cwd()),
   protocol: `https`,
   host: process.env.HOST,
   port: Number(process.env.PORT),
