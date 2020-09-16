@@ -666,7 +666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/cli@npm:^7.0.0":
+"@nestjs/cli@npm:^7.5.1":
   version: 7.5.1
   resolution: "@nestjs/cli@npm:7.5.1"
   dependencies:
@@ -8801,7 +8801,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "parcel-lab-shopify-app@workspace:."
   dependencies:
-    "@nestjs/cli": ^7.0.0
+    "@nestjs/cli": ^7.5.1
     "@nestjs/common": ^7.4.4
     "@nestjs/config": ^0.5.0
     "@nestjs/core": ^7.0.0
