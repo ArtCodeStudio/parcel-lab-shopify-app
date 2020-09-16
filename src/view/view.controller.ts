@@ -23,7 +23,7 @@ export class ViewController {
    */
   @Get()
   @Render('install')
-  install(@Req() req) {
+  install(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.install(shop);
   }
@@ -33,7 +33,7 @@ export class ViewController {
    */
   @Get('/terms')
   @Render('terms')
-  terms(@Req() req) {
+  terms(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.terms(shop);
   }
@@ -43,7 +43,7 @@ export class ViewController {
    */
   @Get('/privacy')
   @Render('privacy')
-  privacy(@Req() req) {
+  privacy(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.privacy(shop);
   }
@@ -53,7 +53,7 @@ export class ViewController {
    */
   @Get('/view')
   @Render('pages/app')
-  app(@Req() req) {
+  app(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.app(shop);
   }
@@ -63,7 +63,7 @@ export class ViewController {
    */
   @Get('/view/settings')
   @Render('pages/settings')
-  settings(@Req() req) {
+  settings(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.settings(shop);
   }
@@ -74,7 +74,7 @@ export class ViewController {
    */
   @Get('/view/plan')
   @Render('pages/plan')
-  plan(@Req() req) {
+  plan(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.plan(shop);
   }
@@ -84,7 +84,7 @@ export class ViewController {
    */
   @Get('/view/api')
   @Render('pages/api')
-  api(@Req() req) {
+  api(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.api(shop);
   }
@@ -94,7 +94,7 @@ export class ViewController {
    */
   @Get('/view/api/shopify')
   @Render('pages/api/shopify')
-  apiShopify(@Req() req) {
+  apiShopify(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.apiShopify(shop);
   }
@@ -104,7 +104,7 @@ export class ViewController {
    */
   @Get('/view/api/webhooks')
   @Render('pages/api/webhooks')
-  apiwebhooks(@Req() req) {
+  apiwebhooks(@Req() req): any {
     const shop = this.extractShopDomain(req);
     return this.viewService.apiWebhooks(shop);
   }
@@ -114,7 +114,7 @@ export class ViewController {
    */
   @Get('/view/close')
   @Render('pages/close')
-  close(@Req() req) {
+  close(@Req() req): any {
     return {};
   }
 }
