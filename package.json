@@ -6,7 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.0.0",
+    "yarn": ">=2.0.0"
   },
   "scripts": {
     "prebuild": "rimraf dist",
