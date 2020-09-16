@@ -1,21 +1,21 @@
 extends layouts/info
 block content
   .container.d-flex.flex-column.justify-content-between(style="min-height: 100vh;")
+    //- .row
+    //-   .col-auto.ml-auto
+    //-     img.d-block.img-fluid.m-5(src="/images/logo.svg", alt=page.title + ' Logo', width="300")
     .row
-      .col-auto.ml-auto
-        img.d-block.img-fluid.m-5(src="/images/the-developer-app-logo.svg", alt=page.title + ' Progress Icon', width="300")
-    .row
-      .col-auto.text-center.mx-auto
-        h1.display-4 #[span.text-primary Install] The Developer App
-        p.install-text Just enter your domain of your Shopify online store #[br] and become an ambitious online store developer!
+      .col-12.text-center.mx-auto.my-5
+        h1.display-4 #[span.text-primary Install] #{page.title}
+        p.install-text Just enter your domain of your Shopify online store #[br] and start to sync orders to parcelLab!
       .col-12.col-md-6.mx-auto
         form(action='/shopify/auth')
           .input-group
             input.form-control.form-control-lg(type="text", name="shop", placeholder="your-shop.myshopify.com")
             .input-group-append
               input.btn.btn-primary.btn-lg(type="submit", value="Go!")
-      .col-12
-        img.d-block.img-fluid.mx-auto.mt-5(src="/images/the-developer-app-prozess-icon.svg", alt=page.title + ' Progress Icon', width="120")
+      //- .col-12
+      //-   img.d-block.img-fluid.mx-auto.mt-5(src="/images/the-developer-app-prozess-icon.svg", alt=page.title + ' Progress Icon', width="120")
     .row
       .col-12.mx-auto.text-center.my-3
         ul.nav.justify-content-center
