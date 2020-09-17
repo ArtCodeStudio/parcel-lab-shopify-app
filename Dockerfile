@@ -1,9 +1,6 @@
 # Dockerfile based on https://docs.docker.com/engine/examples/running_ssh_service/
 FROM ubuntu:latest
 
-# Replace shell with bash so we can source files
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
 # Set debconf to run non-interactively
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
@@ -32,8 +29,11 @@ ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
 # Install nvm with node and npm https://github.com/nvm-sh/nvm
+# https://stackoverflow.com/a/57344191/1465919
 ENV NVM_DIR ~/.nvm
 ENV NODE_VERSION latest
+SHELL ["/bin/bash", "--login", "-c"]
+RUN mkdir -p $NVM_DIR
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
