@@ -28,18 +28,10 @@ RUN sed -i 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
-# Install nvm with node and npm https://github.com/nvm-sh/nvm
-# https://stackoverflow.com/a/57344191/1465919
-ENV NVM_DIR ~/.nvm
-ENV NODE_VERSION node
-SHELL ["/bin/bash", "--login", "-c"]
-RUN mkdir -p $NVM_DIR
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-RUN source $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION \
-    && nvm use default \
-    && npm install yarn@berry -g
+# Install node.js
+RUN curl -sL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+RUN get install -y nodejs
+RUN npm install yarn@berry -g
 
 WORKDIR /usr/src/app
 COPY package*.json ./
