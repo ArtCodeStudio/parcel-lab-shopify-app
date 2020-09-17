@@ -62,7 +62,7 @@ const shopify: ConfigShopify = {
   callbackURL: `${app.protocol}://${app.host}/shopify/auth/callback`,
   /** callback url used in shopify iframe */
   iframeCallbackURL: `${app.protocol}://${app.host}/shopify/auth/callback/iframe`,
-  scope: ['read_themes', 'write_themes', 'read_products', 'write_products', 'read_content', 'write_content'],
+  scope: ['read_orders', 'read_shipping', 'read_customers', 'read_fulfillments'],
   webhooks: {
     autoSubscribe: [
       // 'carts/create',
@@ -84,12 +84,12 @@ const shopify: ConfigShopify = {
       // 'customer_groups/create',
       // 'customer_groups/update',
       // 'customer_groups/delete',
-      // 'draft_orders/create',
-      // 'draft_orders/update',
-      // 'fulfillments/create',
-      // 'fulfillments/update',
-      // 'fulfillment_events/create',
-      // 'fulfillment_events/delete',
+      'draft_orders/create',
+      'draft_orders/update',
+      'fulfillments/create',
+      'fulfillments/update',
+      'fulfillment_events/create',
+      'fulfillment_events/delete',
       // 'inventory_items/create',
       // 'inventory_items/update',
       // 'inventory_items/delete',
