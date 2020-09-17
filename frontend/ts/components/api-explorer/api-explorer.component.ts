@@ -7,7 +7,7 @@ import { DropdownService } from '@ribajs/bs4';
 
 import pugTemplate from './api-explorer.component.pug';
 
-import * as monaco from 'monaco-editor';
+// import * as monaco from 'monaco-editor';
 import { LocalesStaticService } from '@ribajs/i18n';
 
 export interface IAPIParam {
@@ -99,7 +99,7 @@ export abstract class ApiExplorerComponent extends Component {
 
   protected autobind = true;
 
-  protected editor?: monaco.editor.IStandaloneCodeEditor;
+  protected editor?: any; // monaco.editor.IStandaloneCodeEditor;
   protected dropdownService?: DropdownService;
   protected localesService = LocalesStaticService.getInstance('main');
 
@@ -118,16 +118,16 @@ export abstract class ApiExplorerComponent extends Component {
           'This component needs a container element with the class of .monaco-editor',
         );
       }
-      this.editor = monaco.editor.create(el, {
-        value: this.scope.result,
-        language: 'json',
-        theme: 'vs-dark',
-        readOnly: true,
-        automaticLayout: true,
-        minimap: {
-          enabled: false,
-        },
-      });
+      // this.editor = monaco.editor.create(el, {
+      //   value: this.scope.result,
+      //   language: 'json',
+      //   theme: 'vs-dark',
+      //   readOnly: true,
+      //   automaticLayout: true,
+      //   minimap: {
+      //     enabled: false,
+      //   },
+      // });
     }
   }
 

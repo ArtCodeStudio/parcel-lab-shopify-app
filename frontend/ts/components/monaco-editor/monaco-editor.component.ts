@@ -1,7 +1,7 @@
 import { Component } from '@ribajs/core';
 import Debug from 'debug';
 
-import * as monaco from 'monaco-editor';
+// import * as monaco from 'monaco-editor';
 
 import pugTemplate from './monaco-editor.component.pug';
 
