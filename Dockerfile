@@ -35,12 +35,11 @@ ENV NODE_VERSION node
 SHELL ["/bin/bash", "--login", "-c"]
 RUN mkdir -p $NVM_DIR
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-RUN . $NVM_DIR/nvm.sh
-RUN nvm install $NODE_VERSION
-RUN nvm alias default $NODE_VERSION
-RUN nvm use default
-RUN node --version
-RUN npm install yarn@berry -g
+RUN source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default \
+    && npm install yarn@berry -g
 
 WORKDIR /usr/src/app
 COPY package*.json ./
