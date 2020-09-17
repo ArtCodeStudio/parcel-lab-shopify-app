@@ -29,8 +29,8 @@ ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
 # Install node.js
-RUN curl -sL https://deb.nodesource.com/setup_current.x | -E bash -
-RUN get install -y nodejs
+RUN curl -sL https://deb.nodesource.com/setup_current.x | bash -
+RUN apt install -y nodejs
 RUN npm install yarn@berry -g
 
 WORKDIR /usr/src/app
