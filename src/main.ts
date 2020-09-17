@@ -83,7 +83,7 @@ async function bootstrap() {
     /* Options */
     src: stylesSrc,
     dest: stylesDest,
-    debug: true,
+    debug: conf.app.debug,
     outputStyle: 'compressed',
     prefix:  '/styles', // Where prefix is at <link rel="stylesheets" href="styles/app.css"/>
     importer: scssImporter,
