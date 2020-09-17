@@ -99,8 +99,5 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "resolutions": {
-    "nest-shopify": "portal:../nestjs-shopify-module"
   }
 }

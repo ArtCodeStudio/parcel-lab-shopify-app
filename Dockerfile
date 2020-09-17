@@ -4,7 +4,7 @@ FROM ubuntu:latest
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Install base dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y \
     openssh-server \
     apt-transport-https \
     build-essential \
