@@ -1,4 +1,3 @@
-# Dockerfile based on https://docs.docker.com/engine/examples/running_ssh_service/
 FROM ubuntu:latest
 
 # Set debconf to run non-interactively
@@ -16,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     wget
 
 # Configure SSH
+# https://docs.docker.com/engine/examples/running_ssh_service/
 RUN mkdir /var/run/sshd
 # RUN echo 'root:THEPASSWORDYOUCREATED' | chpasswd
 # RUN sed -i 's/#*PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
