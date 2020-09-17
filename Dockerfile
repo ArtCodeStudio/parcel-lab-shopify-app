@@ -1,7 +1,22 @@
 # Dockerfile based on https://docs.docker.com/engine/examples/running_ssh_service/
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y openssh-server
+# Replace shell with bash so we can source files
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+# Set debconf to run non-interactively
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# Install base dependencies
+RUN apt-get update && apt-get install -y \
+    openssh-server \
+    apt-transport-https \
+    build-essential \
+    ca-certificates \
+    curl \
+    git \
+    libssl-dev \
+    wget
 
 # Configure SSH
 RUN mkdir /var/run/sshd
@@ -16,18 +31,16 @@ RUN sed -i 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
-# Install nodejs via nvm: https://github.com/nvm-sh/nvm
-RUN apt-get install -y curl
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-
-# Load nvm
-RUN export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-RUN [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-RUN nvm install latest
-RUN nvm use latest
-RUN nvm alias default latest
-
-RUN npm install yarn@berry -g
+# Install nvm with node and npm https://github.com/nvm-sh/nvm
+ENV NVM_DIR ~/.nvm
+ENV NODE_VERSION latest
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default \
+    && node --version \
+    && npm install yarn@berry -g \
 
 WORKDIR /usr/src/app
 COPY package*.json ./
