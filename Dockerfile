@@ -35,7 +35,7 @@ RUN apt install -y nodejs
 WORKDIR /usr/src/app
 RUN npm install yarn@berry -g
 COPY . .
-ENV YARN_CHECKSUM_BEHAVIOR reset
+ENV YARN_CHECKSUM_BEHAVIOR update
 RUN yarn install
 
 EXPOSE 22
