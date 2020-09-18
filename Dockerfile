@@ -4,7 +4,7 @@ FROM ubuntu:latest
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Install base dependencies
-RUN apt update && apt install -y \
+RUN apt-get update && apt-get install -y \
     openssh-server \
     apt-transport-https \
     build-essential \
@@ -12,11 +12,13 @@ RUN apt update && apt install -y \
     curl \
     git \
     libssl-dev \
-    wget
+    wget \
+    iproute2
 
 # Configure SSH
 # https://docs.docker.com/engine/examples/running_ssh_service/
 RUN mkdir /var/run/sshd
+ENV ROOT_PASSWD "mono4-purple-lucre0-process-fetal-swapping"
 RUN echo 'root:'$ROOT_PASSWD | chpasswd
 RUN sed -i 's/#*PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 RUN mkdir -p ~/.ssh
@@ -27,12 +29,13 @@ RUN sed -i 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid
 
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
+# Find the port with `nmap -sV -p- <host>`
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
 
 # Install node.js
 RUN curl -sL https://deb.nodesource.com/setup_current.x | bash -
-RUN apt install -y nodejs
+RUN apt-get install -y nodejs
 
 WORKDIR /usr/src/app
 RUN npm install yarn@berry -g
