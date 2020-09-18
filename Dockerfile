@@ -33,9 +33,9 @@ RUN curl -sL https://deb.nodesource.com/setup_current.x | bash -
 RUN apt install -y nodejs
 
 WORKDIR /usr/src/app
-COPY package*.json ./
 RUN npm install yarn@berry -g
 COPY . .
+ENV YARN_CHECKSUM_BEHAVIOR reset
 RUN yarn install
 
 EXPOSE 22
