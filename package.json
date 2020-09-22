@@ -11,7 +11,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "build:frontend": "cd frontend && yarn install && yarn run build",
+    "build:frontend": "cd frontend && npm install && npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -23,7 +23,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "npm:link:deps": "yarn link nest-shopify --private"
+    "npm:link:deps": "npm link nest-shopify --private"
   },
   "url": "https://github.com/ArtCodeStudio/parcel-lab-shopify-app",
   "repository": {
