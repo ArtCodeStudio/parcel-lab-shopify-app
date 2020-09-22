@@ -56,6 +56,10 @@ export class AccountConnectsComponent extends Component {
     super(element);
     this.$el = JQuery(this.el);
     this.debug('constructor', this);
+  }
+
+  protected connectedCallback() {
+    super.connectedCallback();
     this.init(AccountConnectsComponent.observedAttributes);
   }
 

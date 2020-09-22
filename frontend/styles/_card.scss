@@ -7,7 +7,7 @@
       .description {
         color:$gray-700
       }
-      rv-icon {
+      bs4-icon {
         background-color: #f4f6f8;
         color: #919eab;
         padding: 10px;
@@ -17,7 +17,7 @@
         color: #084e8a;
         background-color: #f9fafb;
         text-decoration: none;
-        rv-icon {
+        bs4-icon {
           background-color: #dfe3e8;
         }
       }
@@ -26,7 +26,7 @@
   .api {
     &.overview-card {
       a.media {
-        rv-icon {
+        bs4-icon {
           padding: 5px;
         }
       }

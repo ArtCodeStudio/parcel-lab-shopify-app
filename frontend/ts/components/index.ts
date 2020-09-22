@@ -6,7 +6,6 @@ export { ApiExplorerShopifyComponent } from './api-explorer-shopify/api-explorer
 export { SyncProgressComponent } from './sync-progress/sync-progress.component';
 export { ApiSocketExplorerComponent } from './api-socket-explorer/api-socket-explorer.component';
 export { SocketEventCardComponent } from './api-socket-explorer/socket-event-card/socket-event-card.component';
-export { IconComponent } from './icon/icon.component';
 // export { MonacoEditorComponent } from './monaco-editor/monaco-editor.component';
 export { PlansComponent } from './plans/plans.component';
 export { SidebarComponent } from './sidebar/sidebar.component';

@@ -5,7 +5,7 @@ module.exports = {
   apps: [
     {
       name: 'pl-front:dev',
-      script: 'npm run watch',
+      script: 'yarn run watch',
       watch: false, // path.join(__dirname, 'src'),
       // https://github.com/paulmillr/chokidar#api
       // watch_options: {},

@@ -4,7 +4,7 @@ rv-sidebar-toggler {
   right: 0;
   .toggler-button {
     &.active {
-      rv-icon {
+      bs4-icon {
         color: white;
         @include media-breakpoint-up(xl) {
           color: inherit;

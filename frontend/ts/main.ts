@@ -72,10 +72,12 @@ export class Main {
           this.debug('ok');
         } else {
           // not logged in
+          console.warn('Not logged in', loggedIn);
           if (EASDKWrapperService.inIframe()) {
             return this.authService
               .shopifyConnectIframe(shop)
               .then((result) => {
+                console.warn('Redirect to auth url', result);
                 return this.shopifyApp.redirect(result.authUrl);
               })
               .catch((error) => {

@@ -4,6 +4,10 @@
 @import 'app-variables';
 @import '~bootstrap/scss/bootstrap';
 
+// Riba
+@import '~@ribajs/core/src/index';
+@import '~@ribajs/bs4/src/index';
+
 // custom extensions
 @import 'extensions/extensions';
 

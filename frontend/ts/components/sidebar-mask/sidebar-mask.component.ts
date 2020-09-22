@@ -32,8 +32,11 @@ export class SidebarMaskComponent extends Component {
 
   constructor(element?: HTMLElement) {
     super(element);
-
     this.debug('constructor', this.el.constructor, this);
+  }
+
+  protected connectedCallback() {
+    super.connectedCallback();
     this.init(SidebarMaskComponent.observedAttributes);
     this.event.on('afterShow', this.onState.bind(this));
     this.event.on('afterHide', this.onState.bind(this));

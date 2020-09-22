@@ -11,22 +11,12 @@ block content
           .card-text.px-3
             .row
               a.media.pt-3.col-12.col-md-6.col-xl-4(rv-route="'/view/settings'")
-                rv-icon.mr-3(src="/icons/jumplink-iconset_icon_cog.svg" size="40")
+                bs4-icon.mr-3(src="/iconset/svg/icon_cog.svg" size="40")
                 .media-body
                   b.title(rv-i18n-text="'titles.settings'")
                   p.description(rv-i18n-html="'overview.settings_desc'")
               a.media.pt-3.col-12.col-md-6.col-xl-4(rv-route="'/view/api'")
-                rv-icon.mr-3(src="/icons/jumplink-iconset_icon_cogs.svg" size="40")
+                bs4-icon.mr-3(src="/iconset/svg/icon_cogs.svg" size="40")
                 .media-body
                   b.title(rv-i18n-text="'titles.api'")
                   p.description(rv-i18n-html="'overview.api_desc'")
-              a.media.pt-3.col-12.col-md-6.col-xl-4(rv-route="'/view/i18n'")
-                rv-icon.mr-3(src="/icons/jumplink-iconset_icon_globe.svg" size="40")
-                .media-body
-                  b.title(rv-i18n-text="'titles.i18n'")
-                  p.description(rv-i18n-html="'overview.i18n_desc'")
-              a.media.pt-3.col-12.col-md-6.col-xl-4(rv-route="'/view/content'")
-                rv-icon.mr-3(src="/icons/jumplink-iconset_icon_pencil-edit.svg" size="40")
-                .media-body
-                  b.title(rv-i18n-text="'titles.content'")
-                  p.description(rv-i18n-html="'overview.content_desc'")

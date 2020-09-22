@@ -1,7 +1,4 @@
 import { Component, HttpService } from '@ribajs/core';
-import { JQuery } from '@ribajs/jquery';
-import Debug from 'debug';
-
 import pugTemplate from './plans.component.pug';
 
 import { IRecurringCharge } from '../../interfaces/shopify-api/recurring_charge';
@@ -21,8 +18,7 @@ export class PlansComponent extends Component {
     return [];
   }
 
-  protected $el: JQuery<HTMLElement>;
-  protected debug = Debug('component:' + PlansComponent.tagName);
+  public _debug = true;
 
   protected scope: IScope = {
     plans: [],
@@ -33,8 +29,11 @@ export class PlansComponent extends Component {
 
   constructor(element?: HTMLElement) {
     super(element);
-    this.$el = JQuery(this.el);
     this.debug('constructor', this);
+  }
+
+  protected connectedCallback() {
+    super.connectedCallback();
     this.loadAvailableCharges()
       .then(() => {
         return this.loadActiveCharge();

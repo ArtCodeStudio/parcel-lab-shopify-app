@@ -40,8 +40,11 @@ export class SidebarTogglerComponent extends Component {
   constructor(element?: HTMLElement) {
     super(element);
     this.$el = JQuery(this.el);
-
     this.debug('constructor', this.el.constructor, this);
+  }
+
+  protected connectedCallback() {
+    super.connectedCallback();
     this.init(SidebarTogglerComponent.observedAttributes);
     this.event.on('afterShow', this.afterShow.bind(this));
     this.event.on('afterHide', this.afterHide.bind(this));

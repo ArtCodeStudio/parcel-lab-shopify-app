@@ -27,6 +27,10 @@ export class TdaI18nSwitcherComponent extends AI18nSwitcherComponent {
 
   constructor(element?: HTMLElement) {
     super(element);
+  }
+
+  protected connectedCallback() {
+    super.connectedCallback();
     this.init(TdaI18nSwitcherComponent.observedAttributes);
   }
 

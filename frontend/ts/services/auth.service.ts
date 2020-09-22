@@ -40,6 +40,7 @@ export class AuthService {
 
   public async shopifyConnectIframe(myshopifyDomain?: string) {
     const connectUrl = `/shopify/auth/iframe?shop=${myshopifyDomain}`;
+    console.debug('connectUrl', connectUrl);
     return HttpService.getJSON(connectUrl).then(
       (result: { authUrl: string }) => {
         this.debug('shopifyConnectIframe', result.authUrl);

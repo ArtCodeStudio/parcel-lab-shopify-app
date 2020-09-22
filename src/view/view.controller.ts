@@ -90,26 +90,6 @@ export class ViewController {
   }
 
   /**
-   * App backend / api / shopify
-   */
-  @Get('/view/api/shopify')
-  @Render('pages/api/shopify')
-  apiShopify(@Req() req): any {
-    const shop = this.extractShopDomain(req);
-    return this.viewService.apiShopify(shop);
-  }
-
-  /**
-   * App backend / api / webhooks
-   */
-  @Get('/view/api/webhooks')
-  @Render('pages/api/webhooks')
-  apiwebhooks(@Req() req): any {
-    const shop = this.extractShopDomain(req);
-    return this.viewService.apiWebhooks(shop);
-  }
-
-  /**
    * close the current window
    */
   @Get('/view/close')

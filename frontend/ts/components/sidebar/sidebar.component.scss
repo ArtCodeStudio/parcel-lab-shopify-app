@@ -19,16 +19,16 @@ rv-sidebar {
 
   .list-group-item {
     font-weight: $font-weight-bold;
-    rv-icon {
+    bs4-icon {
       color: $gray-600;
     }
     &:hover {
-      rv-icon {
+      bs4-icon {
         color: $gray-700;
       }
     }
     &.active {
-      rv-icon {
+      bs4-icon {
         color: $list-group-action-active-color !important;
       }
     }

@@ -34,6 +34,8 @@
     "@nestjs/platform-express": "^7.4.4",
     "@nestjs/platform-socket.io": "^7.4.4",
     "@nestjs/typeorm": "^7.1.4",
+    "@ribajs/bs4": "^1.8.0",
+    "@ribajs/core": "^1.8.0",
     "@types/cache-manager-ioredis": "^2.0.1",
     "@types/connect-redis": "^0.0.14",
     "@types/express": "^4.17.3",
@@ -66,6 +68,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
+    "source-map-support": "^0.5.19",
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
@@ -100,5 +103,32 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "resolutions": {
+    "nest-shopify": "portal:../nestjs-shopify-module",
+    "@ribajs/bs4": "portal:../riba/packages/bs4",
+    "@ribajs/cache": "portal:../riba/packages/cache",
+    "@ribajs/content-slider": "portal:../riba/packages/content-slider",
+    "@ribajs/core": "portal:../riba/packages/core",
+    "@ribajs/extras": "portal:../riba/packages/extras",
+    "@ribajs/history": "portal:../riba/packages/history",
+    "@ribajs/i18n": "portal:../riba/packages/i18n",
+    "@ribajs/iconset": "portal:../riba/packages/iconset",
+    "@ribajs/jquery": "portal:../riba/packages/jquery",
+    "@ribajs/leaflet-map": "portal:../riba/packages/leaflet-map",
+    "@ribajs/moment": "portal:../riba/packages/moment",
+    "@ribajs/octobercms": "portal:../riba/packages/octobercms",
+    "@ribajs/pdf": "portal:../riba/packages/pdf",
+    "@ribajs/photoswipe": "portal:../riba/packages/photoswipe",
+    "@ribajs/router": "portal:../riba/packages/router",
+    "@ribajs/shopify": "portal:../riba/packages/shopify",
+    "@ribajs/shopify-easdk": "portal:../riba/packages/shopify-easdk",
+    "@ribajs/shopify-tda": "portal:../riba/packages/shopify-tda",
+    "@ribajs/tagged-image": "portal:../riba/packages/tagged-image",
+    "@ribajs/utils": "portal:../riba/packages/utils",
+    "@ribajs/eslint-config": "portal:../riba/infra/eslint-config",
+    "@ribajs/types": "portal:../riba/infra/types",
+    "@ribajs/webpack-config": "portal:../riba/infra/webpack-config",
+    "@ribajs/tsconfig": "portal:../riba/infra/tsconfig"
   }
 }

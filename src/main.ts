@@ -1,3 +1,4 @@
+import 'source-map-support/register'
 import { NestFactory } from '@nestjs/core';
 import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { AppModule } from './app.module';

@@ -36,6 +36,10 @@ export class ApiSocketExplorerComponent extends Component {
     super(element);
     this.$el = JQuery(this.el);
     this.debug('constructor', this);
+  }
+
+  protected connectedCallback() {
+    super.connectedCallback();
     this.init(ApiSocketExplorerComponent.observedAttributes);
   }
 
