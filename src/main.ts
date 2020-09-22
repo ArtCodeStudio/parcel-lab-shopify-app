@@ -11,6 +11,7 @@ import * as passport from 'passport';
 import scssImporter from './scss-importer.service';
 import config from './config';
 import * as mongoose from 'mongoose';
+import { RedisSessionIoAdapter } from 'nest-shopify';
 
 const conf = config();
 
@@ -61,8 +62,8 @@ async function bootstrap() {
    * @see https://github.com/socketio/socket.io-redis
    */
 
-  // const redisIoAdapter = new RedisSessionIoAdapter(session, app);
-  // app.useWebSocketAdapter(redisIoAdapter);
+  const redisIoAdapter = new RedisSessionIoAdapter(session, conf.redis.url, app);
+  app.useWebSocketAdapter(redisIoAdapter);
 
   // passport session
   app.use(passport.initialize());

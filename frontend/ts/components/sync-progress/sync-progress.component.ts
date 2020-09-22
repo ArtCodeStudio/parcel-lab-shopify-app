@@ -29,7 +29,7 @@ export class SyncProgressComponent extends Component {
 
   protected $el: JQuery<HTMLElement>;
   protected debug = Debug('component:' + SyncProgressComponent.tagName);
-  protected syncService = new ShopifyApiSyncService();
+  protected syncService = new ShopifyApiSyncService(window.host);
 
   protected options: Partial<ISyncOptions> = {
     syncToDb: true,

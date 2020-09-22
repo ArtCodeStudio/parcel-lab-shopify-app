@@ -1,6 +1,4 @@
 import { Component } from '@ribajs/core';
-import { JQuery } from '@ribajs/jquery';
-import Debug from 'debug';
 import { LocalesStaticService } from '@ribajs/i18n';
 
 import { WebhooksService } from '../../services/webhooks.service';
@@ -14,10 +12,10 @@ interface IScope {
 export class ApiSocketExplorerComponent extends Component {
   public static tagName = 'rv-api-socket-explorer';
 
-  protected webhooksService = new WebhooksService();
+  protected webhooksService = new WebhooksService(window.host);
   protected localesService = LocalesStaticService.getInstance('main');
 
-  protected $cardContainer?: JQuery<HTMLElement>;
+  protected cardContainer?: HTMLElement;
 
   protected autobind = true;
 
@@ -25,8 +23,7 @@ export class ApiSocketExplorerComponent extends Component {
     return [];
   }
 
-  protected $el: JQuery<HTMLElement>;
-  protected debug = Debug('component:' + ApiSocketExplorerComponent.tagName);
+  public _debug = true;
 
   protected scope: IScope = {
     langcode: 'en',
@@ -34,7 +31,6 @@ export class ApiSocketExplorerComponent extends Component {
 
   constructor(element?: HTMLElement) {
     super(element);
-    this.$el = JQuery(this.el);
     this.debug('constructor', this);
   }
 
@@ -62,7 +58,8 @@ export class ApiSocketExplorerComponent extends Component {
 
   protected async afterBind() {
     this.debug('afterBind', this.scope);
-    this.$cardContainer = this.$el.find('.card-container');
+    this.cardContainer =
+      this.el.querySelector<HTMLElement>('.card-container') || undefined;
     this.watchSocketEvents();
   }
 
@@ -74,16 +71,16 @@ export class ApiSocketExplorerComponent extends Component {
         data[key] = data[key].replace(/&quot;/g, '"');
       }
     }
+    const newCard = document.createElement('rv-socket-event-card');
+    newCard.classList.add('col-auto');
+    newCard.setAttribute('event', eventName);
+    newCard.setAttribute('data', JSON.stringify(data).replace(/'/g, `&#39;`));
+    newCard.setAttribute('role', role || '');
 
-    const $newCard = JQuery(
-      `<rv-socket-event-card class="col-auto" event="${eventName}" data='${JSON.stringify(
-        data,
-      ).replace(/'/g, `&#39;`)}' role="${role || ''}"></rv-socket-event-card>`,
-    );
-    this.debug('$newCard', $newCard);
-    if (this.$cardContainer) {
-      this.$cardContainer.prepend($newCard);
-      this.debug('$cardContainer', this.$cardContainer);
+    this.debug('newCard', newCard);
+    if (this.cardContainer) {
+      this.cardContainer.prepend(newCard);
+      this.debug('cardContainer', this.cardContainer);
       this.build();
     }
   }

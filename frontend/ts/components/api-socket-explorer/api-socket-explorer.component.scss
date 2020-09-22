@@ -1,6 +1,12 @@
 rv-api-socket-explorer {
+  display: block;
+  max-width: 100%;
   .card.monaco-editor-card.placeholder-card {
-    height: 375px;
+    height: 500px;
     max-width: 500px;
   }
+}
+
+.row.api {
+  max-width: 100%;
 }

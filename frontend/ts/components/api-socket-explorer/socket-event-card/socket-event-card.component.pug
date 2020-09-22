@@ -2,7 +2,7 @@
   bs4-icon.close.m-2(src="/iconset/svg/icon_close.svg" size="32" rv-on-click="close")
   .card-body.pb-0
     .card-title
-      | Recived webhook <code>{event}</code>
+      | Recived webhook <code rv-html="event"></code>
       span.badge.badge-primary.mx-1(rv-show="role | filled" rv-i18n-text="'components.socketEventCard.roles.' | append role | append '.label'", rv-bs4-tooltip="'components.socketEventCard.roles.' | append role | append '.info' | t langcode")
-  .card-body.px-0.pt-0
-    rv-monaco-editor(language="json" rv-data-value="data | json")
+    .card-text
+      code(rv-html="data | json")

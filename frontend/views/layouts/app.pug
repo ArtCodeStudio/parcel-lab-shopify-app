@@ -13,6 +13,7 @@ html(lang='en')
       window.apiKey = '#{shopify.apiKey}';
       window.redirectUri = '#{shopify.redirectUri}';
       window.shop = '#{shopify.shop}';
+      window.host = '#{app.host}';
       if (!shop || !shop.length) {
         var urlParams = new URLSearchParams(window.location.search);
         var _shop = urlParams.get('shop');

@@ -11,14 +11,16 @@ export class ShopifyApiSyncService extends EventEmitter {
   protected debug = Debug('services:ShopifyApiSyncService');
   protected baseUrl = `/shopify/sync`;
   protected socket?: SocketIOClient.Socket;
+  protected host: string;
 
-  constructor() {
+  constructor(host: string) {
     super();
+    this.host = host;
     if (ShopifyApiSyncService.instance) {
       return ShopifyApiSyncService.instance;
     }
     this.debug('constructor');
-    this.socket = io('https://next.artandcode.studio/socket.io/shopify/sync', {
+    this.socket = io(`/socket.io/shopify/sync`, {
       secure: true,
       transports: ['polling'],
     });

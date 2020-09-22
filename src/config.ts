@@ -62,7 +62,7 @@ const shopify: ConfigShopify = {
   callbackURL: `${app.protocol}://${app.host}/shopify/auth/callback`,
   /** callback url used in shopify iframe */
   iframeCallbackURL: `${app.protocol}://${app.host}/shopify/auth/callback/iframe`,
-  scope: ['read_orders', 'read_shipping', 'read_customers', 'read_fulfillments'],
+  scope: ['read_orders', 'read_draft_orders', 'read_shipping', 'read_customers', 'read_fulfillments'],
   webhooks: {
     autoSubscribe: [
       // 'carts/create',

@@ -1,5 +1,4 @@
 import { Component } from '@ribajs/core';
-import { JQuery } from '@ribajs/jquery';
 import Debug from 'debug';
 
 import pugTemplate from './socket-event-card.component.pug';
@@ -20,7 +19,6 @@ export class SocketEventCardComponent extends Component {
     return ['event', 'data', 'role'];
   }
 
-  protected $el: JQuery<HTMLElement>;
   protected debug = Debug('component:' + SocketEventCardComponent.tagName);
 
   protected scope: IScope = {
@@ -32,8 +30,10 @@ export class SocketEventCardComponent extends Component {
 
   constructor(element?: HTMLElement) {
     super(element);
-    this.$el = JQuery(this.el);
-    this.debug('constructor', this);
+  }
+
+  protected connectedCallback() {
+    super.connectedCallback();
     this.init(SocketEventCardComponent.observedAttributes);
   }
 

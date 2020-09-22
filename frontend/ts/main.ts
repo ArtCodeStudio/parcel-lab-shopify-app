@@ -20,12 +20,16 @@ import locales from './locales';
 
 import { AuthService } from './services/auth.service';
 
-declare const shop: string;
-declare const apiKey: string;
-// redirect uri to use if not iframe
-// declare const redirectUri: string;
-// auth uri to use in iframe
-// declare const ENVIRONMENT: string;
+declare global {
+  interface Window {
+    host: string;
+    shop: string;
+    apiKey: string;
+    ENVIRONMENT: string;
+    /** redirect uri to use if not iframe */
+    redirectUri: string;
+  }
+}
 
 const handleize = (str: string) => {
   return str
@@ -51,7 +55,7 @@ export class Main {
 
   constructor() {
     // set shop in header for all javascript requests
-    HttpService.setRequestHeaderEachRequest('shop', shop);
+    HttpService.setRequestHeaderEachRequest('shop', window.shop);
 
     this.debug('init the main application');
 
@@ -75,7 +79,7 @@ export class Main {
           console.warn('Not logged in', loggedIn);
           if (EASDKWrapperService.inIframe()) {
             return this.authService
-              .shopifyConnectIframe(shop)
+              .shopifyConnectIframe(window.shop)
               .then((result) => {
                 console.warn('Redirect to auth url', result);
                 return this.shopifyApp.redirect(result.authUrl);
@@ -84,11 +88,10 @@ export class Main {
                 console.error(error);
                 return error;
               });
-            return;
           }
 
-          if (shop && shop.length) {
-            window.location.href = '/shopify/auth?shop=' + shop;
+          if (window.shop && window.shop.length) {
+            window.location.href = '/shopify/auth?shop=' + window.shop;
           } else {
             window.location.href = '/'; // login / install input
           }
@@ -124,15 +127,15 @@ export class Main {
 }
 
 const bootstrap = () => {
-  if (shop) {
+  if (window.shop) {
     ShopifyApp.init({
-      apiKey,
-      shopOrigin: `https://${shop}`,
+      apiKey: window.apiKey,
+      shopOrigin: `https://${window.shop}`,
       forceRedirect: true, // If we want to allow to use the app outsite of the iframe we need to set false here
       debug: true,
     });
   } else {
-    console.error('Shop not detected', shop);
+    console.error('Shop not detected', window.shop);
     window.location.href = '/';
   }
 
