@@ -41,5 +41,5 @@ lerna-debug.log*
 !.yarn/versions
 .pnp.*
 
-# We also ignore yarn.lock because the App Platform by DigitalOcean uses yarn v1 and this is incompatible to v2
+# We also ignore yarn.lock because the App Platform by DigitalOcean uses npm
 yarn.lock
