@@ -81,7 +81,8 @@
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.4.0",
     "source-map-support": "^0.5.19",
-    "typeorm": "^0.2.26"
+    "typeorm": "^0.2.26",
+    "webpack-cli": "^3.3.12"
   },
   "devDependencies": {
     "@nestjs/schematics": "^7.0.0",
