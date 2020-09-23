@@ -18,7 +18,6 @@ const redis: ConfigRedis = {
 };
 
 const RedisStore = connectRedis(expressSession);
-const redisInstance = new Redis(redis.url);
 
 const app: ConfigApp = {
   root: findRoot(process.cwd()),
@@ -35,7 +34,7 @@ const app: ConfigApp = {
  */
 const session = {
   store: new RedisStore({
-    client: redisInstance
+    client: new Redis(redis.url, { keyPrefix: app.host }),
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -48,7 +47,7 @@ const session = {
  */
 const cache: ConfigCache = {
   store: redisCacheStore as any,
-  redisInstance: redisInstance,
+  redisInstance: new Redis(redis.url, { keyPrefix: app.host }),
   ttl: 60, // app.environment === 'production' ? 300 : 60, // second
   max: 100,
 }

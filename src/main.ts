@@ -62,7 +62,7 @@ async function bootstrap() {
    * @see https://github.com/socketio/socket.io-redis
    */
 
-  const redisIoAdapter = new RedisSessionIoAdapter(session, conf.redis.url, app);
+  const redisIoAdapter = new RedisSessionIoAdapter(session, conf.redis.url, conf.app.host, app);
   app.useWebSocketAdapter(redisIoAdapter);
 
   // passport session

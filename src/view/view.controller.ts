@@ -7,13 +7,17 @@ type Request = any;
 export class ViewController {
   constructor(private readonly viewService: ViewService) {}
 
-  private extractShopDomain(request: Request) {
+  private extractShopDomain(req: Request) {
     let shop: string;
-    if (request.query && request.query.shop) {
-      shop = request.query.shop;
+    if (req.query && req.query.shop) {
+      shop = req.query.shop;
     }
-    if (request.user && request.user.shop && request.user.shop.myshopify_domain) {
-      shop = request.user.shop.myshopify_domain;
+    if (req.shop) {
+      shop = req.shop;
+    }
+
+    if (req.user && req.user.shop && req.user.shop.myshopify_domain) {
+      shop = req.user.shop.myshopify_domain;
     }
     return shop;
   }
@@ -94,7 +98,7 @@ export class ViewController {
    */
   @Get('/view/close')
   @Render('pages/close')
-  close(@Req() req): any {
+  close(/*@Req() req*/): any {
     return {};
   }
 }

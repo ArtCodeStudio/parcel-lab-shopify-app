@@ -54,9 +54,6 @@ export class Main {
   );
 
   constructor() {
-    // set shop in header for all javascript requests
-    HttpService.setRequestHeaderEachRequest('shop', window.shop);
-
     this.debug('init the main application');
 
     this.shopifyApp.Bar.initialize({
@@ -128,6 +125,9 @@ export class Main {
 
 const bootstrap = () => {
   if (window.shop) {
+    // set shop in header for all javascript requests
+    HttpService.setRequestHeaderEachRequest('shop', window.shop);
+
     ShopifyApp.init({
       apiKey: window.apiKey,
       shopOrigin: `https://${window.shop}`,
