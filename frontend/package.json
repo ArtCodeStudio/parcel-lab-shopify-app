@@ -5,8 +5,8 @@
   "main": "ts/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "watch": "npm run build -- --watch --env.development",
+    "build": "webpack --env.production",
+    "watch": "webpack --watch --env.development",
     "lint": "eslint ts --ext .js,.jsx,.ts,.tsx && tsc --noEmit"
   },
   "url": "https://github.com/ArtCodeStudio/parcel-lab-shopify-app",
@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git@github.com:ArtCodeStudio/parcel-lab-shopify-app.git"
   },
-  "author": "Pascal Garber <pascal@artandcode.studio>",
+  "author": "Art+Code Studio / Pascal Garber <pascal@artandcode.studio>",
   "license": "UNLICENSED",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
