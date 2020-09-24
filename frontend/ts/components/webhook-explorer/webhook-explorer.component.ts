@@ -3,16 +3,16 @@ import { LocalesStaticService } from '@ribajs/i18n';
 
 import { WebhooksService } from '../../services/webhooks.service';
 
-import pugTemplate from './api-socket-explorer.component.pug';
+import pugTemplate from './webhook-explorer.component.pug';
 
 interface IScope {
   langcode?: string;
 }
 
-export class ApiSocketExplorerComponent extends Component {
-  public static tagName = 'rv-api-socket-explorer';
+export class WebhookExplorerComponent extends Component {
+  public static tagName = 'rv-webhook-explorer';
 
-  protected webhooksService = new WebhooksService(window.host);
+  protected webhooksService = new WebhooksService((window as any).host);
   protected localesService = LocalesStaticService.getInstance('main');
 
   protected cardContainer?: HTMLElement;
@@ -36,19 +36,18 @@ export class ApiSocketExplorerComponent extends Component {
 
   protected connectedCallback() {
     super.connectedCallback();
-    this.init(ApiSocketExplorerComponent.observedAttributes);
+    this.init(WebhookExplorerComponent.observedAttributes);
   }
 
   protected initLocales() {
     // set avaible langcodes
     this.scope.langcode = this.localesService.getLangcode();
-    this.localesService.event.on(
-      'changed',
-      (changedLangcode: string, initial: boolean) => {
-        // Activate localcode and disable the other
-        this.scope.langcode = changedLangcode;
-      },
-    );
+    this.localesService.event.on('changed', (
+      changedLangcode: string /*, initial: boolean*/,
+    ) => {
+      // Activate localcode and disable the other
+      this.scope.langcode = changedLangcode;
+    });
   }
 
   protected async beforeBind() {
@@ -71,7 +70,7 @@ export class ApiSocketExplorerComponent extends Component {
         data[key] = data[key].replace(/&quot;/g, '"');
       }
     }
-    const newCard = document.createElement('rv-socket-event-card');
+    const newCard = document.createElement('rv-webhook-card');
     newCard.classList.add('col-auto');
     newCard.setAttribute('event', eventName);
     newCard.setAttribute('data', JSON.stringify(data).replace(/'/g, `&#39;`));

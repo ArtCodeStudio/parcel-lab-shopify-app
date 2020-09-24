@@ -1,8 +1,8 @@
-import enApiWebhookDescription from './api/webhooks/description.en.html';
-import deApiWebhookDescription from './api/webhooks/description.de.html';
+import enOrdersWebhookDescription from './orders/webhooks/description.en.html';
+import deOrdersWebhookDescription from './orders/webhooks/description.de.html';
 
-import enComponentsApiSocketExplorerPlaceholderCardContent from './components/api-socket-explorer/placeholder-card-content.en.html';
-import deComponentsApiSocketExplorerPlaceholderCardContent from './components/api-socket-explorer/placeholder-card-content.de.html';
+import enComponentswebhookExplorerPlaceholderCardContent from './components/webhook-explorer/placeholder-card-content.en.html';
+import deComponentswebhookExplorerPlaceholderCardContent from './components/webhook-explorer/placeholder-card-content.de.html';
 
 export default {
   de: {
@@ -14,16 +14,6 @@ export default {
             'Das Shopify-Konto, in dem Sie diese App installiert haben oder Zugriff gewährt bekommen haben.',
           notConnected:
             'Diese App wurde noch nicht mit Shopify verbunden. Geben Sie unten ihre Shopify-Domain ein um diese App mit Shopify zu verbinden.',
-        },
-        facebook: {
-          title: 'Facebook-Konto',
-          info:
-            'Ihr Facebook-Konto, dass Sie benutzen um auf die Instagram API zuzugreifen.',
-          notConnected:
-            'Diese App wurde noch nicht mit Ihrem Facebook-Konto verbunden. Klicken Sie unten auf "Weiter mit Facebook".',
-          connect: 'Weiter mit Facebook',
-          disconnect: 'Facebook trennen',
-          logout: 'Facebook abmelden',
         },
         connect: 'Jetzt verbinden',
         disconnect: 'Trennen',
@@ -147,52 +137,10 @@ export default {
             },
           },
         },
-        instagram: {
-          user: {
-            short_desc: 'Ruft deinen Facebook-Benutzer ab.',
-            accounts: {
-              short_desc:
-                'Ruft eine Liste deiner mit Facebook verbundenen Instagram Accounts ab.',
-            },
-          },
-          media: {
-            short_desc:
-              'Ruft die Medien anhand eines Instagram-Business-Kontos ab.',
-          },
-        },
-        facebook: {
-          user: {
-            short_desc: 'Ruft deinen Benutzer ab.',
-            picture: {
-              short_desc: 'Ruft dein Profilbild ab.',
-            },
-            pages: {
-              short_desc:
-                'Ruft eine Liste von Seiten ab auf die der Benutzer zugriff hat.',
-            },
-          },
-          posts: {
-            user: {
-              short_desc:
-                'Ruft eine Liste der Beiträge Ihres Benutzerkontos ab.',
-            },
-            pageId: {
-              short_desc: 'Ruft eine Liste der Beiträge einer Seite ab.',
-            },
-          },
-          post: {
-            postId: {
-              short_desc: 'Ruft einen einzelnen Post ab.',
-              comments: {
-                short_desc: 'Ruft eine Liste von Kommentaren eines Posts ab.',
-              },
-            },
-          },
-        },
       },
-      apiSocketExplorer: {
+      webhookExplorer: {
         placeholderCard: {
-          content_html: deComponentsApiSocketExplorerPlaceholderCardContent,
+          content_html: deComponentswebhookExplorerPlaceholderCardContent,
         },
         simulate: {
           label: 'Simuliere',
@@ -209,66 +157,21 @@ export default {
           },
         },
       },
-      SyncProgress: {
-        title: 'Synchronisation',
-        info_html:
-          'Synchronisiere deine Shopdaten mit dieser App um die Live-Suche zu aktivieren.',
-        need: 'Du hast noch keine Daten synchronisiert.',
-        sync: {
-          need: 'Bisher wurde noch keine Synchronisation gestartet.',
-          running: 'Synchronisation läuft...',
-          starting: 'Synchronisation beginnt...',
-          ending: 'Synchronisation endet...',
-          cancel: 'Abbrechen',
-          start: 'Starten',
-          restart: 'Neu starten',
-          success: 'Die letzte Synchronisation war erfolgreich.',
-          failed: 'Die letzte Synchronisation ist fehlgeschlagen.',
-          cancelled: 'Die letzte Synchronisation wurde abgebrochen.',
-          error_message: 'Fehlermeldung:',
-          products: 'Zuletzt synchronisiertes Produkt',
-          orders: 'Zuletzt synchronisierte Bestellung',
-          pages: 'Zuletzt synchronisierte Seite',
-          customCollections: 'Zuletzt synchronisierte Custom Collection',
-          smartCollections: 'Zuletzt synchronisierte Smart Collection',
-        },
-      },
     },
     titles: {
       overview: 'Übersicht',
       settings: 'Einstellungen',
-      api: 'API',
-      i18n: 'I18n',
-      content: 'Inhalte und Metafields',
-      'content-blogs': 'Blogs',
-      'content-blog': 'Blog',
-      'content-articles': 'Artikel',
-      'content-article': 'Artikel',
-      'facebook-api': 'Facebook REST-API',
-      'instagram-api': 'Instagram REST-API',
-      'shopify-api': 'Shopify REST-API',
+      orders: 'Bestellungen',
       'webhooks-api': 'Webhook Websocket-API',
     },
     overview: {
       settings_desc: 'Generelle Einstellungen und Konto-Anbindungen',
-      api_desc: 'Erweitere Rest-API für dein Theme',
-      i18n_desc: 'Übersetzungstool für deine Themes',
-      content_desc: 'Inhalte und deren Metafields bearbeiten',
-      content_blogs_desc: 'Blogs auflisten',
-      content_articles_desc: 'Artikel und deren Metafields bearbeiten',
-      facebook_api_desc:
-        'Nutze die Facebook REST-API z.B. um Facebook in dein Theme zu integrieren.',
-      instagram_api_desc:
-        'Nutze die Instagram REST-API z.B. um deine Instagram-Bilder und / oder Kommentare in dein Theme zu integrieren.',
-      shopify_api_desc:
-        'Erweitere die Möglichkeiten deines Themes mit der zusätzlichen Shopify Rest-API.',
-      webhooks_api_desc:
-        'Beobachte das Hinzufügen, Entfernen und Ändern von Produkten mit der Webhooks Websocket API.',
+      orders_desc: 'Zeige dir die übertragenen Bestellungen an',
     },
-    api: {
+    orders: {
       webhooks: {
-        title: 'Empfange Webhooks in deinem Theme',
-        description_html: deApiWebhookDescription,
+        title: 'Zeige gerade empfange Order-Webhooks',
+        description_html: deOrdersWebhookDescription,
       },
     },
   },
@@ -281,16 +184,6 @@ export default {
             'The Shopify account where you installed this app or have been granted access.',
           notConnected:
             'This app has not yet been connected with Shopify. Enter your Shopify domain below to connect this app with Shopify.',
-        },
-        facebook: {
-          title: 'Facebook account',
-          info:
-            'Your Facebook account, which you use to access the Instagram API.',
-          notConnected:
-            'This app has not yet been linked to your Facebook account. Click "Continue with Facebook" at the bottom.',
-          connect: 'Continue with Facebook',
-          disconnect: 'Disconnect Facebook',
-          logout: 'Logout on Facebook',
         },
         connect: 'Connect now',
         disconnect: 'Disconnect',
@@ -414,50 +307,10 @@ export default {
             },
           },
         },
-        instagram: {
-          user: {
-            short_desc: 'Retrieves your Facebook user name and id.',
-            accounts: {
-              short_desc:
-                'Retrieves a list of your with Facebook connected instagram accounts.',
-            },
-          },
-          media: {
-            short_desc:
-              'Retrieves your instagram media for a Instagram business ccount.',
-          },
-        },
-        facebook: {
-          user: {
-            short_desc: 'Retrieves your user name and id.',
-            picture: {
-              short_desc: 'Retrieves your user picture image.',
-            },
-            pages: {
-              short_desc: 'Retrieves your user pages your user has access to.',
-            },
-          },
-          posts: {
-            user: {
-              short_desc: 'Retrieves a list of posts by your user account.',
-            },
-            pageId: {
-              short_desc: 'Retrieves a list of posts by a page.',
-            },
-          },
-          post: {
-            postId: {
-              short_desc: 'Retrieves a single post.',
-              comments: {
-                short_desc: 'Retrieves a list of comments of a post.',
-              },
-            },
-          },
-        },
       },
-      apiSocketExplorer: {
+      webhookExplorer: {
         placeholderCard: {
-          content_html: enComponentsApiSocketExplorerPlaceholderCardContent,
+          content_html: enComponentswebhookExplorerPlaceholderCardContent,
         },
         simulate: {
           label: 'Simulate',
@@ -474,65 +327,21 @@ export default {
           },
         },
       },
-      SyncProgress: {
-        title: 'Synchronization',
-        info_html: 'Sync your store data with this app to enable live search.',
-        need: 'You have not synced any data yet.',
-        sync: {
-          need: 'So far no synchronization has been started.',
-          running: 'Synchronization is running...',
-          starting: 'Synchronization starts...',
-          ending: 'Synchronization ends...',
-          cancel: 'Cancel',
-          start: 'Start',
-          restart: 'Restart',
-          success: 'The last synchronization was successful.',
-          failed: 'The last synchronization was failed.',
-          cancelled: 'The last synchronization was cancelled.',
-          error_message: 'Error message:',
-          products: 'Last synchronized product',
-          orders: 'Last synchronized order',
-          pages: 'Last synchronized page',
-          customCollections: 'Last synchronized custom collection',
-          smartCollections: 'Last synchronized smart collection',
-        },
-      },
     },
     titles: {
       overview: 'Overview',
       settings: 'Settings',
-      api: 'API',
-      i18n: 'I18n',
-      content: 'Content and Metafields',
-      'content-blogs': 'Blogs',
-      'content-blog': 'Blog',
-      'content-articles': 'Articles',
-      'content-article': 'Article',
-      'facebook-api': 'Facebook REST API',
-      'instagram-api': 'Instagram REST API',
-      'shopify-api': 'Shopify REST API',
+      orders: 'Orders',
       'webhooks-api': 'Webhook Websocket API',
     },
     overview: {
       settings_desc: 'General settings and account connections',
-      api_desc: 'Expand Rest API for your theme',
-      i18n_desc: 'Translation tool for your themes',
-      content_desc: 'Change contents and metafields',
-      content_blogs_desc: 'List blogs',
-      content_articles_desc: 'Change articles and his metafields',
-      facebook_api_desc:
-        'Use the Facebook REST API, e.g. to integrate Facebook into your theme.',
-      instagram_api_desc:
-        'Use the Instagram REST API, e.g. to integrate your Instagram pictures and / or comments into your theme.',
-      shopify_api_desc:
-        'Expand the possibilities of your theme with the Shopify Rest API.',
-      webhooks_api_desc:
-        'Watch for adding, removing, and modifying products using the Webhooks Websocket API.',
+      orders_desc: 'Show you the transferred orders',
     },
-    api: {
+    orders: {
       webhooks: {
-        title: 'Receive webhooks in your theme',
-        description_html: enApiWebhookDescription,
+        title: 'Show current received order webhooks',
+        description_html: enOrdersWebhookDescription,
       },
     },
   },

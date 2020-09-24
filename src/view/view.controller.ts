@@ -84,13 +84,13 @@ export class ViewController {
   }
 
   /**
-   * App backend / api
+   * App backend / orders
    */
-  @Get('/view/api')
-  @Render('pages/api')
-  api(@Req() req): any {
+  @Get('/view/orders')
+  @Render('pages/orders')
+  orders(@Req() req): any {
     const shop = this.extractShopDomain(req);
-    return this.viewService.api(shop);
+    return this.viewService.orders(shop);
   }
 
   /**

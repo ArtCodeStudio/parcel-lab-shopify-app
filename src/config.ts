@@ -128,7 +128,7 @@ const charges: ConfigCharges = {
     {
       // The default charge
       name: 'Default',
-      price: 29.00,
+      price: 5.00,
       test: app.environment === 'development',
       trial_days: 14,
       return_url: `${app.protocol}://${app.host}/shopify/charge/activate`,
@@ -137,7 +137,7 @@ const charges: ConfigCharges = {
     {
       // Charge for special customers with a cheaper price
       name: 'Customers',
-      price: 19.00,
+      price: 3.00,
       test: app.environment === 'development',   // Marks this charge as a test, meaning it won't charge the shop owner.
       trial_days: 0, // Don't charge the user for 0 days
       return_url: `${app.protocol}://${app.host}/shopify/charge/activate`,

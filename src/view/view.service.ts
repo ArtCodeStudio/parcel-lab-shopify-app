@@ -108,9 +108,9 @@ export class ViewService {
     });
   }
 
-  async api(shop: string) {
-    const vars = await this.getGlobalViewVars(shop, this.api);
-    const title = 'API';
+  async orders(shop: string) {
+    const vars = await this.getGlobalViewVars(shop, this.orders);
+    const title = 'Orders';
     return merge(vars, {
       dataset: {
         title,

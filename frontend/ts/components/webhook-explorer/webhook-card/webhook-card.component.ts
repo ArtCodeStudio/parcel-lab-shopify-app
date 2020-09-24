@@ -1,7 +1,7 @@
 import { Component } from '@ribajs/core';
 import Debug from 'debug';
 
-import pugTemplate from './socket-event-card.component.pug';
+import pugTemplate from './webhook-card.component.pug';
 
 interface IScope {
   close?: SocketEventCardComponent['close'];
@@ -11,7 +11,7 @@ interface IScope {
 }
 
 export class SocketEventCardComponent extends Component {
-  public static tagName = 'rv-socket-event-card';
+  public static tagName = 'rv-webhook-card';
 
   protected autobind = true;
 

@@ -4,10 +4,13 @@ block content
   .row
     .col-12
       h1.mb-5(rv-i18n-text="dataset.title | handleize | prepend 'titles.'")
-  section.row.api
+  section.row.orders
     .col-12
       .card.overview-card
         .card-body
           .card-text.px-3
             .row
-              rv-api-socket-explorer
+              .col-12
+                h2(rv-i18n-text="'orders.webhooks.title'")
+            .row
+              rv-webhook-explorer
