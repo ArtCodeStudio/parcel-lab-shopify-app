@@ -8,13 +8,14 @@ import config from './config';
 import { ShopifyModule, ShopifyModuleOptions } from 'nest-shopify';
 import { Mongoose } from 'mongoose';
 import { PassportStatic } from 'passport';
+import { ParcelLabModule } from './parcel-lab/parcel-lab.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [config],
     }),
-    TypeOrmModule.forRoot()
+    TypeOrmModule.forRoot(),
   ],
   controllers: [ViewController],
   providers: [ViewService],
@@ -28,8 +29,7 @@ export class AppModule {
       imports: [
         CacheModule.register(options.cache),
         ShopifyModule.forRoot(options, database, passport),
-        // InstagramModule.forRoot(options, database, passport),
-        // FacebookModule.forRoot(options, database, passport),
+        ParcelLabModule.forRoot(options, database, passport),
       ],
     };
   }
