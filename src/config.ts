@@ -152,6 +152,11 @@ const mongodb: ConfigMongoDB = {
   url: process.env.MONGODB_URL,
 };
 
+const parcelLab = {
+  user: process.env.PARCELLAB_USER,
+  token: process.env.PARCELLAB_TOKEN
+};
+
 const NestShopifyModuleOptions: ShopifyModuleOptions = {
   app,
   shopify,
@@ -170,4 +175,5 @@ export default () => ({
   cache,
   session,
   app,
+  parcelLab,
 });

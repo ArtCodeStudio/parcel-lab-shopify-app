@@ -1,6 +1,7 @@
 import { Component } from '@ribajs/core';
 import { JQuery } from '@ribajs/jquery';
 import Debug from 'debug';
+import { hasChildNodesTrim } from '@ribajs/utils/src/dom';
 
 import pugTemplate from './account-connects.component.pug';
 
@@ -181,7 +182,7 @@ export class AccountConnectsComponent extends Component {
   protected template() {
     let template: string | null = null;
     // Only set the component template if there no childs already
-    if (this.el.hasChildNodes()) {
+    if (hasChildNodesTrim(this.el)) {
       this.debug('Do not template, because element has child nodes');
       return template;
     } else {

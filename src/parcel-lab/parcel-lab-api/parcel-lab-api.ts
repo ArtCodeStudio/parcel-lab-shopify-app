@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-
 import { params } from './params';
 import * as utils from './utils';
 
@@ -10,11 +8,10 @@ import Async = require('async');
 import ø from 'validator';
 import _ from 'underscore';
 
-@Injectable()
 /**
  * Based on https://bitbucket.org/parcellab/sdk-node/src/master/index.js
  */
-export class ParcelLabApiService {
+export class ParcelLabApi {
     /**
      * Constructor of CheckpointAnalyser, needs to be supplied the courier and options if available
      * @param {Number} user

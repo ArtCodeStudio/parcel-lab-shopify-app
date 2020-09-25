@@ -1,0 +1,17 @@
+section.row
+  .col-12.col-md-4
+    h2.my-3(rv-i18n-text="'components.parcelLabSettings.title'")
+    p.text-muted(rv-i18n-text="'components.parcelLabSettings.info'")
+  .col-12.col-md-8
+    .card
+      .card-body
+        .card-text
+          form
+            .form-group
+              label(for='parcel-lab-user-id') User-ID
+              input#parcel-lab-user-id.form-control(type='number')
+            .form-group
+              label(for='parcel-lab-token') Token
+              input#parcel-lab-token.form-control(type='password', aria-describedby='parcel-lab-token-help')
+              small#parcel-lab-token-help.form-text.text-muted(rv-i18n-text="'components.parcelLabSettings.tokenHelp'")
+            button.btn.btn-link.card-link(type='submit' rv-on-click="logout" rv-i18n-text="'components.parcelLabSettings.saveLabel'")
