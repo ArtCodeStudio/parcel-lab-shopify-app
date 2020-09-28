@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ParcelLabApi } from '../parcel-lab-api/parcel-lab-api';
+import { ParcelLabApi } from '../api/parcel-lab-api';
 import { EventService, Interfaces } from 'nest-shopify';
 
 @Injectable()

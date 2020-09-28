@@ -8,7 +8,13 @@ export default {
       info:
         'Hinterlege hier deine Parcel Lab Daten um es dieser App zu ermöglichen Bestellungen an Parcel Lab zu senden.',
       saveLabel: 'Speichern',
+      showPasswordLabel: 'Anzeigen',
+      hidePasswordLabel: 'Verstecken',
       tokenHelp: 'Wir werden deinen Token niemals an andere weitergeben.',
+      errors: {
+        generalSave:
+          'Einstellungen konnten nicht gespeichert werden, bitte überprüfe deine Eingabe.',
+      },
     },
     accountConnects: {
       shopify: {

@@ -1,8 +1,7 @@
 import { Component, HttpService } from '@ribajs/core';
 import pugTemplate from './plans.component.pug';
-
-import { IRecurringCharge } from '../../interfaces/shopify-api/recurring_charge';
-import { IPlan } from '../../interfaces/plan';
+import Debug from 'debug';
+import { IPlan, IRecurringCharge } from '../../interfaces';
 
 interface IScope {
   plans: IPlan[];
@@ -18,7 +17,7 @@ export class PlansComponent extends Component {
     return [];
   }
 
-  public _debug = true;
+  protected debug = Debug('component:' + PlansComponent.tagName);
 
   protected scope: IScope = {
     plans: [],

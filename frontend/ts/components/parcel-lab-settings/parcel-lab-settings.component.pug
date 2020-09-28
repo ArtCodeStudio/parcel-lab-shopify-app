@@ -9,9 +9,14 @@ section.row
           form
             .form-group
               label(for='parcel-lab-user-id') User-ID
-              input#parcel-lab-user-id.form-control(type='number')
+              input#parcel-lab-user-id.form-control(type='number' rv-value="settings.user")
             .form-group
               label(for='parcel-lab-token') Token
-              input#parcel-lab-token.form-control(type='password', aria-describedby='parcel-lab-token-help')
+              .input-group
+                input#parcel-lab-token.form-control(rv-type='passwortInputType', aria-describedby='parcel-lab-token-help' rv-value="settings.token")
+                .input-group-append
+                  .input-group-text.cursor-pointer(rv-hide="showPasswort" rv-on-click="togglePassword" rv-i18n-text="'components.parcelLabSettings.showPasswordLabel'")
+                  .input-group-text.cursor-pointer(rv-show="showPasswort" rv-on-click="togglePassword" rv-i18n-text="'components.parcelLabSettings.hidePasswordLabel'")
               small#parcel-lab-token-help.form-text.text-muted(rv-i18n-text="'components.parcelLabSettings.tokenHelp'")
-            button.btn.btn-link.card-link(type='submit' rv-on-click="logout" rv-i18n-text="'components.parcelLabSettings.saveLabel'")
+            .alert.alert-danger(role='alert', rv-if="locales.error", rv-i18n-text="locales.error")
+            button.btn.btn-link.card-link(type='button' rv-on-click="save" rv-i18n-text="'components.parcelLabSettings.saveLabel'")

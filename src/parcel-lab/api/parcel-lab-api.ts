@@ -18,7 +18,7 @@ export class ParcelLabApi {
      * @param {String} token
      */
     constructor(protected user: number, protected token: string) {
-        if (!(ø.isInt(user.toString()) && token.length == 30)) {
+        if (!ø.isInt(user.toString()) || token.length < 30) {
             throw new Error('Invalid user/ token combination');
         }
         

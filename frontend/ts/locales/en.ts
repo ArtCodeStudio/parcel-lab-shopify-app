@@ -8,7 +8,12 @@ export default {
       info:
         'Enter your Parcel Lab data here to enable this app to send orders to Parcel Lab.',
       saveLabel: 'Save',
+      showPasswordLabel: 'Show',
+      hidePasswordLabel: 'Hide',
       tokenHelp: "We'll never share your token with anyone else.",
+      errors: {
+        generalSave: 'Settings could not be saved, please check your input.',
+      },
     },
     accountConnects: {
       shopify: {
