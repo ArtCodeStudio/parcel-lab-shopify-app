@@ -3,12 +3,13 @@
  */
 
 export const params = {
-  "endpoint": "https://api.parcellab.com/",
-  "requiredKeys": [
+  endpoint: "https://api.parcellab.com/",
+  mockEndpoint: "https://mock-api.parcellab.com/",
+  requiredKeys: [
     "tracking_number",
     "courier"
   ],
-  "allowedKeys": [
+  allowedKeys: [
     "zip_code",
     "destination_country_iso3",
     "deliveryNo",
@@ -34,15 +35,15 @@ export const params = {
     "cashOnDelivery",
     "upgrade"
   ],
-  "datachecks": {
-    "email": ["email"],
-    "number": ["cashOnDelivery"],
-    "boolean": ["complete", "firstOrder", "upgrade"],
-    "iso3": ["origin_country_iso3", "language_iso3"]
+  datachecks: {
+    email: ["email"],
+    number: ["cashOnDelivery"],
+    boolean: ["complete", "firstOrder", "upgrade"],
+    iso3: ["origin_country_iso3", "language_iso3"]
   },
-  "couriers": {
-    "dhl": "dhl-germany",
-    "dpd": "dpd-de",
-    "hermes": "hermes-de"
+  couriers: {
+    dhl: "dhl-germany",
+    dpd: "dpd-de",
+    hermes: "hermes-de"
   }
 }
