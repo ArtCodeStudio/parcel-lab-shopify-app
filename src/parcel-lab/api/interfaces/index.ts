@@ -17,9 +17,9 @@ export interface ParcellabTrackingBase {
      */
     courier: ParcellabCourier; 
     /**
-     * unique tracking number
+     * unique tracking number(s)
      */
-    tracking_number: string;
+    tracking_number: string | string[];
     /**
      * postal code
      */
