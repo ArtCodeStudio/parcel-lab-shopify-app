@@ -1,11 +1,10 @@
 import { Riba, HttpService, coreModule, EventDispatcher } from '@ribajs/core';
-import { JQuery } from '@ribajs/jquery';
 import Debug from 'debug';
 
 // Extensions / Modules
+import { JQuery } from '@ribajs/jquery';
 import { routerModule } from '@ribajs/router';
 import { i18nModule, LocalesStaticService } from '@ribajs/i18n';
-
 import { bs4Module } from '@ribajs/bs4';
 import {
   ShopifyApp,
@@ -105,10 +104,15 @@ export class Main {
     });
 
     // Regist modules
+    console.debug('regist coreModule');
     this.riba.module.regist(coreModule);
+    console.debug('regist routerModule', routerModule);
     this.riba.module.regist(routerModule);
+    console.debug('regist i18nModule');
     this.riba.module.regist(i18nModule(this.localesService));
+    console.debug('regist shopifyEasdkModule');
     this.riba.module.regist(shopifyEasdkModule);
+    console.debug('regist bs4Module');
     this.riba.module.regist(bs4Module);
 
     // this.dispatcher.on('newPageReady', (viewId: string, currentStatus: IState, prevStatus: IState, $container: JQuery<HTMLElement>, newPageRawHTML: string, dataset: any, isFirstPageLoad: boolean) => {
