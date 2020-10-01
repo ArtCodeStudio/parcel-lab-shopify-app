@@ -237,15 +237,15 @@ export class ParcelLabTrackingService {
             ...(order || {}),
             articles: await this.transformLineItems(shopifyAuth, shopifyFulfillment.line_items),
             branchDelivery: shopifyFulfillment.tracking_numbers?.length > 1, // TODO checkm,
-            courier: await this.getCourier(shopifyFulfillment) || order.courier,
-            client: await this.getClient(shopifyAuth) || order.client,
-            cancelled: shopifyFulfillment.status === 'cancelled' || order.cancelled,
-            complete: shopifyFulfillment.shipment_status === 'delivered' || order.complete,            
+            courier: await this.getCourier(shopifyFulfillment) || order?.courier,
+            client: await this.getClient(shopifyAuth) || order?.client,
+            cancelled: shopifyFulfillment.status === 'cancelled' || order?.cancelled,
+            complete: shopifyFulfillment.shipment_status === 'delivered' || order?.complete,            
             statuslink: shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
             tracking_number: shopifyFulfillment.tracking_numbers ? shopifyFulfillment.tracking_numbers.join(',') : shopifyFulfillment.tracking_number,
             warehouse: shopifyFulfillment.location_id ? shopifyFulfillment.location_id.toString() : undefined,
             customFields: {
-                ...order.customFields  || {},
+                ...order?.customFields  || {},
                 notify_customer: shopifyFulfillment.notify_customer,
             },
         }
@@ -253,10 +253,10 @@ export class ParcelLabTrackingService {
         if ((shopifyFulfillment as AnyWebhookFulfillment).destination) {
             shopifyFulfillment = shopifyFulfillment as AnyWebhookFulfillment;
             tracking.city = shopifyFulfillment.destination.city || order?.city;
-            tracking.destination_country_iso3 = shopifyFulfillment.destination.country_code || order.destination_country_iso3;
+            tracking.destination_country_iso3 = shopifyFulfillment.destination.country_code || order?.destination_country_iso3;
             tracking.phone = shopifyFulfillment.destination.phone;
-            tracking.recipient = shopifyFulfillment.destination.name || order.recipient_notification;
-            tracking.recipient_notification = shopifyFulfillment.destination.name || order.recipient_notification;
+            tracking.recipient = shopifyFulfillment.destination.name || order?.recipient_notification;
+            tracking.recipient_notification = shopifyFulfillment.destination.name || order?.recipient_notification;
             tracking.street = shopifyFulfillment.destination.address1;
             tracking.zip_code = shopifyFulfillment.destination.zip;
 

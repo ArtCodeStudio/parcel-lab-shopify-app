@@ -9,15 +9,17 @@ export class ViewController {
 
   private extractShopDomain(req: Request) {
     let shop: string;
+
+    if (req.user && req.user.shop && req.user.shop.myshopify_domain) {
+      shop = req.user.shop.myshopify_domain;
+    }
+
+    // Overwrite shop by logged in user if we have found a query string (because it could be, that the user tries to log in anther shop)
     if (req.query && req.query.shop) {
       shop = req.query.shop;
     }
     if (req.shop) {
       shop = req.shop;
-    }
-
-    if (req.user && req.user.shop && req.user.shop.myshopify_domain) {
-      shop = req.user.shop.myshopify_domain;
     }
 
     if (req.session.currentShop) {
