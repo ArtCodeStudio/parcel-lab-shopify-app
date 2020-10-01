@@ -10,7 +10,9 @@ interface Scope {
   locales: any;
   settings: Partial<ParcelLabSettings>;
   showPasswort: boolean;
+  passwortInputType: 'text' | 'password';
   save: ParcelLabSettingsComponent['save'];
+  togglePassword: ParcelLabSettingsComponent['togglePassword'];
 }
 
 export class ParcelLabSettingsComponent extends Component {
@@ -78,7 +80,7 @@ export class ParcelLabSettingsComponent extends Component {
   public togglePassword() {
     this.scope.showPasswort = !this.scope.showPasswort;
     if (this.scope.showPasswort) {
-      this.scope.passwortInputType = 'zrcz';
+      this.scope.passwortInputType = 'text';
     } else {
       this.scope.passwortInputType = 'password';
     }

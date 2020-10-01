@@ -7,10 +7,11 @@ import pugTemplate from './webhook-explorer.component.pug';
 
 interface IScope {
   langcode?: string;
+  environment: 'production' | 'development';
 }
 
 export class WebhookExplorerComponent extends Component {
-  public static tagName = 'rv-webhook-explorer';
+  public static tagName = 'webhook-explorer';
 
   protected webhooksService = new WebhooksService((window as any).host);
   protected localesService = LocalesStaticService.getInstance('main');
@@ -20,13 +21,14 @@ export class WebhookExplorerComponent extends Component {
   protected autobind = true;
 
   static get observedAttributes() {
-    return [];
+    return ['environment'];
   }
 
   public _debug = true;
 
   protected scope: IScope = {
     langcode: 'en',
+    environment: 'production',
   };
 
   constructor(element?: HTMLElement) {
@@ -51,15 +53,19 @@ export class WebhookExplorerComponent extends Component {
   }
 
   protected async beforeBind() {
-    this.initLocales();
+    if (this.scope.environment === 'production') {
+      this.initLocales();
+    }
     this.debug('beforeBind');
   }
 
   protected async afterBind() {
     this.debug('afterBind', this.scope);
-    this.cardContainer =
-      this.el.querySelector<HTMLElement>('.card-container') || undefined;
-    this.watchSocketEvents();
+    if (this.scope.environment === 'production') {
+      this.cardContainer =
+        this.el.querySelector<HTMLElement>('.card-container') || undefined;
+      this.watchSocketEvents();
+    }
   }
 
   protected prependNewSocketCard(eventName: string, data: any, role?: string) {

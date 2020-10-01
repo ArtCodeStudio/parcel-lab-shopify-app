@@ -1,0 +1,28 @@
+section.row
+  .col-12
+    .card
+      .cart-header
+        h2.my-3(rv-i18n-text="'components.parcelLabListTracking.title'")
+        p.text-muted(rv-i18n-text="'components.parcelLabListTracking.info'")
+      .card-body
+        .card-text
+          table.table.table-borderless.table-hover
+            thead
+              tr
+                th #
+                th Courier
+                th Status
+                //- Check type of date (updated at?)
+                th Date
+                th Tracking number
+                th Updates
+                th Client
+            tbody
+              tr(rv-each-item="list")
+                th(scope="row" rv-text="item.inf.orn") 
+                td(rv-text="item.co.p")
+                td(rv-text="item.lst.sta.status_details")
+                td(rv-text="item.lst.ago")
+                td(rv-text="item.tn")
+                td(rv-text="item.inf.imprtsrc.number_of_updates")
+                td(rv-text="item.oth.cli")

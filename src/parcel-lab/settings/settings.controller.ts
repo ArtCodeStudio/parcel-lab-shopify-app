@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Res, Req, Session, Body, Query, Param, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Res, Req, Session, Body, HttpStatus } from '@nestjs/common';
 import { Roles } from 'nest-shopify';
 import { SettingsService } from '../settings/settings.service';
 import { ParcelLabSettings } from '../interfaces/settings';
@@ -14,16 +14,16 @@ export class SettingsController {
      * Get the settings
      */
     get(@Res() res, @Session() session) {
-        console.debug('GET parcel-lab/settings', session.currentShop);
-        return this.settings.findByShopDomain(session.currentShop)
-        .then((settings) => {
-          return res.json(settings);
-        })
-        .catch((error: Error) => {
-          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-            message: `Failure on get parcel-lab settings for shop domain ${session.currentShop}`,
-          });
+      console.debug('GET parcel-lab/settings', session.currentShop);
+      return this.settings.findByShopDomain(session.currentShop)
+      .then((settings) => {
+        return res.json(settings);
+      })
+      .catch((error: Error) => {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: `Failure on get parcel-lab settings for shop domain ${session.currentShop} ${error.message}`,
         });
+      });
     }
 
     @Post()

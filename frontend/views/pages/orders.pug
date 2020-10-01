@@ -13,4 +13,6 @@ block content
               .col-12
                 h2(rv-i18n-text="'orders.webhooks.title'")
             .row
-              rv-webhook-explorer
+              webhook-explorer(environment=app.environment)
+    .col-12.my-5
+      parcel-lab-list-tracking

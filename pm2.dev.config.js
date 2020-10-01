@@ -10,7 +10,7 @@ module.exports = {
     instances: 1,
     env: {
       "NODE_ENV": "development",
-      "DEBUG": "instagram:*,facebook:*,shopify:*,app:*,service:*,controller:*"
+      "DEBUG": "instagram:*,facebook:*,shopify:*,app:*,service:*,controller:*,parcelLab:*"
     }
   }]
 };

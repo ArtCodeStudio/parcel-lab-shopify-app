@@ -10,11 +10,11 @@ import _ = require('underscore');
 
 /**
  * checks if object has at least all of the keys in the array, but maybe even more
- * @param  {Object} obj         Object to be checked
- * @param  {[String]} arrayOfKeys Keys to be checked for existence
- * @return {Boolean}             true if object has all the keys of the array
+ * @param obj Object to be checked
+ * @param arrayOfKeys Keys to be checked for existence
+ * @return true if object has all the keys of the array
  */
-export const objHasKeys = function objHasKeys(obj, arrayOfKeys) {
+export const objHasKeys = (obj: any, arrayOfKeys: string[]): boolean => {
 
   let result = true;
 
@@ -25,16 +25,15 @@ export const objHasKeys = function objHasKeys(obj, arrayOfKeys) {
   }
 
   return result;
-
 };
 
 /**
  * checks if object has only key in the array, but not necessarily all of them
- * @param  {Object} obj         Object to be checked
- * @param  {[String]} arrayOfKeys Keys to be checked
- * @return {Boolean}             true if object has only keys contained in the array
+ * @param obj Object to be checked
+ * @param arrayOfKeys Keys to be checked
+ * @return true if object has only keys contained in the array
  */
-export const objHasOnlyKeys = function objHasOnlyKeys(obj, arrayOfKeys) {
+export const objHasOnlyKeys = (obj: any, arrayOfKeys: string[]): boolean => {
 
   let result = true;
 
@@ -49,20 +48,20 @@ export const objHasOnlyKeys = function objHasOnlyKeys(obj, arrayOfKeys) {
 
 };
 
-////////////
-// arrays //
-////////////
-
-/**
- * appends an array to another array
- * @param  {[]} other_array array to append
- */
-// Array.prototype.extend = function(other_array) {
-
-//   if (_.isArray(other_array)) {
-//     other_array.forEach(function(v) {
-//       this.push(v);
-//     }, this);
-//   }
-
-// };
+export const deleteEmptyValues = (data: any) => {
+  for (const key in data) {
+    if(typeof(data[key]) === 'undefined') {
+      delete data[key];
+    }
+    if(typeof(data[key]) === 'string' && data[key].length <= 0) {
+      delete data[key];
+    }
+    if(data[key] === null) {
+      delete data[key];
+    }
+    if(typeof(data[key]) === 'object') {
+      data[key] = deleteEmptyValues(data[key]);
+    }
+  }
+  return data;
+}

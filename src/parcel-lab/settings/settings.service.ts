@@ -8,7 +8,7 @@ import { ParcelLabSettings } from '../interfaces/settings';
 @Injectable()
 export class SettingsService {
 
-    protected logger = new DebugService('parcel-lab:SettingsService');
+    protected logger = new DebugService('parcelLab:SettingsService');
 
     constructor(@Inject('ParcelLabSettingsModel') protected readonly settingsModel: Model<ParcelLabSettingsDocument>) {
 
