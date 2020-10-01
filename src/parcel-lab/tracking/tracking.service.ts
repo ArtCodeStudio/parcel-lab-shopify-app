@@ -35,7 +35,7 @@ export class ParcelLabTrackingService {
         protected readonly product: ProductsService,
         protected readonly order: OrdersService,
     ) {
-        this.testMode = false; // !!this.shopifyModuleOptions.app.debug;
+        this.testMode = !!this.shopifyModuleOptions.app.debug;
         this.addEventListeners();
     }
 
