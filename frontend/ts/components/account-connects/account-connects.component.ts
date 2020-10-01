@@ -37,7 +37,7 @@ export class AccountConnectsComponent extends Component {
   protected authService = new AuthService();
 
   protected scope: IScope = {
-    myshopify_domain: shop || undefined,
+    myshopify_domain: window.shop || undefined,
     account: undefined,
     isConnected: false,
     type: undefined,

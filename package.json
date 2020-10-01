@@ -94,7 +94,7 @@
     "ioredis": "^4.18.0",
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.7",
-    "nest-shopify": "^7.1.0",
+    "nest-shopify": "^7.1.1",
     "node-sass": "^4.14.1",
     "node-sass-middleware": "^0.11.0",
     "passport": "^0.4.1",
