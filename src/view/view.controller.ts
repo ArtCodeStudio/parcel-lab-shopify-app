@@ -15,13 +15,19 @@ export class ViewController {
     if (req.shop) {
       shop = req.shop;
     }
-    if (req.session.latestShop) {
-      shop = req.shop;
-    }
 
     if (req.user && req.user.shop && req.user.shop.myshopify_domain) {
       shop = req.user.shop.myshopify_domain;
     }
+
+    if (req.session.currentShop) {
+      shop = req.shop;
+    }
+
+    if (req.headers['X-Shopify-Shop-Domain']) {
+      shop = req.headers['X-Shopify-Shop-Domain'];
+    }
+
     return shop;
   }
 
