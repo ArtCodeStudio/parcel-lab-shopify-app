@@ -80,10 +80,11 @@ export const params = {
 
     // Germany
     "dhl-germany": "dhl-germany",
-    "hermes-germany": "hermes-germany",
+    "hermes-de": "hermes-de",
     "gls-germany": "gls-germany",
-    "dpd-germany": "dpd-germany",
+    "dpd-de": "dpd-de",
     "liefery": "liefery",
+    "asendia": "asendia",
 
     // Austria
     "austrian-post": "austrian-post",
@@ -134,8 +135,7 @@ export const params = {
     "dhl-pl": "dhl-poland",
     "dhl-pol": "dhl-poland",
 
-    "dpd-de": "dpd-germany",
-    "dpd-deu": "dpd-germany",
+    "dpd-deu": "dpd-de",
 
     "dpd-be": "dpd-benelux",
     "dpd-bel": "dpd-benelux",
@@ -150,8 +150,7 @@ export const params = {
     "dpd-at": "dpd-austria",
     "dpd-aut": "dpd-austria",
 
-    "hermes-de": "hermes-germany",
-    "hermes-deu": "hermes-germany",
+    "hermes-deu": "hermes-de",
 
     "hermes-gb": "hermes-uk",
     "hermes-gbr": "hermes-uk",
@@ -173,15 +172,22 @@ export const params = {
     "post-ch": "swiss-post",
     "post-che": "swiss-post",
 
+    "asendia-de": "asendia",
+    "asendia-deu": "asendia",
+
     ///////////////
     // Transform //
     ///////////////
     "dhl": "dhl-germany",
-    "hermes": "hermes-germany",
-    "dpd": "dpd-germany",
+    "hermes-germany": "hermes-de",
+    "hermes": "hermes-de",
+    "dpd": "dpd-de",
+    "dpd-germany": "dpd-de",
     "colis-privé": "colisprivee",
     "colis-prive": "colisprivee",
     "ups-express": "ups",
+    "asendia-germany": "asendia",
+    "asendia-deutschland": "asendia",
   },
   /**
    * If the courier is one of the bellow we need to append the country code
