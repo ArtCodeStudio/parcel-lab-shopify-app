@@ -301,7 +301,7 @@ export class ParcelLabApi {
    * You can view your most request to the mock endpoint for 3 hours after you placed your request by calling the same route with the GET method. For your convenience, user and token can be placed as URL query parameters.
    */
   protected async validateMostRecentTracking(user: number, token: string) {
-    const url = params.mockEndpoint + 'presage/';
+    const url = params.mockEndpoint + 'track/';
     return this.get(url, { user, token}, user, token);
   }
 
@@ -325,7 +325,7 @@ export class ParcelLabApi {
       url = url + (queryStr && queryStr.length > 0 ? "?" + queryStr : "");
     }
 
-    console.debug('request url', url);
+    console.debug('request url ' + method, url);
 
     const gotOptions = {
       agent: {

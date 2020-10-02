@@ -31,7 +31,7 @@ export class SettingsService {
                     token: settings.token,
                   }, { runValidators: true })
                   .then((updateResult) => {
-                    this.logger.debug(`updateOne updateResult`, updateResult);
+                    this.logger.debug(`updateOne updateResult: %O`, updateResult);
                     return this.findByShopDomain(settings.shop_domain);
                   });
             }

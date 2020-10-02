@@ -35,7 +35,7 @@ export class ParcelLabTrackingService {
         protected readonly product: ProductsService,
         protected readonly order: OrdersService,
     ) {
-        this.testMode = !!this.shopifyModuleOptions.app.debug;
+        this.testMode = !!this.shopifyModuleOptions.app.test;
         this.addEventListeners();
     }
 
@@ -50,7 +50,7 @@ export class ParcelLabTrackingService {
     public async list(myshopifyDomain: string, search?: string, page?: number, size?: number) {
         const settings = await this.parcelLabSettings.findByShopDomain(myshopifyDomain);
         if (!settings) {
-            this.logger.debug('No parcelLab settings found for ' + myshopifyDomain);
+            this.logger.debug('No parcelLab settings found for: %s', myshopifyDomain);
             return;
         }
         const api = new ParcelLabApi(settings.user, settings.token);
@@ -79,95 +79,95 @@ export class ParcelLabTrackingService {
     }
 
     // async onDraftOrderCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderCreate) {
-    //     this.logger.debug('onDraftOrderCreate', myshopifyDomain, data);
+    //     this.logger.debug('onDraftOrderCreate: %s - %O', myshopifyDomain, data);
     // }
     // async onDraftOrderDelete(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderDelete) {
-    //     this.logger.debug('onDraftOrderDelete', myshopifyDomain, data);
+    //     this.logger.debug('onDraftOrderDelete: %s - %O', myshopifyDomain, data);
     // }
     // async onDraftOrderUpdate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderCreate) {
-    //     this.logger.debug('onDraftOrderUpdate', myshopifyDomain, data);
+    //     this.logger.debug('onDraftOrderUpdate: %s - %O', myshopifyDomain, data);
     // }
 
     protected async onOrderCancelled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCancelled) {
-        this.logger.debug('onOrderCancelled', myshopifyDomain, data);
+        this.logger.debug('onOrderCancelled: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-            this.logger.debug('onOrderCancelled result', result);
+            this.logger.debug('onOrderCancelled result: %O', result);
         } catch (error) {
-            console.error('onOrderCancelled error', error);
+             this.logger.error('onOrderCancelled error', error);
         }
     }
     protected async onOrderCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCreate) {
-        this.logger.debug('onOrderCreate', myshopifyDomain, data);
+        this.logger.debug('onOrderCreate: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-            this.logger.debug('onOrderCreate result', result);
+            this.logger.debug('onOrderCreate result: %O', result);
         } catch (error) {
-            console.error('onOrderCreate error', error);
+             this.logger.error('onOrderCreate error', error);
         }
     }
     protected async onOrderFulfilled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersFulfilled) {
-        this.logger.debug('onOrderFulfilled', myshopifyDomain, data);
+        this.logger.debug('onOrderFulfilled: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-            this.logger.debug('onOrderFulfilled result', result);
+            this.logger.debug('onOrderFulfilled result: %O', result);
         } catch (error) {
-            console.error('onOrderFulfilled error', error);
+             this.logger.error('onOrderFulfilled error', error);
         }
     }
     protected async onOrderPaid(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersPaid) {
-        this.logger.debug('onOrderPaid', myshopifyDomain, data);
+        this.logger.debug('onOrderPaid: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-            this.logger.debug('onOrderPaid result', result);
+            this.logger.debug('onOrderPaid result: %O', result);
         } catch (error) {
-            console.error('onOrderPaid error', error);
+             this.logger.error('onOrderPaid error', error);
         }
     }
     protected async onOrderPartiallyFulfilled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled) {
-        this.logger.debug('onOrderPartiallyFulfilled', myshopifyDomain, data);
+        this.logger.debug('onOrderPartiallyFulfilled: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-            this.logger.debug('onOrdonOrderPartiallyFulfillederUpdated result', result);
+            this.logger.debug('onOrdonOrderPartiallyFulfillederUpdated result: %O', result);
         } catch (error) {
-            console.error('onOrderPartiallyFulfilled error', error);
+             this.logger.error('onOrderPartiallyFulfilled error', error);
         }
     }
     protected async onOrderUpdated(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersUpdated) {
-        this.logger.debug('onOrderUpdated', myshopifyDomain, data);
+        this.logger.debug('onOrderUpdated: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-            this.logger.debug('onOrderUpdated result', result);
+            this.logger.debug('onOrderUpdated result: %O', result);
         } catch (error) {
-            console.error('onOrderUpdated error', error);
+             this.logger.error('onOrderUpdated error', error);
         }
     }
     protected async onOrderDelete(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCreate) {
-        this.logger.debug('onOrderDelete', myshopifyDomain, data);
+        this.logger.debug('onOrderDelete: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-            this.logger.debug('onOrderDelete result', result);
+            this.logger.debug('onOrderDelete result: %O', result);
         } catch (error) {
-            console.error('onOrderDelete error', error);
+             this.logger.error('onOrderDelete error', error);
         }
     }
 
     protected async onFulfillmentsCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookFulfillmentCreate) {
-        this.logger.debug('onFulfillmentsCreate', myshopifyDomain, data);
+        this.logger.debug('onFulfillmentsCreate: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateTracking(myshopifyDomain, data);
-            this.logger.debug('onFulfillmentsCreate result', result);
+            this.logger.debug('onFulfillmentsCreate result: %O', result);
         } catch (error) {
-            console.error('onFulfillmentsCreate error', error);
+             this.logger.error('onFulfillmentsCreate error', error);
         }
     }
     protected async onFulfillmentsUpdate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate) {
-        this.logger.debug('onFulfillmentsUpdate', myshopifyDomain, data);
+        this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateTracking(myshopifyDomain, data);
-            this.logger.debug('onFulfillmentsUpdate result', result);
+            this.logger.debug('onFulfillmentsUpdate result: %O', result);
         } catch (error) {
-            console.error('onFulfillmentsUpdate error', error);
+             this.logger.error('onFulfillmentsUpdate error', error);
         }
     }
 
@@ -316,7 +316,7 @@ export class ParcelLabTrackingService {
         return order;
     }
 
-    protected async transformLineItems(shopifyAuth: IShopifyConnect, lineItems: Interfaces.DraftOrder['line_items'] | Interfaces.Order['line_items'] ): Promise<ParcellabArticle[]> {
+    protected async transformLineItems(shopifyAuth: IShopifyConnect, lineItems: Interfaces.DraftOrder['line_items'] | Interfaces.Order['line_items'] = []): Promise<ParcellabArticle[]> {
         const articles: ParcellabArticle[] = [];
         for (const lineItem of lineItems) {
             const article: ParcellabArticle = {
@@ -363,7 +363,7 @@ export class ParcelLabTrackingService {
                 articleUrl: shopifyAuth.shop.domain + '/products/' + product.handle,
             }
         } catch (error) {
-            console.error('getProductData', error);
+             this.logger.error('getProductData', error);
             return {
                 articleNo: lineItem.variant_id.toString(),
                 articleCategory: undefined,
@@ -383,7 +383,7 @@ export class ParcelLabTrackingService {
             const order = await this.order.getFromShopify(shopifyAuth, fulfillment.order_id, { status: 'any' } as any); // By default archived orders are not found by the api
             return this.transformOrder(shopifyAuth, order);
         } catch (error) {
-            console.error(`Error on getOrderData with order_id ${ fulfillment.order_id } for shop ${shopifyAuth.myshopify_domain}`, error);
+             this.logger.error(`Error on getOrderData with order_id ${ fulfillment.order_id } for shop ${shopifyAuth.myshopify_domain}`, error);
             return null;
         }
     }

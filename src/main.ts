@@ -15,6 +15,8 @@ import { RedisSessionIoAdapter } from 'nest-shopify';
 
 const conf = config();
 
+console.debug('Use config', conf);
+
 const assetsDir = join(conf.app.root, 'public');
 const viewsDir = join(conf.app.root, 'frontend/views');
 const stylesSrc = join(conf.app.root, 'frontend/styles');

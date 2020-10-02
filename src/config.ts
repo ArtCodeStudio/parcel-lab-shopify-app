@@ -24,7 +24,8 @@ const app: ConfigApp = {
   protocol: `https`,
   host: process.env.HOST,
   port: Number(process.env.PORT),
-  debug: Boolean(process.env.DEBUG),
+  debug: process.env.DEBUG !== "false" && process.env.DEBUG.length > 0, // TODO store debug string?
+  test: process.env.NODE_ENV === "test" || process.env.TEST === "true",
   environment: process.env.NODE_ENV === 'development' ? 'development' : 'production',
 };
 
