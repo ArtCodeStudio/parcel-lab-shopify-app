@@ -36,7 +36,7 @@ export class ParcelLabApi {
    * @param payload Specifies the tracking to be created
    * @param test For testing only, if true this creates a tracking mock
    */
-  public async createOrUpdateTracking(payload: ParcellabTracking, test: boolean): Promise<string[]> {
+  public async createTracking(payload: ParcellabTracking, test: boolean): Promise<string[]> {
     payload = utils.deleteEmptyValues(payload);
     const { error, isValid} = this.checkPayload(payload, 'tracking');
 

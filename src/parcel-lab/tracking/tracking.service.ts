@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ParcelLabApi } from '../api/parcel-lab-api';
-import { ParcellabOrder, ParcellabTracking, ParcellabArticle } from '../api/interfaces';
+import { ParcellabOrder, ParcellabArticle } from '../api/interfaces';
 import { SettingsService } from '../settings/settings.service';
 import {
     DebugService,
@@ -20,9 +20,9 @@ type AnyWebhookOrder = Interfaces.WebhooksReponse.WebhookOrdersFulfilled | Inter
 type AnyWebhookFulfillment =  Interfaces.WebhooksReponse.WebhookFulfillmentCreate | Interfaces.WebhooksReponse.WebhookFulfillmentUpdate
 
 @Injectable()
-export class ParcelLabTrackingService {
+export class ParcellabOrderService {
 
-    protected logger = new DebugService('parcelLab:ParcelLabTrackingService');
+    protected logger = new DebugService('parcelLab:ParcellabOrderService');
 
     protected testMode = false;
 
@@ -171,7 +171,7 @@ export class ParcelLabTrackingService {
         }
     }
 
-    protected async updateOrCreateTracking(myshopifyDomain, shopifyFulfillment: AnyWebhookFulfillment, overwrite: Partial<ParcellabTracking> = {}) {
+    protected async updateOrCreateTracking(myshopifyDomain, shopifyFulfillment: AnyWebhookFulfillment, overwrite: Partial<ParcellabOrder> = {}) {
         const settings = await this.parcelLabSettings.findByShopDomain(myshopifyDomain);
         if (!settings) {
             this.logger.debug('No parcelLab settings found for ' + myshopifyDomain);
@@ -181,7 +181,7 @@ export class ParcelLabTrackingService {
         const api = new ParcelLabApi(settings.user, settings.token);
         let tracking = await this.transformTracking(shopifyAuth, shopifyFulfillment);
         tracking = {...tracking, ...overwrite};
-        const result = await api.createOrUpdateTracking(tracking, this.testMode);
+        const result = await api.createOrUpdateOrder(tracking, this.testMode);
         return result;
     }
 
@@ -203,7 +203,7 @@ export class ParcelLabTrackingService {
         if (shopifyOrder.fulfillments && shopifyOrder.fulfillments.length > 0) {
             for (const shopifyFulfillment of shopifyOrder.fulfillments) {
                 const tracking = await this.transformTracking(shopifyAuth, shopifyFulfillment, order);
-                const trackingResult = await api.createOrUpdateTracking(tracking, this.testMode);
+                const trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 trackingResults.push(...trackingResult);
             }
         }
@@ -217,7 +217,7 @@ export class ParcelLabTrackingService {
      * @param shopifyFulfillment 
      * @param order Currently only used in updateOrCreateOrder because we already have the order object there and do not need to fetch in again
      */
-    protected async transformTracking(shopifyAuth: IShopifyConnect, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ): Promise<ParcellabTracking> {
+    protected async transformTracking(shopifyAuth: IShopifyConnect, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ): Promise<ParcellabOrder> {
         
         if (!order) {
             order = await this.getOrderData(shopifyAuth, shopifyFulfillment) || undefined;
@@ -233,7 +233,7 @@ export class ParcelLabTrackingService {
          * * upgrade
          * * announced_delivery_date
          */
-        const tracking: Partial<ParcellabTracking> = {
+        const tracking: Partial<ParcellabOrder> = {
             ...(order || {}),
             articles: await this.transformLineItems(shopifyAuth, shopifyFulfillment.line_items),
             branchDelivery: shopifyFulfillment.tracking_numbers?.length > 1, // TODO checkm,
@@ -265,7 +265,7 @@ export class ParcelLabTrackingService {
             tracking.email = shopifyFulfillment?.email || order?.email;
         }
 
-        return tracking as ParcellabTracking;
+        return tracking as ParcellabOrder;
     }
 
 
