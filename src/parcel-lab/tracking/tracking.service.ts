@@ -247,6 +247,8 @@ export class ParcelLabTrackingService {
             customFields: {
                 ...order?.customFields  || {},
                 notify_customer: shopifyFulfillment.notify_customer,
+                status: shopifyFulfillment.status,
+                shipment_status: shopifyFulfillment.shipment_status,
             },
         }
 
@@ -305,11 +307,13 @@ export class ParcelLabTrackingService {
             street: shopifyOrder.shipping_address?.address1,
             warehouse: shopifyOrder.location_id ? shopifyOrder.location_id.toString() : undefined,
             weight: shopifyOrder.total_weight.toString(),
-            xid: shopifyOrder.id.toString(), // TODO CHECKME
+            // xid: shopifyOrder.id.toString(), // TODO CHECKME make this problems wich splits the orders in parcelLab?
             zip_code: shopifyOrder.shipping_address?.zip,
             customFields: {
                 verified_email: shopifyOrder.customer.verified_email,
                 accepts_marketing: shopifyOrder.customer.accepts_marketing,
+                fulfillment_status: shopifyOrder.fulfillment_status,
+                financial_status: shopifyOrder.financial_status,
             },
         };
 
