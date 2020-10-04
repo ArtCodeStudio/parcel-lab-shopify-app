@@ -32,11 +32,12 @@ export class ParcelLabApi {
   //////////////////////
 
   /**
-   * Creates or updates a new tracking on the parcelLab API
+   * Creates or updates a new tracking on the parcelLab API.
+   * Please note: Only use this method if you have a tracking number, if you want to track a order before you have a tracking number, use `createOrUpdateOrder` instead.
    * @param payload Specifies the tracking to be created
    * @param test For testing only, if true this creates a tracking mock
    */
-  public async createTracking(payload: ParcellabTracking, test: boolean): Promise<string[]> {
+  public async createOrUpdateTracking(payload: ParcellabTracking, test: boolean): Promise<string[]> {
     payload = utils.deleteEmptyValues(payload);
     const { error, isValid} = this.checkPayload(payload, 'tracking');
 
@@ -57,6 +58,10 @@ export class ParcelLabApi {
 
   /**
    * Creates or updates a new order on the parcelLab API
+   *
+   * Please note: If you have used this method to track the order the first time you must also use this method to update the order,
+   * also if the order has a tracking number.
+   * Please not not use both methods `createOrUpdateOrder` and `createOrUpdateTracking` for the same order.
    * @param payload Specifies the order to be created
    * @param test For testing only, if true this creates a tracking mock
    */

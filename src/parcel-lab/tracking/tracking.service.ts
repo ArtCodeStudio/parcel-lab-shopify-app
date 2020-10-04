@@ -20,9 +20,9 @@ type AnyWebhookOrder = Interfaces.WebhooksReponse.WebhookOrdersFulfilled | Inter
 type AnyWebhookFulfillment =  Interfaces.WebhooksReponse.WebhookFulfillmentCreate | Interfaces.WebhooksReponse.WebhookFulfillmentUpdate
 
 @Injectable()
-export class ParcellabOrderService {
+export class ParcelLabTrackingService {
 
-    protected logger = new DebugService('parcelLab:ParcellabOrderService');
+    protected logger = new DebugService('parcelLab:ParcelLabTrackingService');
 
     protected testMode = false;
 
