@@ -1,4 +1,5 @@
 import { Component } from '@ribajs/core';
+import { EASDKWrapperService } from '@ribajs/shopify-easdk';
 import { hasChildNodesTrim } from '@ribajs/utils/src/dom';
 import Debug from 'debug';
 import pugTemplate from './parcel-lab-settings.component.pug';
@@ -24,6 +25,8 @@ export class ParcelLabSettingsComponent extends Component {
 
   protected autobind = true;
 
+  protected easdk: EASDKWrapperService;
+
   static get observedAttributes() {
     return [];
   }
@@ -32,7 +35,11 @@ export class ParcelLabSettingsComponent extends Component {
     locales: {
       error: '',
     },
-    settings: { token: 'test' },
+    settings: {
+      user: 0,
+      token: '',
+      prefer_checkout_shipping_method: false,
+    },
     showPasswort: false,
     passwortInputType: 'password',
     // Methods
@@ -68,12 +75,14 @@ export class ParcelLabSettingsComponent extends Component {
         this.scope.settings as ParcelLabSettings,
       );
       this.resetErrors();
+      this.easdk.flashNotice('Settings saved'); // TODO translate
       return result;
     } catch (error) {
       console.error(error);
       this.scope.locales.error =
         'components.parcelLabSettings.errors.generalSave';
       // throw error;
+      this.easdk.flashError("Can't save settings!"); // TODO translate
     }
   }
 
@@ -92,6 +101,7 @@ export class ParcelLabSettingsComponent extends Component {
 
   protected connectedCallback() {
     super.connectedCallback();
+    this.easdk = new EASDKWrapperService();
     return this.init(ParcelLabSettingsComponent.observedAttributes);
   }
 

@@ -29,6 +29,7 @@ export class SettingsService {
                 return this.settingsModel.updateOne({_id: foundSettings._id}, {
                     user: settings.user,
                     token: settings.token,
+                    prefer_checkout_shipping_method: settings.prefer_checkout_shipping_method,
                   }, { runValidators: true })
                   .then((updateResult) => {
                     this.logger.debug(`updateOne updateResult: %O`, updateResult);
@@ -41,6 +42,7 @@ export class SettingsService {
                 user: settings.user,
                 token: settings.token,
                 shop_domain: settings.shop_domain,
+                prefer_checkout_shipping_method: settings.prefer_checkout_shipping_method,
             });
             return this.settingsModel.create(newSettings);
         });

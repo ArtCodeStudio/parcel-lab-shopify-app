@@ -15,4 +15,5 @@ export const ParcelLabSettingsSchema = new Schema({
         required: true,
         unique: true
     },
+    prefer_checkout_shipping_method: Boolean,
 });

@@ -70,8 +70,8 @@ export const params = {
     "wn-direct": "wn-direct",
 
     // Global
-    "dhl-express": "dhl-express",
-    "ups": "ups",
+    "dhl": "dhl", // DHL-Express
+    "ups": "ups", // UPS / UPS-Express
     "fedex": "fedex",
     "tnt": "tnt",
 
@@ -178,7 +178,7 @@ export const params = {
     ///////////////
     // Transform //
     ///////////////
-    "dhl": "dhl-germany",
+    "dhl-express": "dhl",
     "hermes-germany": "hermes-de",
     "hermes": "hermes-de",
     "dpd": "dpd-de",

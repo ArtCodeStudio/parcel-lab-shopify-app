@@ -33,7 +33,11 @@ export class SettingsController {
      */
     set(@Res() res, @Session() session, @Req() req, @Body('settings') settings: ParcelLabSettings) {
       console.debug('POST parcel-lab/settings', session.currentShop, settings);
-      return this.settings.createOrUpdate({ ...settings, shop_domain: session.currentShop})
+      // Convert string to boolean
+      return this.settings.createOrUpdate({
+        ...settings,
+        shop_domain: session.currentShop
+      })
       .then((settings) => {
         return res.json(settings);
       })

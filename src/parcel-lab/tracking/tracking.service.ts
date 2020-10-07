@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ParcelLabApi } from '../api/parcel-lab-api';
 import { ParcellabOrder, ParcellabArticle } from '../api/interfaces';
+import { ParcelLabSettings } from '../interfaces'
 import { SettingsService } from '../settings/settings.service';
 import {
     DebugService,
@@ -13,6 +14,7 @@ import {
     IShopifyConnect,
     SHOPIFY_MODULE_OPTIONS,
     ShopifyModuleOptions,
+    CheckoutsService,
 } from 'nest-shopify';
 
 type AnyWebhookOrder = Interfaces.WebhooksReponse.WebhookOrdersFulfilled | Interfaces.WebhooksReponse.WebhookOrdersPaid | Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled | Interfaces.WebhooksReponse.WebhookOrdersUpdated | Interfaces.WebhooksReponse.WebhookOrdersCreate;
@@ -33,6 +35,7 @@ export class ParcelLabTrackingService {
         protected readonly parcelLabSettings: SettingsService,
         protected readonly shop: ShopService,
         protected readonly product: ProductsService,
+        protected readonly checkout: CheckoutsService,
         protected readonly order: OrdersService,
     ) {
         this.testMode = !!this.shopifyModuleOptions.app.test;
@@ -94,7 +97,7 @@ export class ParcelLabTrackingService {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderCancelled result: %O', result);
         } catch (error) {
-             this.logger.error('onOrderCancelled error', error);
+            this.logger.error('onOrderCancelled error', error);
         }
     }
     protected async onOrderCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCreate) {
@@ -103,7 +106,7 @@ export class ParcelLabTrackingService {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderCreate result: %O', result);
         } catch (error) {
-             this.logger.error('onOrderCreate error', error);
+            this.logger.error('onOrderCreate error', error);
         }
     }
     protected async onOrderFulfilled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersFulfilled) {
@@ -112,7 +115,7 @@ export class ParcelLabTrackingService {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderFulfilled result: %O', result);
         } catch (error) {
-             this.logger.error('onOrderFulfilled error', error);
+            this.logger.error('onOrderFulfilled error', error);
         }
     }
     protected async onOrderPaid(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersPaid) {
@@ -130,7 +133,7 @@ export class ParcelLabTrackingService {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrdonOrderPartiallyFulfillederUpdated result: %O', result);
         } catch (error) {
-             this.logger.error('onOrderPartiallyFulfilled error', error);
+            this.logger.error('onOrderPartiallyFulfilled error', error);
         }
     }
     protected async onOrderUpdated(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersUpdated) {
@@ -148,7 +151,7 @@ export class ParcelLabTrackingService {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderDelete result: %O', result);
         } catch (error) {
-             this.logger.error('onOrderDelete error', error);
+            this.logger.error('onOrderDelete error', error);
         }
     }
 
@@ -158,7 +161,7 @@ export class ParcelLabTrackingService {
             const result = await this.updateOrCreateTracking(myshopifyDomain, data);
             this.logger.debug('onFulfillmentsCreate result: %O', result);
         } catch (error) {
-             this.logger.error('onFulfillmentsCreate error', error);
+            this.logger.error('onFulfillmentsCreate error', error);
         }
     }
     protected async onFulfillmentsUpdate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate) {
@@ -167,11 +170,11 @@ export class ParcelLabTrackingService {
             const result = await this.updateOrCreateTracking(myshopifyDomain, data);
             this.logger.debug('onFulfillmentsUpdate result: %O', result);
         } catch (error) {
-             this.logger.error('onFulfillmentsUpdate error', error);
+            this.logger.error('onFulfillmentsUpdate error', error);
         }
     }
 
-    protected async updateOrCreateTracking(myshopifyDomain, shopifyFulfillment: AnyWebhookFulfillment, overwrite: Partial<ParcellabOrder> = {}) {
+    protected async updateOrCreateTracking(myshopifyDomain: string, shopifyFulfillment: AnyWebhookFulfillment, overwrite: Partial<ParcellabOrder> = {}) {
         const settings = await this.parcelLabSettings.findByShopDomain(myshopifyDomain);
         if (!settings) {
             this.logger.debug('No parcelLab settings found for ' + myshopifyDomain);
@@ -179,13 +182,13 @@ export class ParcelLabTrackingService {
         }
         const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
         const api = new ParcelLabApi(settings.user, settings.token);
-        let tracking = await this.transformTracking(shopifyAuth, shopifyFulfillment);
+        let tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment);
         tracking = {...tracking, ...overwrite};
         const result = await api.createOrUpdateOrder(tracking, this.testMode);
         return result;
     }
 
-    protected async updateOrCreateOrder(myshopifyDomain, shopifyOrder: AnyWebhookOrder, overwrite: Partial<ParcellabOrder> = {}) {
+    protected async updateOrCreateOrder(myshopifyDomain: string, shopifyOrder: AnyWebhookOrder, overwrite: Partial<ParcellabOrder> = {}) {
         const settings = await this.parcelLabSettings.findByShopDomain(myshopifyDomain);
         if (!settings) {
             this.logger.debug('No parcelLab settings found for ' + myshopifyDomain);
@@ -193,7 +196,7 @@ export class ParcelLabTrackingService {
         }
         const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
         const api = new ParcelLabApi(settings.user, settings.token);
-        let order = await this.transformOrder(shopifyAuth, shopifyOrder);
+        let order = await this.transformOrder(shopifyAuth, settings, shopifyOrder);
 
         order = {...order, ...overwrite};
         const orderResult = await api.createOrUpdateOrder(order, this.testMode);
@@ -202,7 +205,7 @@ export class ParcelLabTrackingService {
         const trackingResults: string[] = [];
         if (shopifyOrder.fulfillments && shopifyOrder.fulfillments.length > 0) {
             for (const shopifyFulfillment of shopifyOrder.fulfillments) {
-                const tracking = await this.transformTracking(shopifyAuth, shopifyFulfillment, order);
+                const tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment, order);
                 const trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 trackingResults.push(...trackingResult);
             }
@@ -217,10 +220,10 @@ export class ParcelLabTrackingService {
      * @param shopifyFulfillment 
      * @param order Currently only used in updateOrCreateOrder because we already have the order object there and do not need to fetch in again
      */
-    protected async transformTracking(shopifyAuth: IShopifyConnect, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ): Promise<ParcellabOrder> {
+    protected async transformTracking(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ): Promise<ParcellabOrder> {
         
         if (!order) {
-            order = await this.getOrderData(shopifyAuth, shopifyFulfillment) || undefined;
+            order = await this.getOrderData(shopifyAuth, parcelLabSettings, shopifyFulfillment) || undefined;
         }
 
         /**
@@ -237,7 +240,7 @@ export class ParcelLabTrackingService {
             ...(order || {}),
             articles: await this.transformLineItems(shopifyAuth, shopifyFulfillment.line_items),
             branchDelivery: shopifyFulfillment.tracking_numbers?.length > 1, // TODO checkm,
-            courier: await this.getCourier(shopifyFulfillment) || order?.courier,
+            courier: await this.getCourier(parcelLabSettings, shopifyFulfillment, order),
             client: await this.getClient(shopifyAuth) || order?.client,
             cancelled: shopifyFulfillment.status === 'cancelled' || order?.cancelled,
             complete: shopifyFulfillment.shipment_status === 'delivered' || order?.complete,            
@@ -245,7 +248,7 @@ export class ParcelLabTrackingService {
             tracking_number: shopifyFulfillment.tracking_numbers ? shopifyFulfillment.tracking_numbers.join(',') : shopifyFulfillment.tracking_number,
             warehouse: shopifyFulfillment.location_id ? shopifyFulfillment.location_id.toString() : undefined,
             customFields: {
-                ...order?.customFields  || {},
+                ...order?.customFields || {},
                 notify_customer: shopifyFulfillment.notify_customer,
                 status: shopifyFulfillment.status,
                 shipment_status: shopifyFulfillment.shipment_status,
@@ -270,7 +273,14 @@ export class ParcelLabTrackingService {
 
 
 
-    protected async transformOrder(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder> {
+    protected async transformOrder(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder> {
+
+        let shopifyCheckout: Partial<Interfaces.Checkout> | undefined | null;
+
+        if (shopifyOrder.checkout_token) {
+            shopifyCheckout = await this.getCheckout(shopifyAuth, shopifyOrder.checkout_token);
+        }
+
         /**
          * TODO transform missing properties:
          * * announced_delivery_date
@@ -283,11 +293,11 @@ export class ParcelLabTrackingService {
          * 
          * The following are set on tracking, so not necessary here
          * * branchDelivery
-         * * courier
          * * tracking_number
          */
         const order: ParcellabOrder = {
             articles: await this.transformLineItems(shopifyAuth, shopifyOrder.line_items),
+            courier: await this.getCourier(parcelLabSettings, null, null, shopifyOrder, shopifyCheckout),
             city: shopifyOrder?.shipping_address?.city,
             client: await this.getClient(shopifyAuth),
             orderNo: shopifyOrder.order_number.toString(),
@@ -314,6 +324,7 @@ export class ParcelLabTrackingService {
                 accepts_marketing: shopifyOrder.customer.accepts_marketing,
                 fulfillment_status: shopifyOrder.fulfillment_status,
                 financial_status: shopifyOrder.financial_status,
+                checkout_token: shopifyOrder.checkout_token,
             },
         };
 
@@ -375,21 +386,31 @@ export class ParcelLabTrackingService {
                 articleUrl: undefined,
             };
         }
-
     }
 
-    protected async getOrderData(shopifyAuth: IShopifyConnect, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<ParcellabOrder | null> {
+    protected async getOrderData(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<ParcellabOrder | null> {
         if (!fulfillment.order_id) {
             console.warn('getOrderData no order_id given!');
             return null;
         }
         try {
             const order = await this.order.getFromShopify(shopifyAuth, fulfillment.order_id, { status: 'any' } as any); // By default archived orders are not found by the api
-            return this.transformOrder(shopifyAuth, order);
+            return this.transformOrder(shopifyAuth, parcelLabSettings, order);
         } catch (error) {
              this.logger.error(`Error on getOrderData with order_id ${ fulfillment.order_id } for shop ${shopifyAuth.myshopify_domain}`, error);
             return null;
         }
+    }
+
+    protected async getCheckout(shopifyAuth: IShopifyConnect, checkoutToken: string) {
+        try {
+            const checkout = this.checkout.getFromShopify(shopifyAuth, checkoutToken, {});
+            return checkout;
+        } catch (error) {
+            this.logger.error(error);
+            return null;
+        }
+        
     }
 
     protected async getVariant(product: Partial<Interfaces.Product>, variant_id: number): Promise<Interfaces.ProductVariant | null> {
@@ -413,8 +434,116 @@ export class ParcelLabTrackingService {
         return product.image?.src;
     }
 
-    protected async getCourier(fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment) {
-        return fulfillment.tracking_company;
+    protected async getCourier(parcelLabSettings: ParcelLabSettings, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment | null, order?: ParcellabOrder | null, shopifyOrder?: Partial<Interfaces.Order>, shopifyCheckout?: Partial<Interfaces.Checkout>) {
+        let courier = order?.courier || shopifyFulfillment?.tracking_company || shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title;
+        // If this option is true we try to parse the carier from the shipping method title the customer has selected in the checkout process
+        if (parcelLabSettings.prefer_checkout_shipping_method) {
+            courier = this.transformCheckoutShippingToCourier(shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title) || courier;
+        }
+        
+        return courier;
+    }
+
+    protected transformCheckoutShippingToCourier(shippingMethodTitle?: string) {
+        let carier: string | undefined;
+        if (!shippingMethodTitle) {
+            carier = undefined;
+            return carier;
+        }
+        carier = shippingMethodTitle.trim().toLowerCase().replace(/\s/g,"-");
+
+        const search = [
+            {
+                includes: ['dhl', 'express'],
+                corresponds: 'dhl-express'
+            },
+            {
+                includes: ['dhl'],
+                corresponds: 'dhl'
+            },
+            {
+                includes: ['dpd', 'express'],
+                corresponds: 'dpd-express'
+            },
+            {
+                includes: ['dpd'],
+                corresponds: 'dpd'
+            },
+            {
+                includes: ['hermes'],
+                corresponds: 'hermes'
+            },
+            {
+                includes: ['wn', 'direct'],
+                corresponds: 'wn-direct'
+            },
+            {
+                includes: ['colis', 'priv'],
+                corresponds: 'colisprivee'
+            },
+            {
+                includes: ['asendia'],
+                corresponds: 'asendia'
+            },
+            {
+                includes: ['gls'],
+                corresponds: 'gls'
+            },
+            {
+                includes: ['ontrac'],
+                corresponds: 'ontrac'
+            },
+            {
+                includes: ['fedex'],
+                corresponds: 'fedex'
+            },
+            {
+                includes: ['tnt'],
+                corresponds: 'tnt'
+            },
+            {
+                includes: ['liefery'],
+                corresponds: 'liefery'
+            },
+            {
+                includes: ['chronopost'],
+                corresponds: 'chronopost'
+            },
+            {
+                includes: ['mondial', 'relay'],
+                corresponds: 'mondial-relay'
+            },
+            {
+                includes: ['seur'],
+                corresponds: 'seur'
+            },
+            {
+                includes: ['poczta', 'polska'],
+                corresponds: 'poczta-polska'
+            },
+            {
+                includes: ['ppl'],
+                corresponds: 'ppl'
+            },
+            {
+                includes: ['pošta'],
+                corresponds: 'pošta'
+            },
+            {
+                includes: ['post'],
+                corresponds: 'post'
+            },
+        ];
+
+        for (const curSearch of search) {
+            const match = curSearch.includes.every(item => carier.includes(item));
+            if (match) {
+                carier = curSearch.corresponds;
+                return carier
+            }
+        }
+        
+        return undefined;
     }
 
 }

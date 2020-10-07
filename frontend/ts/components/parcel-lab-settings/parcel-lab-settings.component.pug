@@ -18,5 +18,9 @@ section.row
                   .input-group-text.cursor-pointer(rv-hide="showPasswort" rv-on-click="togglePassword" rv-i18n-text="'components.parcelLabSettings.showPasswordLabel'")
                   .input-group-text.cursor-pointer(rv-show="showPasswort" rv-on-click="togglePassword" rv-i18n-text="'components.parcelLabSettings.hidePasswordLabel'")
               small#parcel-lab-token-help.form-text.text-muted(rv-i18n-text="'components.parcelLabSettings.tokenHelp'")
+            .form-group
+              .custom-control.custom-checkbox
+                input#prefer_checkout_shipping_method.custom-control-input(type='checkbox', rv-checked="settings.prefer_checkout_shipping_method")
+                label.custom-control-label(for='prefer_checkout_shipping_method', rv-i18n-text="'components.parcelLabSettings.preferCheckoutShippingMethodLabel'") Prefer carier from checkout shipping method
             .alert.alert-danger(role='alert', rv-if="locales.error", rv-i18n-text="locales.error")
             button.btn.btn-link.card-link(type='button' rv-on-click="save" rv-i18n-text="'components.parcelLabSettings.saveLabel'")
