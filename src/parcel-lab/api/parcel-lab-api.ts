@@ -109,38 +109,38 @@ export class ParcelLabApi {
     const requiredKeys = params[endpoint].requiredKeys;
     const allowedKeys = requiredKeys.concat(params.allowedKeys);
     if (utils.objHasKeys(payload, requiredKeys)) {
-      if (utils.objHasOnlyKeys(payload, allowedKeys)) {
-
-        let isValid = true;
-        let error = '';
-        const datachecks = params.datachecks;
-
-        for (let i = 0; i < datachecks.email.length; i++) {
-          if (!_.isNull(payload[datachecks.email[i]]) && !_.isUndefined(payload[datachecks.email[i]])) {
-            isValid = isValid && ø.isEmail(payload[datachecks.email[i]]);
-          }
-        }
-        if (!isValid) error = 'Field to be required to be an email is not an email';
-
-        for (let j = 0; j < datachecks.number.length; j++) {
-          if (!_.isNull(payload[datachecks.number[j]]) && !_.isUndefined(payload[datachecks.number[j]])) {
-            isValid = isValid && typeof payload[datachecks.number[j]] === 'number';
-          }
-        }
-        if (!isValid) error = 'Field to be required to be a number is not a number';
-
-        for (let k = 0; k < datachecks.boolean.length; k++) {
-          if (!_.isNull(payload[datachecks.boolean[k]]) && !_.isUndefined(payload[datachecks.boolean[k]])) {
-            isValid = isValid && (typeof payload[datachecks.boolean[k]] === 'boolean');
-          }
-        }
-        if (!isValid) error = 'Field to be required to be a bool is not a bool';
-
-        return { error, isValid };
-  
-      } else {
-        return { error: 'Some keys are not allowed', isValid: false };
+      const keyChecker = utils.objHasOnlyKeys(payload, allowedKeys);
+      if (!keyChecker.allAllowed) {
+        return { error: 'Used not allowed keys: ' + keyChecker.unallowed.join(', '), isValid: false };
       }
+
+      let isValid = true;
+      let error = '';
+      const datachecks = params.datachecks;
+
+      for (let i = 0; i < datachecks.email.length; i++) {
+        if (!_.isNull(payload[datachecks.email[i]]) && !_.isUndefined(payload[datachecks.email[i]])) {
+          isValid = isValid && ø.isEmail(payload[datachecks.email[i]]);
+        }
+      }
+      if (!isValid) error = 'Field to be required to be an email is not an email';
+
+      for (let j = 0; j < datachecks.number.length; j++) {
+        if (!_.isNull(payload[datachecks.number[j]]) && !_.isUndefined(payload[datachecks.number[j]])) {
+          isValid = isValid && typeof payload[datachecks.number[j]] === 'number';
+        }
+      }
+      if (!isValid) error = 'Field to be required to be a number is not a number';
+
+      for (let k = 0; k < datachecks.boolean.length; k++) {
+        if (!_.isNull(payload[datachecks.boolean[k]]) && !_.isUndefined(payload[datachecks.boolean[k]])) {
+          isValid = isValid && (typeof payload[datachecks.boolean[k]] === 'boolean');
+        }
+      }
+      if (!isValid) error = 'Field to be required to be a bool is not a bool';
+
+      return { error, isValid };
+
     } else {
       return { error: 'Required keys missing', isValid: false };
     }

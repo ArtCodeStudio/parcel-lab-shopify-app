@@ -435,7 +435,11 @@ export class ParcelLabTrackingService {
     }
 
     protected async getCourier(parcelLabSettings: ParcelLabSettings, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment | null, order?: ParcellabOrder | null, shopifyOrder?: Partial<Interfaces.Order>, shopifyCheckout?: Partial<Interfaces.Checkout>) {
-        let courier = order?.courier || shopifyFulfillment?.tracking_company || shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title;
+        let fallbackCourier = shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title;
+        if (fallbackCourier) {
+            fallbackCourier = fallbackCourier.trim().toLowerCase().replace(/\s/g,"-");
+        }
+        let courier = order?.courier || shopifyFulfillment?.tracking_company || fallbackCourier;
         // If this option is true we try to parse the carier from the shipping method title the customer has selected in the checkout process
         if (parcelLabSettings.prefer_checkout_shipping_method) {
             courier = this.transformCheckoutShippingToCourier(shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title) || courier;
@@ -445,12 +449,12 @@ export class ParcelLabTrackingService {
     }
 
     protected transformCheckoutShippingToCourier(shippingMethodTitle?: string) {
-        let carier: string | undefined;
+        let courier: string | undefined;
         if (!shippingMethodTitle) {
-            carier = undefined;
-            return carier;
+            courier = undefined;
+            return courier;
         }
-        carier = shippingMethodTitle.trim().toLowerCase().replace(/\s/g,"-");
+        courier = shippingMethodTitle.trim().toLowerCase().replace(/\s/g,"-");
 
         const search = [
             {
@@ -533,13 +537,21 @@ export class ParcelLabTrackingService {
                 includes: ['post'],
                 corresponds: 'post'
             },
+            {
+                includes: ['ups', 'express'],
+                corresponds: 'ups-express'
+            },
+            {
+                includes: ['ups'],
+                corresponds: 'ups'
+            },
         ];
 
         for (const curSearch of search) {
-            const match = curSearch.includes.every(item => carier.includes(item));
+            const match = curSearch.includes.every(item => courier.includes(item));
             if (match) {
-                carier = curSearch.corresponds;
-                return carier
+                courier = curSearch.corresponds;
+                return courier;
             }
         }
         

@@ -33,18 +33,22 @@ export const objHasKeys = (obj: any, arrayOfKeys: string[]): boolean => {
  * @param arrayOfKeys Keys to be checked
  * @return true if object has only keys contained in the array
  */
-export const objHasOnlyKeys = (obj: any, arrayOfKeys: string[]): boolean => {
+export const objHasOnlyKeys = (obj: any, arrayOfKeys: string[]) => {
 
-  let result = true;
+  let allAllowed = true;
+  const unallowed = [];
 
   const keys = _.keys(obj);
   for (let i = 0; i < keys.length; i++) {
     if (!_.contains(arrayOfKeys, keys[i])) {
-      result = false;
+      allAllowed = false;
+      unallowed.push(keys[i]);
     }
   }
 
-  return result;
+  return {
+    allAllowed, unallowed
+  };
 
 };
 
