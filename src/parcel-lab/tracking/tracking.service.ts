@@ -451,14 +451,11 @@ export class ParcelLabTrackingService {
     }
 
     protected async getCourier(parcelLabSettings: ParcelLabSettings, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment | null, order?: ParcellabOrder | null, shopifyOrder?: Partial<Interfaces.Order>, shopifyCheckout?: Partial<Interfaces.Checkout>) {
-        let fallbackCourier = shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title;
-        if (fallbackCourier) {
-            fallbackCourier = fallbackCourier.trim().toLowerCase().replace(/\s/g,"-");
-        }
-        let courier = order?.courier || shopifyFulfillment?.tracking_company || fallbackCourier;
-        // If this option is true we try to parse the carier from the shipping method title the customer has selected in the checkout process
+        const courierFromShippingMethod = this.transformCheckoutShippingToCourier(shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title)
+        let courier = order?.courier || shopifyFulfillment?.tracking_company || courierFromShippingMethod;
+        // If this option is true we prefer the courier from the shipping method title the customer has selected in the checkout process otherwise this is just the fallback
         if (parcelLabSettings.prefer_checkout_shipping_method) {
-            courier = this.transformCheckoutShippingToCourier(shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title) || courier;
+            courier = courierFromShippingMethod || courier;
         }
         
         return courier;
