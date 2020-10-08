@@ -8,13 +8,6 @@
 
 // UNUSED EXPORTS: Main
 
-// NAMESPACE OBJECT: ../../riba/packages/jquery/src/binders/index.ts
-var binders_namespaceObject = {};
-__webpack_require__.r(binders_namespaceObject);
-__webpack_require__.d(binders_namespaceObject, {
-  "onEventBinder": () => onEventBinder
-});
-
 // NAMESPACE OBJECT: ../../riba/packages/shopify-easdk/src/components/index.ts
 var components_namespaceObject = {};
 __webpack_require__.r(components_namespaceObject);
@@ -31,6 +24,13 @@ __webpack_require__.d(services_namespaceObject, {
   "ModalWrapperService": () => ModalWrapperService,
   "UserWrapperService": () => UserWrapperService,
   "WrapperService": () => WrapperService
+});
+
+// NAMESPACE OBJECT: ../../riba/packages/jquery/src/binders/index.ts
+var binders_namespaceObject = {};
+__webpack_require__.r(binders_namespaceObject);
+__webpack_require__.d(binders_namespaceObject, {
+  "onEventBinder": () => onEventBinder
 });
 
 // NAMESPACE OBJECT: ./ts/components/index.ts
@@ -65,16 +65,16 @@ var description_en_default = /*#__PURE__*/__webpack_require__.n(description_en);
 var description_de = __webpack_require__(1920);
 var description_de_default = /*#__PURE__*/__webpack_require__.n(description_de);
 
+// EXTERNAL MODULE: ./.yarn/cache/@babel-runtime-npm-7.11.2-f2cfabd212-1.zip/node_modules/@babel/runtime/helpers/classCallCheck.js
+var classCallCheck = __webpack_require__(8656);
+var classCallCheck_default = /*#__PURE__*/__webpack_require__.n(classCallCheck);
+
 // EXTERNAL MODULE: ./.yarn/cache/jquery-npm-3.5.1-965b25dbd8-1.zip/node_modules/jquery/dist/jquery.js
 var jquery = __webpack_require__(3216);
 var jquery_default = /*#__PURE__*/__webpack_require__.n(jquery);
 
 // EXTERNAL MODULE: ../../riba/packages/utils/src/type.ts
 var type = __webpack_require__(8310);
-// EXTERNAL MODULE: ./.yarn/cache/@babel-runtime-npm-7.11.2-f2cfabd212-1.zip/node_modules/@babel/runtime/helpers/classCallCheck.js
-var classCallCheck = __webpack_require__(8656);
-var classCallCheck_default = /*#__PURE__*/__webpack_require__.n(classCallCheck);
-
 // EXTERNAL MODULE: ./.yarn/cache/@babel-runtime-npm-7.11.2-f2cfabd212-1.zip/node_modules/@babel/runtime/helpers/asyncToGenerator.js
 var asyncToGenerator = __webpack_require__(8368);
 var asyncToGenerator_default = /*#__PURE__*/__webpack_require__.n(asyncToGenerator);
@@ -105,93 +105,8 @@ var src = __webpack_require__(569);
 var inherits = __webpack_require__(6648);
 var inherits_default = /*#__PURE__*/__webpack_require__.n(inherits);
 
-// EXTERNAL MODULE: ./.yarn/$$virtual/debug-virtual-96c2470d0d/0/cache/debug-npm-4.3.0-b4bda317a1-1.zip/node_modules/debug/src/browser.js
-var browser = __webpack_require__(9659);
-var browser_default = /*#__PURE__*/__webpack_require__.n(browser);
-
-// CONCATENATED MODULE: ../../riba/packages/jquery/src/vendors/jquery.module.ts
-
-window.$ = (jquery_default());
-window.jQuery = (jquery_default());
-
-// CONCATENATED MODULE: ../../riba/packages/jquery/src/vendors/index.ts
-
-// CONCATENATED MODULE: ../../riba/packages/jquery/src/binders/on-event.binder.ts
-
-
-/**
- * Binds an event handler on the element.
- */
-
-var onEventBinder = {
-  name: "on-*",
-  "function": true,
-  priority: 1000,
-  bind: function bind(el) {
-    if (!this.customData) {
-      this.customData = {
-        handler: null
-      };
-    }
-  },
-  unbind: function unbind(el) {
-    if (this.customData.handler) {
-      if (this.args === null) {
-        throw new Error("args is null");
-      }
-
-      var eventName = this.args[0];
-      jquery_default()(el).off(eventName, this.customData.handler);
-    }
-  },
-  routine: function routine(el, value) {
-    var _this = this;
-
-    if (this.args === null) {
-      throw new Error("args is null");
-    }
-
-    var eventName = this.args[0];
-
-    if (this.customData.handler) {
-      jquery_default()(el).off(eventName, this.customData.handler);
-    }
-
-    this.customData.handler = this.eventHandler(value, el);
-
-    try {
-      jquery_default()(el).on(eventName, function (event) {
-        var extraParameters = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        event.data = (0,type/* extend */.l7)(false, event.data || {}, extraParameters);
-        return _this.customData.handler(event);
-      });
-    } catch (error) {
-      console.warn(error);
-      jquery_default()(el).on(eventName, function (event, extraParameters) {
-        event.data = (0,type/* extend */.l7)(false, event.data || {}, extraParameters);
-        return _this.customData.handler(event);
-      });
-    }
-  }
-};
-// CONCATENATED MODULE: ../../riba/packages/jquery/src/binders/index.ts
-
-// CONCATENATED MODULE: ../../riba/packages/jquery/src/jquery.module.ts
- // import * as formatters from './formatters';
-// import * as services from './services';
-// import * as components from './components';
-
-var jqueryModule = {
-  formatters: {},
-  binders: binders_namespaceObject,
-  services: {},
-  components: {}
-};
-
-// CONCATENATED MODULE: ../../riba/packages/jquery/src/index.ts
-
-
-
+// EXTERNAL MODULE: ../../riba/packages/utils/src/dom.ts
+var dom = __webpack_require__(4783);
 // EXTERNAL MODULE: ./.yarn/cache/@babel-runtime-npm-7.11.2-f2cfabd212-1.zip/node_modules/@babel/runtime/helpers/get.js
 var get = __webpack_require__(7857);
 var get_default = /*#__PURE__*/__webpack_require__.n(get);
@@ -199,6 +114,10 @@ var get_default = /*#__PURE__*/__webpack_require__.n(get);
 // EXTERNAL MODULE: ./.yarn/cache/@babel-runtime-npm-7.11.2-f2cfabd212-1.zip/node_modules/@babel/runtime/helpers/possibleConstructorReturn.js
 var possibleConstructorReturn = __webpack_require__(5415);
 var possibleConstructorReturn_default = /*#__PURE__*/__webpack_require__.n(possibleConstructorReturn);
+
+// EXTERNAL MODULE: ./.yarn/$$virtual/debug-virtual-96c2470d0d/0/cache/debug-npm-4.3.0-b4bda317a1-1.zip/node_modules/debug/src/browser.js
+var browser = __webpack_require__(9659);
+var browser_default = /*#__PURE__*/__webpack_require__.n(browser);
 
 // EXTERNAL MODULE: ./.yarn/cache/@babel-runtime-npm-7.11.2-f2cfabd212-1.zip/node_modules/@babel/runtime/helpers/getPrototypeOf.js
 var getPrototypeOf = __webpack_require__(8097);
@@ -218,8 +137,6 @@ var bs4_src = __webpack_require__(5668);
 var ShopifyApp = window.ShopifyApp;
 // CONCATENATED MODULE: ../../riba/packages/shopify-easdk/src/interfaces/index.ts
 
-// EXTERNAL MODULE: ../../riba/packages/utils/src/dom.ts
-var dom = __webpack_require__(4783);
 // EXTERNAL MODULE: ../../riba/packages/shopify-easdk/src/components/bar/bar.component.pug
 var bar_component = __webpack_require__(3128);
 var bar_component_default = /*#__PURE__*/__webpack_require__.n(bar_component);
@@ -1352,6 +1269,89 @@ var shopifyEasdkModule = {
 // export * from './binders';
 
  // export * from './types';
+
+
+// CONCATENATED MODULE: ../../riba/packages/jquery/src/vendors/jquery.module.ts
+
+window.$ = (jquery_default());
+window.jQuery = (jquery_default());
+
+// CONCATENATED MODULE: ../../riba/packages/jquery/src/vendors/index.ts
+
+// CONCATENATED MODULE: ../../riba/packages/jquery/src/binders/on-event.binder.ts
+
+
+/**
+ * Binds an event handler on the element.
+ */
+
+var onEventBinder = {
+  name: "on-*",
+  "function": true,
+  priority: 1000,
+  bind: function bind(el) {
+    if (!this.customData) {
+      this.customData = {
+        handler: null
+      };
+    }
+  },
+  unbind: function unbind(el) {
+    if (this.customData.handler) {
+      if (this.args === null) {
+        throw new Error("args is null");
+      }
+
+      var eventName = this.args[0];
+      jquery_default()(el).off(eventName, this.customData.handler);
+    }
+  },
+  routine: function routine(el, value) {
+    var _this = this;
+
+    if (this.args === null) {
+      throw new Error("args is null");
+    }
+
+    var eventName = this.args[0];
+
+    if (this.customData.handler) {
+      jquery_default()(el).off(eventName, this.customData.handler);
+    }
+
+    this.customData.handler = this.eventHandler(value, el);
+
+    try {
+      jquery_default()(el).on(eventName, function (event) {
+        var extraParameters = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        event.data = (0,type/* extend */.l7)(false, event.data || {}, extraParameters);
+        return _this.customData.handler(event);
+      });
+    } catch (error) {
+      console.warn(error);
+      jquery_default()(el).on(eventName, function (event, extraParameters) {
+        event.data = (0,type/* extend */.l7)(false, event.data || {}, extraParameters);
+        return _this.customData.handler(event);
+      });
+    }
+  }
+};
+// CONCATENATED MODULE: ../../riba/packages/jquery/src/binders/index.ts
+
+// CONCATENATED MODULE: ../../riba/packages/jquery/src/jquery.module.ts
+ // import * as formatters from './formatters';
+// import * as services from './services';
+// import * as components from './components';
+
+var jqueryModule = {
+  formatters: {},
+  binders: binders_namespaceObject,
+  services: {},
+  components: {}
+};
+
+// CONCATENATED MODULE: ../../riba/packages/jquery/src/index.ts
+
 
 
 // EXTERNAL MODULE: ./ts/components/account-connects/account-connects.component.pug
@@ -4787,8 +4787,8 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { defineProperty_default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
- // Extensions / Modules
 
+ // Extensions / Modules
 
 
 
@@ -4877,16 +4877,8 @@ var Main = function Main() {
   //   this.debug('newPageReady', viewId, currentStatus, dataset);
   // });
 
-  jquery_default()(function ()
-  /*$: JQueryStatic*/
-  {
-    var bindToElement = jquery_default()('body')[0];
-
-    _this.debug('bind to', bindToElement);
-    /*this.view = */
-
-
-    _this.riba.bind(bindToElement, _this.model);
+  (0,dom/* ready */.Cd)(function () {
+    _this.riba.bind(document.body, _this.model);
   });
 };
 
@@ -4911,7 +4903,9 @@ var bootstrap = function bootstrap() {
   });
 };
 
-bootstrap();
+(0,dom/* ready */.Cd)(function () {
+  bootstrap();
+});
 
 /***/ }),
 

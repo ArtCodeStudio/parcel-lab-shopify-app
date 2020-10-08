@@ -4,7 +4,6 @@
     "ts/main.ts"
   ],
   "compilerOptions": {
-    "sourceMap": true,
     "outDir": "../public/scripts/",
     "typeRoots": ["./node_modules/@types", "./src/ts/types"]
   }

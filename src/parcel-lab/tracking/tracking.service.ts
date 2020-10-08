@@ -475,6 +475,14 @@ export class ParcelLabTrackingService {
                 corresponds: 'dhl-express'
             },
             {
+                includes: ['dhl', 'germany'],
+                corresponds: 'dhl-germany'
+            },
+            {
+                includes: ['dhl', 'de'],
+                corresponds: 'dhl-germany'
+            },
+            {
                 includes: ['dhl'],
                 corresponds: 'dhl'
             },
