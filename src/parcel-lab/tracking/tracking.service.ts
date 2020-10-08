@@ -246,7 +246,7 @@ export class ParcelLabTrackingService {
             complete: shopifyFulfillment.shipment_status === 'delivered' || order?.complete,            
             statuslink: shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
             tracking_number: shopifyFulfillment.tracking_numbers ? shopifyFulfillment.tracking_numbers.join(',') : shopifyFulfillment.tracking_number,
-            warehouse: shopifyFulfillment.location_id ? shopifyFulfillment.location_id.toString() : undefined,
+            warehouse: shopifyFulfillment.location_id ? shopifyFulfillment.location_id?.toString() : undefined,
             customFields: {
                 ...order?.customFields || {},
                 notify_customer: shopifyFulfillment.notify_customer,
@@ -300,14 +300,14 @@ export class ParcelLabTrackingService {
             courier: await this.getCourier(parcelLabSettings, null, null, shopifyOrder, shopifyCheckout),
             city: shopifyOrder?.shipping_address?.city,
             client: await this.getClient(shopifyAuth),
-            orderNo: shopifyOrder.order_number.toString(),
+            orderNo: shopifyOrder.order_number?.toString(),
             cancelled: shopifyOrder.cancelled_at !== null ? true : false,
             complete: shopifyOrder.fulfillment_status === 'fulfilled',
-            customerNo: shopifyOrder.customer?.id.toString(),
-            deliveryNo: shopifyOrder.id.toString(), // TODO CHECKME
+            customerNo: shopifyOrder.customer?.id?.toString(),
+            deliveryNo: shopifyOrder.id?.toString(), // TODO CHECKME
             destination_country_iso3: shopifyOrder.shipping_address?.country_code,
             email: shopifyOrder.customer?.email,
-            language_iso3: await this.getLangCode(shopifyAuth, shopifyOrder),
+            language_iso3: await this.getLocaleCode(shopifyAuth, shopifyOrder),
             market: shopifyOrder.source_name,
             order_date: new Date(shopifyOrder.created_at),
             phone: shopifyOrder.customer?.phone,
@@ -315,9 +315,9 @@ export class ParcelLabTrackingService {
             recipient_notification: this.getName(shopifyOrder),
             statuslink: shopifyOrder.order_status_url,
             street: shopifyOrder.shipping_address?.address1,
-            warehouse: shopifyOrder.location_id ? shopifyOrder.location_id.toString() : undefined,
-            weight: shopifyOrder.total_weight.toString(),
-            // xid: shopifyOrder.id.toString(), // TODO CHECKME make this problems wich splits the orders in parcelLab?
+            warehouse: shopifyOrder.location_id ? shopifyOrder.location_id?.toString() : undefined,
+            weight: shopifyOrder.total_weight?.toString(),
+            xid: shopifyOrder.id?.toString(), // TODO CHECKME make this problems wich splits the orders in parcelLab?
             zip_code: shopifyOrder.shipping_address?.zip,
             customFields: {
                 verified_email: shopifyOrder.customer.verified_email,
@@ -336,7 +336,7 @@ export class ParcelLabTrackingService {
         for (const lineItem of lineItems) {
             const article: ParcellabArticle = {
                 articleName: lineItem.title + ' ' + lineItem.variant_title,
-                articleNo: lineItem.variant_id.toString(),
+                articleNo: lineItem.variant_id?.toString(),
                 quantity: lineItem.quantity,
             };
             const { articleNo, articleCategory, articleImageUrl, articleUrl } = await this.getProductData(shopifyAuth, lineItem);
@@ -354,9 +354,25 @@ export class ParcelLabTrackingService {
         return shopifyAuth.shop.name;
     }
 
-    protected async getLangCode(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>) {
-        const langCode = shopifyOrder.customer_locale || shopifyOrder.billing_address?.country_code || shopifyOrder.shipping_address?.country_code || shopifyOrder.customer?.default_address?.country_code || shopifyAuth.shop.primary_locale;
+    protected async getLocaleCode(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>) {
+        const langCode = this.getLocalCodeFromNoteAttributes(shopifyOrder) || shopifyOrder.customer_locale || shopifyOrder.billing_address?.country_code || shopifyOrder.shipping_address?.country_code || shopifyOrder.customer?.default_address?.country_code || shopifyAuth.shop.primary_locale;
         return langCode;
+    }
+
+    /**
+     * Special case if the locale code was passed via additional note attributes 
+     * @param shopifyOrder 
+     */
+    protected getLocalCodeFromNoteAttributes(shopifyOrder: Partial<Interfaces.Order>) {
+        if (!shopifyOrder.note_attributes) {
+            return null;
+        }
+        for (const noteAttribute of shopifyOrder.note_attributes) {
+            if(noteAttribute.name === 'locale') {
+                return noteAttribute.value?.toString();
+            }
+        }
+        return null;
     }
 
     protected getName(shopifyOrder: Partial<Interfaces.Order>) {
@@ -372,7 +388,7 @@ export class ParcelLabTrackingService {
             const product = await this.product.getFromShopify(shopifyAuth, lineItem.product_id);
             const variant = await this.getVariant(product, lineItem.variant_id);
             return {
-                articleNo: variant.barcode || lineItem.variant_id.toString(), // TODO make configurable what the articleNo should be
+                articleNo: variant.barcode || lineItem.variant_id?.toString(), // TODO make configurable what the articleNo should be
                 articleCategory: undefined, // TODO how can we get the collections of a product?
                 articleImageUrl: this.getProductImageSource(product, lineItem.variant_id),
                 articleUrl: shopifyAuth.shop.domain + '/products/' + product.handle,
@@ -380,7 +396,7 @@ export class ParcelLabTrackingService {
         } catch (error) {
              this.logger.error('getProductData', error);
             return {
-                articleNo: lineItem.variant_id.toString(),
+                articleNo: lineItem.variant_id?.toString(),
                 articleCategory: undefined,
                 articleImageUrl: undefined,
                 articleUrl: undefined,
