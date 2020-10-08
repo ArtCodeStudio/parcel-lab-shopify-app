@@ -3964,6 +3964,7 @@ function parcel_lab_settings_component_isNativeReflectConstruct() { if (typeof R
 
 
 
+
 var ParcelLabSettingsComponent = /*#__PURE__*/function (_Component) {
   inherits_default()(ParcelLabSettingsComponent, _Component);
 
@@ -3989,7 +3990,9 @@ var ParcelLabSettingsComponent = /*#__PURE__*/function (_Component) {
 
     defineProperty_default()(assertThisInitialized_default()(_this), "autobind", true);
 
-    defineProperty_default()(assertThisInitialized_default()(_this), "easdk", void 0);
+    defineProperty_default()(assertThisInitialized_default()(_this), "easdk", new EASDKWrapperService());
+
+    defineProperty_default()(assertThisInitialized_default()(_this), "localesService", i18n_src.LocalesStaticService.getInstance('main'));
 
     defineProperty_default()(assertThisInitialized_default()(_this), "scope", {
       locales: {
@@ -4054,7 +4057,7 @@ var ParcelLabSettingsComponent = /*#__PURE__*/function (_Component) {
     key: "save",
     value: function () {
       var _save = asyncToGenerator_default()( /*#__PURE__*/regenerator_default().mark(function _callee2() {
-        var result;
+        var result, successfullySavedMessage, notSuccessfullySavedMessage;
         return regenerator_default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -4077,24 +4080,32 @@ var ParcelLabSettingsComponent = /*#__PURE__*/function (_Component) {
               case 7:
                 result = _context2.sent;
                 this.resetErrors();
-                this.easdk.flashNotice('Settings saved'); // TODO translate
+                _context2.next = 11;
+                return this.localesService.getByCurrentLang(['components', 'parcelLabSettings', 'successfullySavedMessage']);
 
+              case 11:
+                successfullySavedMessage = _context2.sent;
+                this.easdk.flashNotice(successfullySavedMessage);
                 return _context2.abrupt("return", result);
 
-              case 13:
-                _context2.prev = 13;
+              case 16:
+                _context2.prev = 16;
                 _context2.t0 = _context2["catch"](4);
                 console.error(_context2.t0);
-                this.scope.locales.error = 'components.parcelLabSettings.errors.generalSave'; // throw error;
+                this.scope.locales.error = 'components.parcelLabSettings.errors.generalSave';
+                _context2.next = 22;
+                return this.localesService.getByCurrentLang(['components', 'parcelLabSettings', 'notSuccessfullySavedMessage']);
 
-                this.easdk.flashError("Can't save settings!"); // TODO translate
+              case 22:
+                notSuccessfullySavedMessage = _context2.sent;
+                this.easdk.flashError(notSuccessfullySavedMessage);
 
-              case 18:
+              case 24:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[4, 13]]);
+        }, _callee2, this, [[4, 16]]);
       }));
 
       function save() {
@@ -4124,7 +4135,6 @@ var ParcelLabSettingsComponent = /*#__PURE__*/function (_Component) {
     value: function connectedCallback() {
       get_default()(getPrototypeOf_default()(ParcelLabSettingsComponent.prototype), "connectedCallback", this).call(this);
 
-      this.easdk = new EASDKWrapperService();
       return this.init(ParcelLabSettingsComponent.observedAttributes);
     }
   }, {
@@ -4449,6 +4459,10 @@ defineProperty_default()(ParcelLabListTrackingComponent, "tagName", 'parcel-lab-
       showPasswordLabel: 'Show',
       hidePasswordLabel: 'Hide',
       tokenHelp: "We'll never share your token with anyone else.",
+      preferCheckoutShippingMethodLabel: 'Try to identify the courier from the shipping method',
+      preferCheckoutShippingMethodInfo: 'If active, the app tries to identify the courier by the title of the shipping method selected by the customer during the ordering process. We recommend to leave this option disabled and to activate it only if there are problems with the courier sent to ParcelLab',
+      successfullySavedMessage: 'ParcelLab settings successfully saved',
+      notSuccessfullySavedMessage: 'ParcelLab settings could not be saved',
       errors: {
         generalSave: 'Settings could not be saved, please check your input.'
       }
@@ -4616,6 +4630,10 @@ defineProperty_default()(ParcelLabListTrackingComponent, "tagName", 'parcel-lab-
       showPasswordLabel: 'Anzeigen',
       hidePasswordLabel: 'Verstecken',
       tokenHelp: 'Wir werden deinen Token niemals an andere weitergeben.',
+      preferCheckoutShippingMethodLabel: 'Leite den Kuriers aus der Versandmethode her',
+      preferCheckoutShippingMethodInfo: 'Wenn aktiv, versucht die App den Kurier anhand des Titels der Versandmethode (die der Kunde im Bestellvorgang ausgewählt hat) herzuleiten. Wir empfehlen diese Option deaktiviert zu lassen und nur zu aktivieren wenn es Probleme mit dem an ParcelLab übergebenen Kurier gibt.',
+      successfullySavedMessage: 'ParcelLab Einstellungen erfolgreich gespeichert',
+      notSuccessfullySavedMessage: 'ParcelLab Einstellungen konnten nicht gespeichert werden',
       errors: {
         generalSave: 'Einstellungen konnten nicht gespeichert werden, bitte überprüfe deine Eingabe.'
       }
@@ -30327,7 +30345,7 @@ module.exports = template;
 
 var pug = __webpack_require__(7164);
 
-function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;pug_html = pug_html + "\u003Csection class=\"row\"\u003E\u003Cdiv class=\"col-12 col-md-4\"\u003E\u003Ch2 class=\"my-3\" rv-i18n-text=\"'components.parcelLabSettings.title'\"\u003E\u003C\u002Fh2\u003E\u003Cp class=\"text-muted\" rv-i18n-text=\"'components.parcelLabSettings.info'\"\u003E\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"col-12 col-md-8\"\u003E\u003Cdiv class=\"card\"\u003E\u003Cdiv class=\"card-body\"\u003E\u003Cdiv class=\"card-text\"\u003E\u003Cform\u003E\u003Cdiv class=\"form-group\"\u003E\u003Clabel for=\"parcel-lab-user-id\"\u003EUser-ID\u003C\u002Flabel\u003E\u003Cinput class=\"form-control\" id=\"parcel-lab-user-id\" type=\"number\" rv-value=\"settings.user\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"form-group\"\u003E\u003Clabel for=\"parcel-lab-token\"\u003EToken\u003C\u002Flabel\u003E\u003Cdiv class=\"input-group\"\u003E\u003Cinput class=\"form-control\" id=\"parcel-lab-token\" rv-type=\"passwortInputType\" aria-describedby=\"parcel-lab-token-help\" rv-value=\"settings.token\"\u003E\u003Cdiv class=\"input-group-append\"\u003E\u003Cdiv class=\"input-group-text cursor-pointer\" rv-hide=\"showPasswort\" rv-on-click=\"togglePassword\" rv-i18n-text=\"'components.parcelLabSettings.showPasswordLabel'\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"input-group-text cursor-pointer\" rv-show=\"showPasswort\" rv-on-click=\"togglePassword\" rv-i18n-text=\"'components.parcelLabSettings.hidePasswordLabel'\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003Csmall class=\"form-text text-muted\" id=\"parcel-lab-token-help\" rv-i18n-text=\"'components.parcelLabSettings.tokenHelp'\"\u003E\u003C\u002Fsmall\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"form-group\"\u003E\u003Cdiv class=\"custom-control custom-checkbox\"\u003E\u003Cinput class=\"custom-control-input\" id=\"prefer_checkout_shipping_method\" type=\"checkbox\" rv-checked=\"settings.prefer_checkout_shipping_method\"\u003E\u003Clabel class=\"custom-control-label\" for=\"prefer_checkout_shipping_method\" rv-i18n-text=\"'components.parcelLabSettings.preferCheckoutShippingMethodLabel'\"\u003EPrefer carier from checkout shipping method\u003C\u002Flabel\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"alert alert-danger\" role=\"alert\" rv-if=\"locales.error\" rv-i18n-text=\"locales.error\"\u003E\u003C\u002Fdiv\u003E\u003Cbutton class=\"btn btn-link card-link\" type=\"button\" rv-on-click=\"save\" rv-i18n-text=\"'components.parcelLabSettings.saveLabel'\"\u003E\u003C\u002Fbutton\u003E\u003C\u002Fform\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fsection\u003E";;return pug_html;};
+function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;pug_html = pug_html + "\u003Csection class=\"row\"\u003E\u003Cdiv class=\"col-12 col-md-4\"\u003E\u003Ch2 class=\"my-3\" rv-i18n-text=\"'components.parcelLabSettings.title'\"\u003E\u003C\u002Fh2\u003E\u003Cp class=\"text-muted\" rv-i18n-text=\"'components.parcelLabSettings.info'\"\u003E\u003C\u002Fp\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"col-12 col-md-8\"\u003E\u003Cdiv class=\"card\"\u003E\u003Cdiv class=\"card-body\"\u003E\u003Cdiv class=\"card-text\"\u003E\u003Cform\u003E\u003Cdiv class=\"form-group\"\u003E\u003Clabel for=\"parcel-lab-user-id\"\u003EUser-ID\u003C\u002Flabel\u003E\u003Cinput class=\"form-control\" id=\"parcel-lab-user-id\" type=\"number\" rv-value=\"settings.user\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"form-group\"\u003E\u003Clabel for=\"parcel-lab-token\"\u003EToken\u003C\u002Flabel\u003E\u003Cdiv class=\"input-group\"\u003E\u003Cinput class=\"form-control\" id=\"parcel-lab-token\" rv-type=\"passwortInputType\" aria-describedby=\"parcel-lab-token-help\" rv-value=\"settings.token\"\u003E\u003Cdiv class=\"input-group-append\"\u003E\u003Cdiv class=\"input-group-text cursor-pointer\" rv-hide=\"showPasswort\" rv-on-click=\"togglePassword\" rv-i18n-text=\"'components.parcelLabSettings.showPasswordLabel'\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"input-group-text cursor-pointer\" rv-show=\"showPasswort\" rv-on-click=\"togglePassword\" rv-i18n-text=\"'components.parcelLabSettings.hidePasswordLabel'\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003Csmall class=\"form-text text-muted\" id=\"parcel-lab-token-help\" rv-i18n-text=\"'components.parcelLabSettings.tokenHelp'\"\u003E\u003C\u002Fsmall\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"form-group\"\u003E\u003Cdiv class=\"custom-control custom-checkbox\"\u003E\u003Cinput class=\"custom-control-input\" id=\"prefer_checkout_shipping_method\" type=\"checkbox\" rv-checked=\"settings.prefer_checkout_shipping_method\" aria-describedby=\"prefer-checkout-shipping-method-info\"\u003E\u003Clabel class=\"custom-control-label\" for=\"prefer_checkout_shipping_method\" rv-i18n-text=\"'components.parcelLabSettings.preferCheckoutShippingMethodLabel'\"\u003E\u003C\u002Flabel\u003E\u003C\u002Fdiv\u003E\u003Csmall class=\"form-text text-muted\" id=\"prefer-checkout-shipping-method-info\" rv-i18n-text=\"'components.parcelLabSettings.preferCheckoutShippingMethodInfo'\"\u003E\u003C\u002Fsmall\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"alert alert-danger\" role=\"alert\" rv-if=\"locales.error\" rv-i18n-text=\"locales.error\"\u003E\u003C\u002Fdiv\u003E\u003Cbutton class=\"btn btn-link card-link\" type=\"button\" rv-on-click=\"save\" rv-i18n-text=\"'components.parcelLabSettings.saveLabel'\"\u003E\u003C\u002Fbutton\u003E\u003C\u002Fform\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fsection\u003E";;return pug_html;};
 module.exports = template;
 
 /***/ }),

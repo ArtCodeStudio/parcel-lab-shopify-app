@@ -3,8 +3,8 @@ export interface ParcelLabSettings {
     token: string;
     shop_domain?: string;
     /**
-     * If true the app tries to parse the carier from the shipping method title the customer has selected in the checkout process.
-     * Only use this only if the transferred carier is faulty, we recommend to leave this option disabled.
+     * If active, the app tries to derive the courier by the title of the shipping method selected by the customer during the ordering process.
+     * We recommend to leave this option disabled and to activate it only if there are problems with the courier sent to ParcelLab
      */
     prefer_checkout_shipping_method: boolean;
 }

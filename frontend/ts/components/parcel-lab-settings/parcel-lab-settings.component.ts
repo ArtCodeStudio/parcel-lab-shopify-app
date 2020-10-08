@@ -1,6 +1,7 @@
 import { Component } from '@ribajs/core';
 import { EASDKWrapperService } from '@ribajs/shopify-easdk';
 import { hasChildNodesTrim } from '@ribajs/utils/src/dom';
+import { LocalesStaticService } from '@ribajs/i18n';
 import Debug from 'debug';
 import pugTemplate from './parcel-lab-settings.component.pug';
 
@@ -18,14 +19,11 @@ interface Scope {
 
 export class ParcelLabSettingsComponent extends Component {
   public static tagName = 'parcel-lab-settings';
-
   protected parcelLab = new ParcelLabService();
-
   protected debug = Debug('component:' + ParcelLabSettingsComponent.tagName);
-
   protected autobind = true;
-
-  protected easdk: EASDKWrapperService;
+  protected easdk = new EASDKWrapperService();
+  protected localesService = LocalesStaticService.getInstance('main');
 
   static get observedAttributes() {
     return [];
@@ -75,14 +73,23 @@ export class ParcelLabSettingsComponent extends Component {
         this.scope.settings as ParcelLabSettings,
       );
       this.resetErrors();
-      this.easdk.flashNotice('Settings saved'); // TODO translate
+
+      const successfullySavedMessage = await this.localesService.getByCurrentLang(
+        ['components', 'parcelLabSettings', 'successfullySavedMessage'],
+      );
+
+      this.easdk.flashNotice(successfullySavedMessage);
       return result;
     } catch (error) {
       console.error(error);
       this.scope.locales.error =
         'components.parcelLabSettings.errors.generalSave';
-      // throw error;
-      this.easdk.flashError("Can't save settings!"); // TODO translate
+
+      const notSuccessfullySavedMessage = await this.localesService.getByCurrentLang(
+        ['components', 'parcelLabSettings', 'notSuccessfullySavedMessage'],
+      );
+
+      this.easdk.flashError(notSuccessfullySavedMessage);
     }
   }
 
@@ -101,7 +108,6 @@ export class ParcelLabSettingsComponent extends Component {
 
   protected connectedCallback() {
     super.connectedCallback();
-    this.easdk = new EASDKWrapperService();
     return this.init(ParcelLabSettingsComponent.observedAttributes);
   }
 

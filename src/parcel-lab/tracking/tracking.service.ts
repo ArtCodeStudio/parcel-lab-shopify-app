@@ -244,7 +244,7 @@ export class ParcelLabTrackingService {
             client: await this.getClient(shopifyAuth) || order?.client,
             cancelled: shopifyFulfillment.status === 'cancelled' || order?.cancelled,
             complete: shopifyFulfillment.shipment_status === 'delivered' || order?.complete,            
-            statuslink: shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
+            statuslink: order.statuslink || shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
             tracking_number: shopifyFulfillment.tracking_numbers ? shopifyFulfillment.tracking_numbers.join(',') : shopifyFulfillment.tracking_number,
             warehouse: shopifyFulfillment.location_id ? shopifyFulfillment.location_id?.toString() : undefined,
             customFields: {

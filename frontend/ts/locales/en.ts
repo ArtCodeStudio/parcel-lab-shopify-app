@@ -11,6 +11,12 @@ export default {
       showPasswordLabel: 'Show',
       hidePasswordLabel: 'Hide',
       tokenHelp: "We'll never share your token with anyone else.",
+      preferCheckoutShippingMethodLabel:
+        'Try to identify the courier from the shipping method',
+      preferCheckoutShippingMethodInfo:
+        'If active, the app tries to identify the courier by the title of the shipping method selected by the customer during the ordering process. We recommend to leave this option disabled and to activate it only if there are problems with the courier sent to ParcelLab',
+      successfullySavedMessage: 'ParcelLab settings successfully saved',
+      notSuccessfullySavedMessage: 'ParcelLab settings could not be saved',
       errors: {
         generalSave: 'Settings could not be saved, please check your input.',
       },
