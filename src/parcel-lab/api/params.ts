@@ -29,7 +29,7 @@ export const params = {
     "orderNo",
     "cancelled",
     "complete",
-    "courie",
+    "courier",
     "courierServiceLeve",
     "customerNo",
     "deliveryNo",
