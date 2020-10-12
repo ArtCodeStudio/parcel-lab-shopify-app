@@ -12,7 +12,7 @@ export default {
       hidePasswordLabel: 'Verstecken',
       tokenHelp: 'Wir werden deinen Token niemals an andere weitergeben.',
       preferCheckoutShippingMethodLabel:
-        'Leite den Kuriers aus der Versandmethode her',
+        'Versuche den Kuriers aus der Versandmethode herzuleiten',
       preferCheckoutShippingMethodInfo:
         'Wenn aktiv, versucht die App den Kurier anhand des Titels der Versandmethode (die der Kunde im Bestellvorgang ausgewählt hat) herzuleiten. Wir empfehlen diese Option deaktiviert zu lassen und nur zu aktivieren wenn es Probleme mit dem an ParcelLab übergebenen Kurier gibt.',
       successfullySavedMessage:
