@@ -92,7 +92,7 @@ export class ParcelLabTrackingService {
     // }
 
     protected async onOrderCancelled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCancelled) {
-        this.logger.debug('onOrderCancelled: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onOrderCancelled: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderCancelled result: %O', result);
@@ -101,7 +101,7 @@ export class ParcelLabTrackingService {
         }
     }
     protected async onOrderCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCreate) {
-        this.logger.debug('onOrderCreate: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onOrderCreate: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderCreate result: %O', result);
@@ -110,7 +110,7 @@ export class ParcelLabTrackingService {
         }
     }
     protected async onOrderFulfilled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersFulfilled) {
-        this.logger.debug('onOrderFulfilled: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onOrderFulfilled: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderFulfilled result: %O', result);
@@ -119,7 +119,7 @@ export class ParcelLabTrackingService {
         }
     }
     protected async onOrderPaid(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersPaid) {
-        this.logger.debug('onOrderPaid: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onOrderPaid: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderPaid result: %O', result);
@@ -128,7 +128,7 @@ export class ParcelLabTrackingService {
         }
     }
     protected async onOrderPartiallyFulfilled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled) {
-        this.logger.debug('onOrderPartiallyFulfilled: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onOrderPartiallyFulfilled: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrdonOrderPartiallyFulfillederUpdated result: %O', result);
@@ -137,7 +137,7 @@ export class ParcelLabTrackingService {
         }
     }
     protected async onOrderUpdated(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersUpdated) {
-        this.logger.debug('onOrderUpdated: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onOrderUpdated: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderUpdated result: %O', result);
@@ -146,7 +146,7 @@ export class ParcelLabTrackingService {
         }
     }
     protected async onOrderDelete(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCreate) {
-        this.logger.debug('onOrderDelete: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onOrderDelete: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateOrder(myshopifyDomain, data);
             this.logger.debug('onOrderDelete result: %O', result);
@@ -156,7 +156,7 @@ export class ParcelLabTrackingService {
     }
 
     protected async onFulfillmentsCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookFulfillmentCreate) {
-        this.logger.debug('onFulfillmentsCreate: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onFulfillmentsCreate: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateTracking(myshopifyDomain, data);
             this.logger.debug('onFulfillmentsCreate result: %O', result);
@@ -165,7 +165,7 @@ export class ParcelLabTrackingService {
         }
     }
     protected async onFulfillmentsUpdate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate) {
-        this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
+        // this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
         try {
             const result = await this.updateOrCreateTracking(myshopifyDomain, data);
             this.logger.debug('onFulfillmentsUpdate result: %O', result);
