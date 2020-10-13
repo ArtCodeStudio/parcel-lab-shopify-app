@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 
 import { Model } from 'mongoose';
-import { DebugService } from 'nest-shopify';
+import { DebugService, EventService, IShopifyConnect } from 'nest-shopify';
 import { ParcelLabSettingsDocument } from '../interfaces/mongoose/settings.document';
 import { ParcelLabSettings } from '../interfaces/settings';
 
@@ -10,8 +10,20 @@ export class SettingsService {
 
     protected logger = new DebugService('parcelLab:SettingsService');
 
-    constructor(@Inject('ParcelLabSettingsModel') protected readonly settingsModel: Model<ParcelLabSettingsDocument>) {
-
+    constructor(
+        @Inject('ParcelLabSettingsModel') protected readonly settingsModel: Model<ParcelLabSettingsDocument>,
+        protected readonly shopifyEvents: EventService,
+    ) {
+        // Delete settings if app is uninstalled
+        this.shopifyEvents.on('app/uninstalled', async (shopifyConnect: IShopifyConnect) => {
+            this.deleteByShopDomain(shopifyConnect.myshopify_domain)
+            .then((result) => {
+                this.logger.debug('deleted parcelLab settings', result);
+            })
+            .catch((error: Error) => {
+                this.logger.error(`[${shopifyConnect.myshopify_domain}] Error on delete parcelLab settings: ${error.message}`, error);
+            });
+        });
     }
 
     async findByShopDomain(shopDomain: string) {
@@ -20,7 +32,6 @@ export class SettingsService {
     }
 
     async createOrUpdate(settings: ParcelLabSettings ) {
-
         // this.settingsModel.update({_id: settings._id}, obj, {upsert: true}, function (err) {...});
         return this.findByShopDomain(settings.shop_domain)
         .then(async (foundSettings) => {
@@ -46,6 +57,10 @@ export class SettingsService {
             });
             return this.settingsModel.create(newSettings);
         });
+    }
 
+    async deleteByShopDomain(shopDomain: string) {
+        const query = { 'shop_domain': shopDomain };
+        return this.settingsModel.deleteOne(query).exec();
     }
 }
