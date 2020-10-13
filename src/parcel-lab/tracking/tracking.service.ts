@@ -320,8 +320,8 @@ export class ParcelLabTrackingService {
             xid: shopifyOrder.id?.toString(), // TODO CHECKME make this problems wich splits the orders in parcelLab?
             zip_code: shopifyOrder.shipping_address?.zip,
             customFields: {
-                verified_email: shopifyOrder.customer.verified_email,
-                accepts_marketing: shopifyOrder.customer.accepts_marketing,
+                verified_email: shopifyOrder.customer?.verified_email,
+                accepts_marketing: shopifyOrder.customer?.accepts_marketing,
                 fulfillment_status: shopifyOrder.fulfillment_status,
                 financial_status: shopifyOrder.financial_status,
                 checkout_token: shopifyOrder.checkout_token,
