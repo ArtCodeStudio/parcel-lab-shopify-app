@@ -12,6 +12,7 @@ export const ParcelLabSettingsSchema = new Schema({
     shop_domain: {
         type: String,
         trim: true,
+        index: true,
         required: true,
         unique: true
     },

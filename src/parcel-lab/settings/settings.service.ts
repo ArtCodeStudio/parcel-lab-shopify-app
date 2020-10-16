@@ -15,13 +15,14 @@ export class SettingsService {
         protected readonly shopifyEvents: EventService,
     ) {
         // Delete settings if app is uninstalled
-        this.shopifyEvents.on('webhook:app/uninstalled', async (shopifyConnect: IShopifyConnect) => {
-            this.deleteByShopDomain(shopifyConnect.myshopify_domain)
+        this.shopifyEvents.on('webhook:app/uninstalled', async (shop: IShopifyConnect['shop']) => {
+            this.logger.warn('webhook:app/uninstalled:', shop.myshopify_domain);
+            this.deleteByShopDomain(shop.myshopify_domain)
             .then((result) => {
-                this.logger.debug('deleted parcelLab settings', result);
+                this.logger.debug('deleted parcelLab settings for ' + shop.myshopify_domain, result);
             })
             .catch((error: Error) => {
-                this.logger.error(`[${shopifyConnect.myshopify_domain}] Error on delete parcelLab settings: ${error.message}`, error);
+                this.logger.error(`[${shop.myshopify_domain}] Error on delete parcelLab settings: ${error.message}`, error);
             });
         });
     }
