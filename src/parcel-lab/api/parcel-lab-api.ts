@@ -32,7 +32,7 @@ export class ParcelLabApi {
   //////////////////////
 
   /**
-   * Creates or updates a new tracking on the parcelLab API.
+   * Creates or updates a new tracking
    * Please note: Only use this method if you have a tracking number, if you want to track a order before you have a tracking number, use `createOrUpdateOrder` instead.
    * @param payload Specifies the tracking to be created
    * @param test For testing only, if true this creates a tracking mock
@@ -85,7 +85,7 @@ export class ParcelLabApi {
   }
 
   /**
-   * Checking last transfer via API
+   * Checking last transfer
    * @see https://how.parcellab.works/docs/integration-quick-start/creating-a-new-tracking/api#checking-last-transfer-via-api
    * @param search Any search string
    * @param page What page to show (pagination), defaults to 0
@@ -310,14 +310,38 @@ export class ParcelLabApi {
     return this.get(url, { user, token}, user, token);
   }
 
+  /**
+   * Make a http POST request
+   * @param url The url you want to make the request to
+   * @param data The data object which you want to transfer in the body of the post request
+   * @param user parcelLab user id
+   * @param token parcelLab token
+   * @param responseType The response type, by default 'text'
+   */
   protected async post(url: string, data: any, user: number, token: string, responseType = 'text'): Promise<any> {
     return this.request('post', url, data, user, token, responseType);
   }
 
+  /**
+   * Make a http GET request
+   * @param url The url you want to make the request to
+   * @param params The query string parameter values
+   * @param user parcelLab user id
+   * @param token parcelLab token
+   * @param responseType The response type, by default 'text'
+   */
   protected async get(url: string, params: any, user: number, token: string, responseType = 'text'): Promise<any> {
     return this.request('get', url, params, user, token, responseType);
   }
 
+  /**
+   * Make a http request
+   * @param url 
+   * @param params 
+   * @param user 
+   * @param token 
+   * @param responseType 
+   */
   protected async request(method: 'post' | 'get', url: string, data: any = {}, user: number, token: string, responseType = 'text'): Promise<string> {
     // prepare request
     const httpsAgent = new Agent({
@@ -330,7 +354,7 @@ export class ParcelLabApi {
       url = url + (queryStr && queryStr.length > 0 ? "?" + queryStr : "");
     }
 
-    console.debug('request url ' + method, url);
+    // console.debug('request url ' + method, url);
 
     const gotOptions = {
       agent: {
