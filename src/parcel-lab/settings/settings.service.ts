@@ -15,7 +15,7 @@ export class SettingsService {
         protected readonly shopifyEvents: EventService,
     ) {
         // Delete settings if app is uninstalled
-        this.shopifyEvents.on('app/uninstalled', async (shopifyConnect: IShopifyConnect) => {
+        this.shopifyEvents.on('webhook:app/uninstalled', async (shopifyConnect: IShopifyConnect) => {
             this.deleteByShopDomain(shopifyConnect.myshopify_domain)
             .then((result) => {
                 this.logger.debug('deleted parcelLab settings', result);
