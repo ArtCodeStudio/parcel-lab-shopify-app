@@ -152,6 +152,7 @@
     "@ribajs/types": "portal:../riba/infra/types",
     "@ribajs/webpack-config": "portal:../riba/infra/webpack-config",
     "@ribajs/tsconfig": "portal:../riba/infra/tsconfig",
-    "shopify-admin-api": "portal:../shopify-admin-api"
+    "shopify-admin-api": "portal:../shopify-admin-api",
+    "typescript": "4.0.3"
   }
 }
