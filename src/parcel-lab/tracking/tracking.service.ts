@@ -1,6 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { ParcelLabApi } from '../api/parcel-lab-api';
-import { ParcellabOrder, ParcellabArticle } from '../api/interfaces';
+import {
+    ParcelLabApi,
+    ParcellabOrder,
+    ParcellabArticle,
+    ParcellabSearchResponse,
+} from 'parcellab';
 import { ParcelLabSettings } from '../interfaces'
 import { SettingsService } from '../settings/settings.service';
 import {
@@ -50,7 +54,7 @@ export class ParcelLabTrackingService {
      * @param page What page to show (pagination), defaults to 0
      * @param size Number of entries on a page, defaults to 24
      */
-    public async list(myshopifyDomain: string, search?: string, page?: number, size?: number) {
+    public async list(myshopifyDomain: string, search?: string, page?: number, size?: number): Promise<ParcellabSearchResponse> {
         const settings = await this.parcelLabSettings.findByShopDomain(myshopifyDomain);
         if (!settings) {
             this.logger.debug('No parcelLab settings found for: %s', myshopifyDomain);
