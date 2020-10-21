@@ -3,7 +3,7 @@
 module.exports = {
   apps : [{
     name        : "pl:dev",
-    script      : "yarn run start:debug",
+    script      : "npm run start:debug",
     watch       : false, // path.join(__dirname, 'src'),
     // https://github.com/paulmillr/chokidar#api
     // watch_options: {},

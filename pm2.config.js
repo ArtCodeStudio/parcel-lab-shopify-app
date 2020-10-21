@@ -2,7 +2,7 @@
 module.exports = {
   apps : [{
     name        : "pl",
-    script      : "yarn run start:prod",
+    script      : "npm run start:prod",
     watch       : false,
     env: {
       "NODE_ENV": "production",
