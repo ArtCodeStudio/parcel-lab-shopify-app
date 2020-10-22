@@ -4,9 +4,11 @@ import {
     ParcellabOrder,
     ParcellabArticle,
     ParcellabSearchResponse,
+    ParcellabTrackingNumberByCurriers,
 } from 'parcellab';
 import { ParcelLabSettings } from '../interfaces'
 import { SettingsService } from '../settings/settings.service';
+import { TrackingMoreService } from '../../tracking-more/tracking-more.service';
 import {
     DebugService,
     EventService,
@@ -272,10 +274,40 @@ export class ParcelLabTrackingService {
             tracking.email = shopifyFulfillment?.email || order?.email;
         }
 
+        // Tracking number found but no courier, try to get c
+        if (tracking.tracking_number && !tracking.courier) {
+            this.detectCourier(parcelLabSettings, tracking.tracking_number)
+        }
+
+        // Delete courier if we have not a tracking number
+        if (tracking.courier && !tracking.tracking_number) {
+            delete tracking.courier;
+        }
+
         return tracking as ParcellabOrder;
     }
 
+    /**
+     * Try to setect courier by tracking number
+     * @param tracking_number 
+     */
+    protected detectCourier(parcelLabSettings: ParcelLabSettings, trackingNumber: string | string[] | ParcellabTrackingNumberByCurriers) {
 
+        if (trackingNumber === 'string') {
+
+            // TODO custom code to try to detect the tracking number so that we do not need to uses TrackingMore?
+
+            // Use TrackingMore API to get the carrier 
+            if (parcelLabSettings.fallback_detect_carrier_by_tracking_more && parcelLabSettings.tracking_more_token) {
+                const trackingMore = new TrackingMoreService(parcelLabSettings.tracking_more_token);
+                const detectResult = trackingMore.detectCarrier(trackingNumber);
+                this.logger.log('[detectCarrier] detectResult: ', detectResult);
+            }
+        }
+
+
+        return undefined;
+    }
 
     protected async transformOrder(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder> {
 

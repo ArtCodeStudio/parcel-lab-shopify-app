@@ -61,7 +61,9 @@ export class SettingsService {
     }
 
     async deleteByShopDomain(shopDomain: string) {
-        const query = { 'shop_domain': shopDomain };
-        return this.settingsModel.deleteOne(query).exec();
+        const settings = await this.findByShopDomain(shopDomain);
+        if (settings) {
+            return this.settingsModel.deleteOne({"_id": settings._id}).exec();
+        }
     }
 }

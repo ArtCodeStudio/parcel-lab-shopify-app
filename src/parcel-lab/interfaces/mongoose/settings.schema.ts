@@ -17,4 +17,7 @@ export const ParcelLabSettingsSchema = new Schema({
         unique: true
     },
     prefer_checkout_shipping_method: Boolean,
+
+    fallback_detect_carrier_by_tracking_more: Boolean,
+    tracking_more_token: String,
 });

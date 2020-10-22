@@ -7,4 +7,7 @@ export interface ParcelLabSettings {
      * We recommend to leave this option disabled and to activate it only if there are problems with the courier sent to ParcelLab
      */
     prefer_checkout_shipping_method: boolean;
+
+    fallback_detect_carrier_by_tracking_more: boolean;
+    tracking_more_token: string
 }
