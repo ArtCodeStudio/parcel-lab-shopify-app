@@ -454,24 +454,38 @@ export class ParcelLabTrackingService {
         return product.image?.src;
     }
 
+    /**
+     * "DHL Express" -> "dhl-express"
+     * @param courier 
+     */
+    protected handleCourierName(courier?: string) {
+        if (typeof courier === 'string') {
+            courier = courier.trim().toLowerCase().replace(/\s/g,"-");
+        }
+        if (courier === 'other' || courier === 'any') {
+            courier = undefined;
+        }
+        return courier;
+    }
+
     protected async getCourier(parcelLabSettings: ParcelLabSettings, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment | null, order?: ParcellabOrder | null, shopifyOrder?: Partial<Interfaces.Order>, shopifyCheckout?: Partial<Interfaces.Checkout>) {
-        let courier = order?.courier || shopifyFulfillment?.tracking_company;
+        let courier = shopifyFulfillment?.tracking_company || order?.courier;
+        courier = this.handleCourierName(courier);
         // If this option is true we prefer the courier from the shipping method title the customer has selected in the checkout process otherwise this is just the fallback
-        if (parcelLabSettings.prefer_checkout_shipping_method) {
-            const courierFromShippingMethod = this.transformCheckoutShippingToCourier(shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title)
-            courier = courierFromShippingMethod || courier;
+        if (parcelLabSettings.prefer_checkout_shipping_method || !courier) {
+            courier = this.transformCheckoutShippingToCourier(shopifyCheckout?.shipping_line?.title || shopifyCheckout?.shipping_rate?.title, courier);
         }
         
         return courier;
     }
 
-    protected transformCheckoutShippingToCourier(shippingMethodTitle?: string) {
+    protected transformCheckoutShippingToCourier(shippingMethodTitle: string, fallbackName?: string) {
         let courier: string | undefined;
         if (!shippingMethodTitle) {
-            courier = undefined;
+            courier = fallbackName;
             return courier;
         }
-        courier = shippingMethodTitle.trim().toLowerCase().replace(/\s/g,"-");
+        courier = this.handleCourierName(shippingMethodTitle);
 
         const search = [
             {
@@ -507,7 +521,7 @@ export class ParcelLabTrackingService {
                 corresponds: 'wn-direct'
             },
             {
-                includes: ['colis', 'priv'],
+                includes: ['colis', 'priv'], // Colis Privé
                 corresponds: 'colisprivee'
             },
             {
@@ -580,7 +594,7 @@ export class ParcelLabTrackingService {
             }
         }
         
-        return undefined;
+        return fallbackName;
     }
 
 }
