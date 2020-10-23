@@ -411,8 +411,21 @@ export class ParcelLabTrackingService {
         return null;
     }
 
-    protected getName(shopifyOrder: Partial<Interfaces.Order>) {
-        return shopifyOrder.customer?.name || (shopifyOrder.customer?.first_name + ' ' + shopifyOrder.customer?.last_name);
+    protected getName(shopifyOrder: Partial<Interfaces.Order>): string | undefined {
+        if (shopifyOrder.customer?.name) {
+            return shopifyOrder.customer?.name
+        }
+        
+        if (shopifyOrder.customer?.first_name || shopifyOrder.customer?.last_name) {
+            if (shopifyOrder.customer?.first_name && shopifyOrder.customer?.last_name) {
+                return shopifyOrder.customer?.first_name + ' ' + shopifyOrder.customer?.last_name;
+            } else if (shopifyOrder.customer?.first_name) {
+                return shopifyOrder.customer?.first_name;
+            } else if (shopifyOrder.customer?.last_name) {
+                return shopifyOrder.customer?.last_name;
+            }
+        }
+        return undefined;
     }
 
     protected async getShopifyAuth(domain: string) {
