@@ -494,7 +494,7 @@ export class ParcelLabTrackingService {
         if (typeof courier === 'string') {
             courier = courier.trim().toLowerCase().replace(/\s/g,"-");
         }
-        if (courier === 'other' || courier === 'any') {
+        if (courier === 'other' || courier === 'any' || courier === 'std') {
             courier = undefined;
         }
         return courier;

@@ -9,6 +9,7 @@ import { ShopifyModule, ShopifyModuleOptions } from 'nest-shopify';
 import { Mongoose } from 'mongoose';
 import { PassportStatic } from 'passport';
 import { ParcelLabModule } from './parcel-lab/parcel-lab.module';
+import { CourierDetectorService } from './courier-detector/courier-detector.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { ParcelLabModule } from './parcel-lab/parcel-lab.module';
     TypeOrmModule.forRoot(),
   ],
   controllers: [ViewController],
-  providers: [ViewService],
+  providers: [ViewService, CourierDetectorService],
 })
 
 export class AppModule {

@@ -11,6 +11,10 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "src/typings"
+    ]
   },
   "exclude": ["node_modules", "frontend", "dist"]
 }
