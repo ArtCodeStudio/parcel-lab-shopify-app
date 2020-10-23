@@ -281,6 +281,11 @@ export class ParcelLabTrackingService {
             tracking.courier = courier || tracking.courier
         }
 
+        // Delete courier property if we do not have a tracking number
+        if (!tracking.tracking_number) {
+            delete tracking.courier;
+        }
+
         return tracking as ParcellabOrder;
     }
 
