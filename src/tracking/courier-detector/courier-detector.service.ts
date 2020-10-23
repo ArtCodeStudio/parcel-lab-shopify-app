@@ -64,6 +64,7 @@ export class CourierDetectorService {
 
         /**
          * 16 numeric digits (0000 0000 0000 0000) AND 13 numeric and alphabetic characters (AA 000 000 000 AA).
+         * TODO check key name
          */
         'post-ca': {
             code: 'post-ca',

@@ -498,21 +498,23 @@ export class ParcelLabTrackingService {
                 console.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`, detectedCourier);
             }
         } else {
-            console.warn(`[validateCourier] Can't validate courier "${courier}" for for tracking number "${trackingNumber}", use tracking more as fallback.`);
+            console.warn(`[validateCourier] Can't validate courier "${courier}" for for tracking number "${trackingNumber}"`);
 
             // Use TrackingMore API to get the carrier 
             if (parcelLabSettings.fallback_detect_carrier_by_tracking_more && parcelLabSettings.tracking_more_token) {
-                try {
-                    const trackingMore = new TrackingMoreService(parcelLabSettings.tracking_more_token);
-                    const detectResult = await trackingMore.detectCarrier(trackingNumber);
-                    if (detectResult.meta.code === 200 && detectResult.data?.length > 0 && detectResult.data[0].code) {
-                        detectedCourier = detectResult.data[0].code;
+                // Only use tracking more if we have no courier to keep the number of requests small
+                if (!courier) {
+                    try {
+                        const trackingMore = new TrackingMoreService(parcelLabSettings.tracking_more_token);
+                        const detectResult = await trackingMore.detectCarrier(trackingNumber);
+                        if (detectResult.meta.code === 200 && detectResult.data?.length > 0 && detectResult.data[0].code) {
+                            detectedCourier = detectResult.data[0].code;
+                        }
+                        this.logger.log(`[validateCourier] Detected courier from tracking more: "${detectedCourier}"`, detectResult);
+                    } catch (error) {
+                        console.error(error);
                     }
-                    this.logger.log(`[validateCourier] Detected courier from tracking more: "${detectedCourier}"`, detectResult);
-                } catch (error) {
-                    console.error(error);
                 }
-
             }
         }
 
