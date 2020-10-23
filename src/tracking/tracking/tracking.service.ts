@@ -4,11 +4,11 @@ import {
     ParcellabOrder,
     ParcellabArticle,
     ParcellabSearchResponse,
-    ParcellabTrackingNumberByCurriers,
 } from 'parcellab';
 import { ParcelLabSettings } from '../interfaces'
 import { SettingsService } from '../settings/settings.service';
-import { TrackingMoreService } from '../../tracking-more/tracking-more.service';
+import { CourierDetectorService } from '../courier-detector/courier-detector.service';
+import { TrackingMoreService } from '../tracking-more/tracking-more.service';
 import {
     DebugService,
     EventService,
@@ -39,6 +39,7 @@ export class ParcelLabTrackingService {
         protected readonly shopifyEvents: EventService,
         protected readonly shopify: ShopifyConnectService,
         protected readonly parcelLabSettings: SettingsService,
+        protected readonly courierDetector: CourierDetectorService,
         protected readonly shop: ShopService,
         protected readonly product: ProductsService,
         protected readonly checkout: CheckoutsService,
@@ -274,39 +275,13 @@ export class ParcelLabTrackingService {
             tracking.email = shopifyFulfillment?.email || order?.email;
         }
 
-        // Tracking number found but no courier, try to get c
-        if (tracking.tracking_number && !tracking.courier) {
-            this.detectCourier(parcelLabSettings, tracking.tracking_number)
-        }
-
-        // Delete courier if we have not a tracking number
-        if (tracking.courier && !tracking.tracking_number) {
-            delete tracking.courier;
+        if (tracking.tracking_number && typeof tracking.tracking_number === 'string') {
+            const { courier, trackingNumber } = await this.validateCourier(parcelLabSettings, tracking.tracking_number, tracking.courier);
+            tracking.tracking_number = trackingNumber || tracking.tracking_number;
+            tracking.courier = courier || tracking.courier
         }
 
         return tracking as ParcellabOrder;
-    }
-
-    /**
-     * Try to setect courier by tracking number
-     * @param tracking_number 
-     */
-    protected detectCourier(parcelLabSettings: ParcelLabSettings, trackingNumber: string | string[] | ParcellabTrackingNumberByCurriers) {
-
-        if (trackingNumber === 'string') {
-
-            // TODO custom code to try to detect the tracking number so that we do not need to uses TrackingMore?
-
-            // Use TrackingMore API to get the carrier 
-            if (parcelLabSettings.fallback_detect_carrier_by_tracking_more && parcelLabSettings.tracking_more_token) {
-                const trackingMore = new TrackingMoreService(parcelLabSettings.tracking_more_token);
-                const detectResult = trackingMore.detectCarrier(trackingNumber);
-                this.logger.log('[detectCarrier] detectResult: ', detectResult);
-            }
-        }
-
-
-        return undefined;
     }
 
     protected async transformOrder(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder> {
@@ -511,6 +486,37 @@ export class ParcelLabTrackingService {
             courier = undefined;
         }
         return courier;
+    }
+
+    protected async validateCourier(parcelLabSettings: ParcelLabSettings, trackingNumber: string, courier?: string) {
+        if (!trackingNumber || typeof trackingNumber !== 'string') {
+            return { courier, trackingNumber }
+        }
+        let detectedCourier = await this.courierDetector.getCourier(trackingNumber);
+        if (detectedCourier) {
+            if (courier !== courier) {
+                console.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`, detectedCourier);
+            }
+        } else {
+            console.warn(`[validateCourier] Can't validate courier "${courier}" for for tracking number "${trackingNumber}", use tracking more as fallback.`);
+
+            // Use TrackingMore API to get the carrier 
+            if (parcelLabSettings.fallback_detect_carrier_by_tracking_more && parcelLabSettings.tracking_more_token) {
+                try {
+                    const trackingMore = new TrackingMoreService(parcelLabSettings.tracking_more_token);
+                    const detectResult = await trackingMore.detectCarrier(trackingNumber);
+                    if (detectResult.meta.code === 200 && detectResult.data?.length > 0 && detectResult.data[0].code) {
+                        detectedCourier = detectResult.data[0].code;
+                    }
+                    this.logger.log(`[validateCourier] Detected courier from tracking more: "${detectedCourier}"`, detectResult);
+                } catch (error) {
+                    console.error(error);
+                }
+
+            }
+        }
+
+        return { courier: detectedCourier || courier, trackingNumber }
     }
 
     protected async getCourier(parcelLabSettings: ParcelLabSettings, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment | null, order?: ParcellabOrder | null, shopifyOrder?: Partial<Interfaces.Order>, shopifyCheckout?: Partial<Interfaces.Checkout>) {

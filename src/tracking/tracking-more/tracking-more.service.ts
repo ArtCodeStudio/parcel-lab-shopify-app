@@ -1,7 +1,6 @@
 import got from 'got';
-// import { parse as parseUrl } from 'url';
 import { stringify as QueryString } from 'querystring';
-
+import { TrackingMoreCourierDetectResponse } from './interfaces';
 
 export class TrackingMoreService {
 
@@ -16,7 +15,7 @@ export class TrackingMoreService {
      * Detect carrier by tracking number
      * @param tracking_number 
      */
-    public async detectCarrier(tracking_number: string) {
+    public async detectCarrier(tracking_number: string): Promise<TrackingMoreCourierDetectResponse> {
         return this.post('https://api.trackingmore.com/v2/carriers/detect', { tracking_number }, this.token);
     }
 

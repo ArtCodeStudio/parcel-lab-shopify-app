@@ -49,7 +49,7 @@ const app: ConfigApp = {
  */
 const session = {
   store: new RedisStore({
-    client: new Redis(redis.url, { keyPrefix: app.host }),
+    client: new Redis(redis.url, { keyPrefix: app.host }) as any, // TODO
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,

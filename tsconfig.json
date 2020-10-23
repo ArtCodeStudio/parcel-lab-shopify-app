@@ -13,7 +13,7 @@
     "incremental": true,
     "typeRoots": [
       "node_modules/@types",
-      "src/typings"
+      "src/tracking/typings"
     ]
   },
   "exclude": ["node_modules", "frontend", "dist"]

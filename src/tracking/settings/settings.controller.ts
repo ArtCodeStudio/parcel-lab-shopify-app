@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Res, Req, Session, Body, HttpStatus } from '@nestjs/common';
 import { Roles } from 'nest-shopify';
-import { SettingsService } from '../settings/settings.service';
+import { SettingsService } from './settings.service';
 import { ParcelLabSettings } from '../interfaces/settings';
 
 @Controller('parcel-lab/settings')
