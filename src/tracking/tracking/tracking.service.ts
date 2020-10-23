@@ -435,14 +435,14 @@ export class ParcelLabTrackingService {
 
     protected async getOrderData(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<ParcellabOrder | null> {
         if (!fulfillment.order_id) {
-            console.warn('getOrderData no order_id given!');
+            this.logger.warn('getOrderData no order_id given!');
             return null;
         }
         try {
             const order = await this.order.getFromShopify(shopifyAuth, fulfillment.order_id, { status: 'any' } as any); // By default archived orders are not found by the api
             return this.transformOrder(shopifyAuth, parcelLabSettings, order);
         } catch (error) {
-             this.logger.error(`Error on getOrderData with order_id ${ fulfillment.order_id } for shop ${shopifyAuth.myshopify_domain}`, error);
+            this.logger.error(`Error on getOrderData with order_id ${ fulfillment.order_id } for shop ${shopifyAuth.myshopify_domain}`, error);
             return null;
         }
     }
@@ -500,10 +500,10 @@ export class ParcelLabTrackingService {
         let detectedCourier = await this.courierDetector.getCourier(trackingNumber);
         if (detectedCourier) {
             if (courier !== courier) {
-                console.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`, detectedCourier);
+                this.logger.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`, detectedCourier);
             }
         } else {
-            console.warn(`[validateCourier] Can't validate courier "${courier}" for for tracking number "${trackingNumber}"`);
+            this.logger.warn(`[validateCourier] Can't validate courier "${courier}" for for tracking number "${trackingNumber}"`);
 
             // Use TrackingMore API to get the carrier 
             if (parcelLabSettings.fallback_detect_carrier_by_tracking_more && parcelLabSettings.tracking_more_token) {
@@ -515,9 +515,9 @@ export class ParcelLabTrackingService {
                         if (detectResult.meta.code === 200 && detectResult.data?.length > 0 && detectResult.data[0].code) {
                             detectedCourier = detectResult.data[0].code;
                         }
-                        this.logger.log(`[validateCourier] Detected courier from tracking more: "${detectedCourier}"`, detectResult);
+                        this.logger.debug(`[validateCourier] Detected courier from tracking more: "${detectedCourier}"`, detectResult);
                     } catch (error) {
-                        console.error(error);
+                        this.logger.error(error);
                     }
                 }
             }
