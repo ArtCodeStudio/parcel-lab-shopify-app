@@ -22,6 +22,10 @@ import {
     ShopifyModuleOptions,
     CheckoutsService,
 } from 'nest-shopify';
+import { resolve } from 'path';
+
+// Options TODO make this configurable?
+const PREFER_SKU = true;
 
 type AnyWebhookOrder = Interfaces.WebhooksReponse.WebhookOrdersFulfilled | Interfaces.WebhooksReponse.WebhookOrdersPaid | Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled | Interfaces.WebhooksReponse.WebhookOrdersUpdated | Interfaces.WebhooksReponse.WebhookOrdersCreate;
 
@@ -212,7 +216,7 @@ export class ParcelLabTrackingService {
         const trackingResults: string[] = [];
         if (shopifyOrder.fulfillments && shopifyOrder.fulfillments.length > 0) {
             for (const shopifyFulfillment of shopifyOrder.fulfillments) {
-                const tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment, order);
+                const tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment, shopifyOrder, order);
                 const trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 trackingResults.push(...trackingResult);
             }
@@ -227,10 +231,14 @@ export class ParcelLabTrackingService {
      * @param shopifyFulfillment 
      * @param order Currently only used in updateOrCreateOrder because we already have the order object there and do not need to fetch in again
      */
-    protected async transformTracking(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ): Promise<ParcellabOrder> {
+    protected async transformTracking(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, shopifyOrder?: Partial<Interfaces.Order>, order?: ParcellabOrder ): Promise<ParcellabOrder> {
+
+        if (!shopifyOrder) {
+            shopifyOrder = await this.getShopifyOrder(shopifyAuth, shopifyFulfillment);
+        }
         
-        if (!order) {
-            order = await this.getOrderData(shopifyAuth, parcelLabSettings, shopifyFulfillment) || undefined;
+        if (!order && shopifyOrder) {
+            order = await this.getOrderData(shopifyAuth, parcelLabSettings, shopifyFulfillment, shopifyOrder) || undefined;
         }
 
         /**
@@ -245,8 +253,8 @@ export class ParcelLabTrackingService {
          */
         const tracking: Partial<ParcellabOrder> = {
             ...(order || {}),
-            articles: await this.transformLineItems(shopifyAuth, shopifyFulfillment.line_items),
-            branchDelivery: shopifyFulfillment.tracking_numbers?.length > 1, // TODO checkm,
+            articles: await this.transformLineItems(shopifyAuth, shopifyOrder, shopifyFulfillment.line_items),
+            branchDelivery: false, // TODO set this true of this is a store / branch delivery (Filiallieferung)
             courier: await this.getCourier(parcelLabSettings, shopifyFulfillment, order),
             client: await this.getClient(shopifyAuth) || order?.client,
             cancelled: shopifyFulfillment.status === 'cancelled' || order?.cancelled,
@@ -312,7 +320,7 @@ export class ParcelLabTrackingService {
          * * tracking_number
          */
         const order: ParcellabOrder = {
-            articles: await this.transformLineItems(shopifyAuth, shopifyOrder.line_items),
+            articles: await this.transformLineItems(shopifyAuth, shopifyOrder, shopifyOrder.line_items),
             courier: await this.getCourier(parcelLabSettings, null, null, shopifyOrder, shopifyCheckout),
             city: shopifyOrder?.shipping_address?.city,
             client: await this.getClient(shopifyAuth),
@@ -347,15 +355,15 @@ export class ParcelLabTrackingService {
         return order;
     }
 
-    protected async transformLineItems(shopifyAuth: IShopifyConnect, lineItems: Interfaces.DraftOrder['line_items'] | Interfaces.Order['line_items'] = []): Promise<ParcellabArticle[]> {
+    protected async transformLineItems(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>, lineItems: Interfaces.DraftOrder['line_items'] | Interfaces.Order['line_items'] = []): Promise<ParcellabArticle[]> {
         const articles: ParcellabArticle[] = [];
         for (const lineItem of lineItems) {
             const article: ParcellabArticle = {
                 articleName: lineItem.title + ' ' + lineItem.variant_title,
-                articleNo: lineItem.variant_id?.toString(),
+                articleNo: await this.getArticleNo(lineItem),
                 quantity: lineItem.quantity,
             };
-            const { articleNo, articleCategory, articleImageUrl, articleUrl } = await this.getProductData(shopifyAuth, lineItem);
+            const { articleNo, articleCategory, articleImageUrl, articleUrl } = await this.getProductData(shopifyAuth, shopifyOrder, lineItem);
             
             article.articleNo = articleNo || article.articleNo;
             article.articleCategory = articleCategory;
@@ -364,6 +372,47 @@ export class ParcelLabTrackingService {
             articles.push(article);
         }
         return articles;
+    }
+
+    protected async getArticleUrl(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>, product: Partial<Interfaces.Product>): Promise<string> {
+        const domain = await this.getShopDomain(shopifyAuth, shopifyOrder);
+        return resolve(domain, 'products', product.handle);
+    }
+
+    protected async getShopDomain(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>): Promise<string> {
+        return this.getShopDomainFromNoteAttributes(shopifyOrder) || shopifyAuth.shop.domain;
+    }
+
+    /**
+     * Special case (for a private client) if the real domain was passed via additional note attributes 
+     * @param shopifyOrder 
+     */
+    protected getShopDomainFromNoteAttributes(shopifyOrder: Partial<Interfaces.Order>) {
+        if (!shopifyOrder.note_attributes) {
+            return null;
+        }
+        for (const noteAttribute of shopifyOrder.note_attributes) {
+            if(noteAttribute.name === 'domain') {
+                return noteAttribute.value?.toString();
+            }
+        }
+        return null;
+    }
+
+    protected async getArticleNo(lineItem: Interfaces.DraftLineItem | Interfaces.LineItem | Interfaces.ProductVariant): Promise<string> {
+        if (PREFER_SKU && lineItem.sku) {
+            return lineItem.sku;
+        }
+        if ((lineItem as Interfaces.ProductVariant).barcode) {
+            return (lineItem as Interfaces.ProductVariant).barcode;
+        }
+        if ((lineItem as Interfaces.LineItem).variant_id) {
+            return (lineItem as Interfaces.LineItem).variant_id.toString();
+        }
+        if (lineItem.product_id) {
+            return lineItem.product_id.toString();
+        }
+        return lineItem.id.toString();
     }
 
     protected async getClient(shopifyAuth: IShopifyConnect) {
@@ -376,7 +425,7 @@ export class ParcelLabTrackingService {
     }
 
     /**
-     * Special case if the locale code was passed via additional note attributes 
+     * Special case (for a private client) if the locale code was passed via additional note attributes 
      * @param shopifyOrder 
      */
     protected getLocalCodeFromNoteAttributes(shopifyOrder: Partial<Interfaces.Order>) {
@@ -412,20 +461,20 @@ export class ParcelLabTrackingService {
         return this.shopify.findByDomain(domain)
     }
 
-    protected async getProductData(shopifyAuth: IShopifyConnect, lineItem: Interfaces.LineItem): Promise<{articleNo?: string; articleCategory?: string; articleImageUrl?: string; articleUrl?: string}> {
+    protected async getProductData(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>, lineItem: Interfaces.LineItem): Promise<{articleNo?: string; articleCategory?: string; articleImageUrl?: string; articleUrl?: string}> {
         try {
             const product = await this.product.getFromShopify(shopifyAuth, lineItem.product_id);
             const variant = await this.getVariant(product, lineItem.variant_id);
             return {
-                articleNo: variant.barcode || lineItem.variant_id?.toString(), // TODO make configurable what the articleNo should be
+                articleNo: await this.getArticleNo(variant || lineItem), // TODO make configurable what the articleNo should be
                 articleCategory: undefined, // TODO how can we get the collections of a product?
                 articleImageUrl: this.getProductImageSource(product, lineItem.variant_id),
-                articleUrl: shopifyAuth.shop.domain + '/products/' + product.handle,
+                articleUrl: await this.getArticleUrl(shopifyAuth, shopifyOrder, product),
             }
         } catch (error) {
-             this.logger.error('getProductData', error);
+            this.logger.error('getProductData', error);
             return {
-                articleNo: lineItem.variant_id?.toString(),
+                articleNo: await this.getArticleNo(lineItem),
                 articleCategory: undefined,
                 articleImageUrl: undefined,
                 articleUrl: undefined,
@@ -433,14 +482,28 @@ export class ParcelLabTrackingService {
         }
     }
 
-    protected async getOrderData(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<ParcellabOrder | null> {
+    protected async getShopifyOrder(shopifyAuth: IShopifyConnect, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<Partial<Interfaces.Order> | null> {
         if (!fulfillment.order_id) {
             this.logger.warn('getOrderData no order_id given!');
             return null;
         }
         try {
-            const order = await this.order.getFromShopify(shopifyAuth, fulfillment.order_id, { status: 'any' } as any); // By default archived orders are not found by the api
-            return this.transformOrder(shopifyAuth, parcelLabSettings, order);
+            const shopifyOrder = await this.order.getFromShopify(shopifyAuth, fulfillment.order_id, { status: 'any' } as any); // By default archived orders are not found by the api
+            return shopifyOrder;
+        } catch (error) {
+            this.logger.error(`Error on getOrderData with order_id ${ fulfillment.order_id } for shop ${shopifyAuth.myshopify_domain}`, error);
+            return null;
+        }
+    }
+
+    protected async getOrderData(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder | null> {
+        if (!fulfillment.order_id) {
+            this.logger.warn('getOrderData no order_id given!');
+            return null;
+        }
+        try {
+            
+            return this.transformOrder(shopifyAuth, parcelLabSettings, shopifyOrder);
         } catch (error) {
             this.logger.error(`Error on getOrderData with order_id ${ fulfillment.order_id } for shop ${shopifyAuth.myshopify_domain}`, error);
             return null;
