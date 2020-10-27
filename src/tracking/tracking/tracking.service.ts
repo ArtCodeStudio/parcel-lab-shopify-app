@@ -374,9 +374,9 @@ export class ParcelLabTrackingService {
         return articles;
     }
 
-    protected async getArticleUrl(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>, product: Partial<Interfaces.Product>): Promise<string> {
+    protected async getArticleUrl(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>, product: Partial<Interfaces.Product>, prepend = 'https://'): Promise<string> {
         const domain = await this.getShopDomain(shopifyAuth, shopifyOrder);
-        return resolve(domain, 'products', product.handle);
+        return prepend + domain + '/products/' + product.handle;
     }
 
     protected async getShopDomain(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>): Promise<string> {
