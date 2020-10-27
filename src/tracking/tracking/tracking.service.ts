@@ -376,7 +376,11 @@ export class ParcelLabTrackingService {
 
     protected async getArticleUrl(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>, product: Partial<Interfaces.Product>, prepend = 'https://'): Promise<string> {
         const domain = await this.getShopDomain(shopifyAuth, shopifyOrder);
-        return prepend + domain + '/products/' + product.handle;
+        let url = domain + '/products/' + product.handle;
+        if (!url.startsWith('http')) {
+            url = prepend + url;
+        }
+        return url;
     }
 
     protected async getShopDomain(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>): Promise<string> {
