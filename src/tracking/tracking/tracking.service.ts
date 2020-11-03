@@ -565,7 +565,7 @@ export class ParcelLabTrackingService {
         }
         let detectedCourier = this.courierDetector.getCourier(trackingNumber);
         if (detectedCourier) {
-            if (courier !== courier) {
+            if (courier !== detectedCourier) {
                 this.logger.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`);
             }
         } else {
