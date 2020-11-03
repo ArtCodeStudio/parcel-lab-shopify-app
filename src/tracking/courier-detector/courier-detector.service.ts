@@ -17,6 +17,7 @@ export class CourierDetectorService {
     couriers: CourierList = {
         /**
          * UPS tracking numbers usually begin with "1Z", contain 18 characters, and do not contain the letters "O", "I", or "Q".
+         * E.g. 1Z0370A00400378664
          */
         ups: {
             code: 'ups',
@@ -102,28 +103,36 @@ export class CourierDetectorService {
 
     }
 
-    async getCouriers(trackNum: string) {
-        return Object.keys(this.couriers).filter(courier => this.couriers[courier].patterns.filter(pattern => pattern.test(trackNum)).length > 0);
+    getCouriers(trackNum: string) {
+        const couriers = Object.keys(this.couriers);
+        const matches = couriers.filter(courier => {
+            return this.couriers[courier].patterns.filter(pattern => {
+                const match = pattern.test(trackNum);
+                return match;
+            }).length > 0
+        });
+        return matches;
     }
 
-    async getCourier(trackNum: string): Promise<string> {
-        return this.getCouriers(trackNum)[0];
+    getCourier(trackNum: string) {
+        const couriers = this.getCouriers(trackNum);
+        return couriers[0];
     }
 
-    async isCourier(trackNum: string, courier: string) {
+    isCourier(trackNum: string, courier: string) {
         courier = courier.toLowerCase();
-        const courierObj = await this.getCouriers(trackNum)
+        const courierObj = this.getCouriers(trackNum)
         return courierObj.indexOf(courier) > -1;
     }
 
-    async getTrackingUrl(trackNum: string, courier: string) {
+    getTrackingUrl(trackNum: string, courier: string) {
         courier = courier.toLowerCase();
         return courier
         ? this.couriers[courier] && this.couriers[courier].tracking_url(trackNum)
         : this.couriers[this.getCouriers(trackNum)[0]].tracking_url(trackNum);
     }
 
-    async injectPatterns(courier: string, patt: RegExp | string) {
+    injectPatterns(courier: string, patt: RegExp | string) {
         courier = courier.toLowerCase();
         return !courier || !this.couriers[courier]
             ? false
@@ -132,8 +141,8 @@ export class CourierDetectorService {
             .push(new RegExp(patt));
     }
 
-    async isKnown(trackNum: string) {
-        const courierObj = await this.getCouriers(trackNum);
+    isKnown(trackNum: string) {
+        const courierObj = this.getCouriers(trackNum);
         return courierObj.length > 0;
     }
 }

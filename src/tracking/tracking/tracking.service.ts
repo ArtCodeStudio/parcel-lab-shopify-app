@@ -563,7 +563,7 @@ export class ParcelLabTrackingService {
         if (!trackingNumber || typeof trackingNumber !== 'string') {
             return { courier, trackingNumber }
         }
-        let detectedCourier = await this.courierDetector.getCourier(trackingNumber);
+        let detectedCourier = this.courierDetector.getCourier(trackingNumber);
         if (detectedCourier) {
             if (courier !== courier) {
                 this.logger.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`);
