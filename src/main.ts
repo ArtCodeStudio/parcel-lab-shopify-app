@@ -27,13 +27,13 @@ async function bootstrap() {
     bodyParser: false,
   };
 
-  // https://github.com/Automattic/mongoose/issues/6890
-  mongoose.set('useCreateIndex', true);
-  mongoose.set('useNewUrlParser', true);
-  mongoose.set('useUnifiedTopology', true);
-  mongoose.set('useFindAndModify', false);
-
-  const mongooseConnection: typeof mongoose = await mongoose.connect(conf.mongodb.url);
+  let mongooseConnection: typeof mongoose;
+  try {
+    mongooseConnection = await mongoose.connect(conf.mongodb.url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
+  } catch (error) {
+    throw new Error(error);
+  }
+  
 
   // const expressServer = express();
   const app = await NestFactory.create<NestExpressApplication>(
