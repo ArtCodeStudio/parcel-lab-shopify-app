@@ -22,7 +22,6 @@ import {
     ShopifyModuleOptions,
     CheckoutsService,
 } from 'nest-shopify';
-import { resolve } from 'path';
 
 // Options TODO make this configurable?
 const PREFER_SKU = true;
@@ -567,7 +566,7 @@ export class ParcelLabTrackingService {
         let detectedCourier = await this.courierDetector.getCourier(trackingNumber);
         if (detectedCourier) {
             if (courier !== courier) {
-                this.logger.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`, detectedCourier);
+                this.logger.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`);
             }
         } else {
             this.logger.warn(`[validateCourier] Can't validate courier "${courier}" for for tracking number "${trackingNumber}"`);

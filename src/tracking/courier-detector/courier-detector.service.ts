@@ -45,12 +45,21 @@ export class CourierDetectorService {
         },
 
         /**
-         * DHL tracking numbers are normally 10 or 11 digits long and do not contain letters.
+         * DHL Espress / International tracking numbers are normally 10 or 11 digits long and do not contain letters.
          */
         dhl: {
             code: 'dhl',
             patterns: [new RegExp(/\b(\d{4}[- ]?\d{4}[- ]?\d{2}|\d{3}[- ]?\d{8}|[A-Z]{3}\d{7})\b/i)],
             tracking_url: (trackNum: string) => `http://www.dhl.com/en/express/tracking.html?AWB=${trackNum}&brand=DHL`
+        },
+
+        /**
+         * Starts with 2 numbers, following by 9 numeric digits and ends with DE (CR236025058DE)
+         */
+        'dhl-germany': {
+            code: 'dhl-germany',
+            patterns: [new RegExp('^[A-Z]{2}[0-9]{9}DE$')],
+            tracking_url: (trackNum: string) => `https://www.dhl.de/de/privatkunden/dhl-sendungsverfolgung.html?piececode=${trackNum}`
         },
 
         /**
@@ -71,6 +80,26 @@ export class CourierDetectorService {
             patterns: [new RegExp('^[0-9]{16}$|^[A-Z]{2}[0-9]{9}[A-Z]{2}$')],
             tracking_url: (trackNum: string) => `https://www.canadapost.ca/trackweb/en#/search?searchFor=${trackNum}`
         },
+
+        /**
+         * Starts with Z and ends with 16 numeric digits. The last 5 numeric digits are the zip code (Z6100130652673000)
+         */
+        'colisprivee': {
+            code: 'colisprivee',
+            patterns: [new RegExp('^Z[0-9]{16}$')],
+            tracking_url: (trackNum: string) => `https://www.colisprive.com/moncolis/pages/detailColis.aspx?numColis=${trackNum}`
+        },
+
+        /**
+         * Starts with H and ends with 19 numbers (H1000730000824301047)
+         */
+        'hermes': {
+            code: 'hermes',
+            patterns: [new RegExp('^H[0-9]{19}$')],
+            tracking_url: (trackNum: string) => `https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation/#${trackNum}`
+        }
+
+
     }
 
     async getCouriers(trackNum: string) {
