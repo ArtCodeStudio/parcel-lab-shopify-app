@@ -22,6 +22,11 @@ describe('CourierDetectorService', () => {
     expect(courier).toBe("hermes");
   });
 
+  it('"H1000730000172901032" should be detected as "hermes"', () => {
+    const courier = service.getCourier("H1000730000172901032");
+    expect(courier).toBe("hermes");
+  });
+  
   // colisprivee
   it('"Z6100130652673000" should be detected as "colisprivee"', () => {
     const courier = service.getCourier("Z6100130652673000");
@@ -54,5 +59,24 @@ describe('CourierDetectorService', () => {
     const courier = service.getCourier("09445440528213M");
     expect(courier).toBe("dpd");
   });
+
+  it('"094454405280792" should be detected as "dpd"', () => {
+    const courier = service.getCourier("094454405280792");
+    expect(courier).toBe("dpd");
+  });
   
+  // ups
+  it('"1Z0370A00400378806" should be detected as "ups"', () => {
+    const courier = service.getCourier("1Z0370A00400378806");
+    expect(courier).toBe("ups");
+  });
+
+  // colisprivee
+  it('"Z6100126949933320" should be detected as "colisprivee"', () => {
+    const courier = service.getCourier("Z6100126949933320");
+    expect(courier).toBe("colisprivee");
+  });
+
 });
+
+

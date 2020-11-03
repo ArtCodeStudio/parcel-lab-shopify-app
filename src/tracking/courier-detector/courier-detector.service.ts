@@ -65,6 +65,16 @@ export class CourierDetectorService {
         },
 
         /**
+         * Starts with 09 following by 12 more numeric digits and ends with a alphabetic character or a numeric digit (09445440528278N)
+         * WARNING fedex can also have 15 numeric digits!
+         */
+        dpd: {
+            code: 'dpd',
+            patterns: [new RegExp('^09[0-9]{12}[A-Z0-9]{1}$')],
+            tracking_url: (trackNum: string) => `https://tracking.dpd.de/status/de_DE/parcel/${trackNum}`
+        },
+
+        /**
          * FedEx Express tracking numbers are normally 12 digits long and do not contain letters AND FedEx Ground tracking numbers are normally 15 digits long and do not contain letters.
          */
         fedex: {
@@ -99,15 +109,6 @@ export class CourierDetectorService {
             code: 'hermes',
             patterns: [new RegExp('^H[0-9]{19}$')],
             tracking_url: (trackNum: string) => `https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation/#${trackNum}`
-        },
-
-        /**
-         * Starts with 14 numeric digits and ends with a alphabetic character (09445440528278N)
-         */
-        dpd: {
-            code: 'dpd',
-            patterns: [new RegExp('^[0-9]{14}[A-Z]{1}$')],
-            tracking_url: (trackNum: string) => `https://tracking.dpd.de/status/de_DE/parcel/${trackNum}`
         },
 
     }
