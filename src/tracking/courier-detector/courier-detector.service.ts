@@ -56,10 +56,11 @@ export class CourierDetectorService {
 
         /**
          * Starts with 2 numbers, following by 9 numeric digits and ends with DE (CR236025058DE)
+         * Or 20 numeric digits (00340434463400054439)
          */
         'dhl-germany': {
             code: 'dhl-germany',
-            patterns: [new RegExp('^[A-Z]{2}[0-9]{9}DE$')],
+            patterns: [new RegExp('^[A-Z]{2}[0-9]{9}DE$'), new RegExp('^[0-9]{20}$')],
             tracking_url: (trackNum: string) => `https://www.dhl.de/de/privatkunden/dhl-sendungsverfolgung.html?piececode=${trackNum}`
         },
 
@@ -85,21 +86,29 @@ export class CourierDetectorService {
         /**
          * Starts with Z and ends with 16 numeric digits. The last 5 numeric digits are the zip code (Z6100130652673000)
          */
-        'colisprivee': {
+        colisprivee: {
             code: 'colisprivee',
             patterns: [new RegExp('^Z[0-9]{16}$')],
             tracking_url: (trackNum: string) => `https://www.colisprive.com/moncolis/pages/detailColis.aspx?numColis=${trackNum}`
         },
 
         /**
-         * Starts with H and ends with 19 numbers (H1000730000824301047)
+         * Starts with H and ends with 19 numeric digits (H1000730000824301047)
          */
-        'hermes': {
+        hermes: {
             code: 'hermes',
             patterns: [new RegExp('^H[0-9]{19}$')],
             tracking_url: (trackNum: string) => `https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation/#${trackNum}`
-        }
+        },
 
+        /**
+         * Starts with 14 numeric digits and ends with a alphabetic character (09445440528278N)
+         */
+        dpd: {
+            code: 'dpd',
+            patterns: [new RegExp('^[0-9]{14}[A-Z]{1}$')],
+            tracking_url: (trackNum: string) => `https://tracking.dpd.de/status/de_DE/parcel/${trackNum}`
+        },
 
     }
 
