@@ -7,7 +7,6 @@ import {
 } from 'parcellab';
 import { ParcelLabSettings } from '../interfaces'
 import { SettingsService } from '../settings/settings.service';
-import { CourierDetectorService } from '../courier-detector/courier-detector.service';
 import { TrackingMoreService } from '../tracking-more/tracking-more.service';
 import {
     DebugService,
@@ -42,7 +41,6 @@ export class ParcelLabTrackingService {
         protected readonly shopifyEvents: EventService,
         protected readonly shopify: ShopifyConnectService,
         protected readonly parcelLabSettings: SettingsService,
-        protected readonly courierDetector: CourierDetectorService,
         protected readonly shop: ShopService,
         protected readonly product: ProductsService,
         protected readonly checkout: CheckoutsService,
@@ -559,37 +557,31 @@ export class ParcelLabTrackingService {
         return courier;
     }
 
-    protected async validateCourier(parcelLabSettings: ParcelLabSettings, trackingNumber: string, courier?: string) {
+    protected async validateCourier(parcelLabSettings: ParcelLabSettings, trackingNumber?: string, courier?: string) {
         if (!trackingNumber || typeof trackingNumber !== 'string') {
             return { courier, trackingNumber }
         }
-        let detectedCourier = this.courierDetector.getCourier(trackingNumber);
-        if (detectedCourier) {
-            if (courier !== detectedCourier) {
-                this.logger.warn(`[validateCourier] Wrong courier "${courier}" (detected: "${detectedCourier}") for tracking number "${trackingNumber}" found!`);
-            }
-        } else {
-            this.logger.warn(`[validateCourier] Can't validate courier "${courier}" for for tracking number "${trackingNumber}"`);
 
-            // Use TrackingMore API to get the carrier 
-            if (parcelLabSettings.fallback_detect_carrier_by_tracking_more && parcelLabSettings.tracking_more_token) {
-                // Only use tracking more if we have no courier to keep the number of requests small
-                if (!courier) {
-                    try {
-                        const trackingMore = new TrackingMoreService(parcelLabSettings.tracking_more_token);
-                        const detectResult = await trackingMore.detectCarrier(trackingNumber);
-                        if (detectResult.meta.code === 200 && detectResult.data?.length > 0 && detectResult.data[0].code) {
-                            detectedCourier = detectResult.data[0].code;
-                        }
-                        this.logger.debug(`[validateCourier] Detected courier from tracking more: "${detectedCourier}"`, detectResult);
-                    } catch (error) {
-                        this.logger.error(error);
+        let detectedCourier: string;
+
+        // Use TrackingMore API to get the carrier 
+        if (parcelLabSettings.fallback_detect_carrier_by_tracking_more && parcelLabSettings.tracking_more_token) {
+            // Only use tracking more if we have no courier to keep the number of requests small
+            if (!courier) {
+                try {
+                    const trackingMore = new TrackingMoreService(parcelLabSettings.tracking_more_token);
+                    const detectResult = await trackingMore.detectCarrier(trackingNumber);
+                    if (detectResult.meta.code === 200 && detectResult.data?.length > 0 && detectResult.data[0].code) {
+                        detectedCourier = detectResult.data[0].code;
                     }
+                    this.logger.debug(`[validateCourier] Detected courier from tracking more: "${detectedCourier}"`, detectResult);
+                } catch (error) {
+                    this.logger.error(error);
                 }
             }
         }
 
-        return { courier: detectedCourier || courier, trackingNumber }
+        return { courier: (detectedCourier || courier), trackingNumber }
     }
 
     protected async getCourier(parcelLabSettings: ParcelLabSettings, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment | null, order?: ParcellabOrder | null, shopifyOrder?: Partial<Interfaces.Order>, shopifyCheckout?: Partial<Interfaces.Checkout>) {

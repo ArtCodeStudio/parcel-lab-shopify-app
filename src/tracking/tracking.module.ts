@@ -7,14 +7,12 @@ import { SettingsController } from './settings/settings.controller';
 import { SettingsService } from './settings/settings.service';
 import { ParcelLabSettingsModelProvider } from './settings/settings.model.provider';
 import { TrackingController } from './tracking/tracking.controller';
-import { CourierDetectorService } from './courier-detector/courier-detector.service';
 
 @Module({
   providers: [
     ParcelLabTrackingService,
     SettingsService,
     ParcelLabSettingsModelProvider,
-    CourierDetectorService,
   ],
   controllers: [SettingsController, TrackingController]
 })
