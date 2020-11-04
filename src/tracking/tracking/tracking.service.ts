@@ -287,7 +287,7 @@ export class ParcelLabTrackingService {
         }
 
         // Delete courier property if we do not have a tracking number
-        if (!tracking.tracking_number) {
+        if (!tracking.tracking_number || tracking.tracking_number.length === 0) {
             delete tracking.courier;
         }
 
@@ -318,7 +318,8 @@ export class ParcelLabTrackingService {
          */
         const order: ParcellabOrder = {
             articles: await this.transformLineItems(shopifyAuth, shopifyOrder, shopifyOrder.line_items),
-            courier: await this.getCourier(parcelLabSettings, null, null, shopifyOrder, shopifyCheckout),
+            // We do not track the courier until we have a tracking number
+            // courier: await this.getCourier(parcelLabSettings, null, null, shopifyOrder, shopifyCheckout),
             city: shopifyOrder?.shipping_address?.city,
             client: await this.getClient(shopifyAuth),
             orderNo: shopifyOrder.order_number?.toString(),
