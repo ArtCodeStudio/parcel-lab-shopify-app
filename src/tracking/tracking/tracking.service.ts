@@ -296,11 +296,10 @@ export class ParcelLabTrackingService {
 
     protected async transformOrder(shopifyAuth: IShopifyConnect, parcelLabSettings: ParcelLabSettings, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder> {
 
-        let shopifyCheckout: Partial<Interfaces.Checkout> | undefined | null;
-
-        if (shopifyOrder.checkout_token) {
-            shopifyCheckout = await this.getCheckout(shopifyAuth, shopifyOrder.checkout_token);
-        }
+        // let shopifyCheckout: Partial<Interfaces.Checkout> | undefined | null;
+        // if (shopifyOrder.checkout_token) {
+        //     shopifyCheckout = await this.getCheckout(shopifyAuth, shopifyOrder.checkout_token);
+        // }
 
         /**
          * TODO transform missing properties:
@@ -339,7 +338,7 @@ export class ParcelLabTrackingService {
             street: shopifyOrder.shipping_address?.address1,
             warehouse: shopifyOrder.location_id ? shopifyOrder.location_id?.toString() : undefined,
             weight: shopifyOrder.total_weight?.toString(),
-            xid: shopifyOrder.id?.toString(), // TODO CHECKME make this problems wich splits the orders in parcelLab?
+            xid: shopifyOrder.id?.toString(),
             zip_code: shopifyOrder.shipping_address?.zip,
             customFields: {
                 verified_email: shopifyOrder.customer?.verified_email,
@@ -347,6 +346,7 @@ export class ParcelLabTrackingService {
                 fulfillment_status: shopifyOrder.fulfillment_status,
                 financial_status: shopifyOrder.financial_status,
                 checkout_token: shopifyOrder.checkout_token,
+                cancelled_at: shopifyOrder.cancelled_at
             },
         };
 
