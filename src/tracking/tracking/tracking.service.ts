@@ -192,7 +192,12 @@ export class ParcelLabTrackingService {
         const api = new ParcelLabApi(settings.user, settings.token);
         let tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment);
         tracking = {...tracking, ...overwrite};
-        const result = await api.createOrUpdateOrder(tracking, this.testMode);
+        let result: string[] = [];
+        if (tracking.orderNo) {
+            result = await api.createOrUpdateOrder(tracking, this.testMode);
+        } else {
+            console.warn(`Order number is missing for order id "${tracking.customFields.order_id}".`);
+        }
         return result;
     }
 
@@ -207,14 +212,24 @@ export class ParcelLabTrackingService {
         let order = await this.transformOrder(shopifyAuth, settings, shopifyOrder);
 
         order = {...order, ...overwrite};
-        const orderResult = await api.createOrUpdateOrder(order, this.testMode);
+        let orderResult: string[] = [];
+        if (order.orderNo) {
+            orderResult = await api.createOrUpdateOrder(order, this.testMode);
+        } else {
+            console.warn(`Order number is missing for order id "${order.customFields.order_id}".`);
+        }
 
         // If the order has fulfillments we can create tracking of them and not only a order
         const trackingResults: string[] = [];
         if (shopifyOrder.fulfillments && shopifyOrder.fulfillments.length > 0) {
             for (const shopifyFulfillment of shopifyOrder.fulfillments) {
                 const tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment, shopifyOrder, order);
-                const trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
+                let trackingResult: string[] = [];
+                if (order.orderNo) {
+                    trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
+                } else {
+                    console.warn(`Order number is missing for order id "${order.customFields.order_id}".`);
+                }
                 trackingResults.push(...trackingResult);
             }
         }
@@ -271,7 +286,8 @@ export class ParcelLabTrackingService {
                 fulfillment_status: order?.customFields?.fulfillment_status || shopifyOrder.fulfillment_status,
                 financial_status: order?.customFields?.financial_status || shopifyOrder.financial_status,
                 checkout_token: order?.customFields?.checkout_token || shopifyOrder.checkout_token,
-                cancelled_at: order?.customFields?.cancelled_at || shopifyOrder.cancelled_at
+                cancelled_at: order?.customFields?.cancelled_at || shopifyOrder.cancelled_at,
+                order_id: order?.customFields?.order_id || shopifyOrder?.id,
             },
         }
 
@@ -358,7 +374,8 @@ export class ParcelLabTrackingService {
                 fulfillment_status: shopifyOrder?.fulfillment_status,
                 financial_status: shopifyOrder?.financial_status,
                 checkout_token: shopifyOrder?.checkout_token,
-                cancelled_at: shopifyOrder?.cancelled_at
+                cancelled_at: shopifyOrder?.cancelled_at,
+                order_id: shopifyOrder?.id,
             },
         };
 
