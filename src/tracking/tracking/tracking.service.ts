@@ -266,8 +266,8 @@ export class ParcelLabTrackingService {
                 notify_customer: order?.customFields?.notify_customer || shopifyFulfillment.notify_customer,
                 status: order?.customFields?.status || shopifyFulfillment.status,
                 shipment_status: order?.customFields?.shipment_status || shopifyFulfillment.shipment_status,
-                verified_email: order?.customFields?.verified_email || shopifyOrder.customer?.verified_email,
-                accepts_marketing: order?.customFields?.accepts_marketing || shopifyOrder.customer?.accepts_marketing,
+                verified_email: order?.customFields?.verified_email || shopifyOrder?.customer?.verified_email,
+                accepts_marketing: order?.customFields?.accepts_marketing || shopifyOrder?.customer?.accepts_marketing,
                 fulfillment_status: order?.customFields?.fulfillment_status || shopifyOrder.fulfillment_status,
                 financial_status: order?.customFields?.financial_status || shopifyOrder.financial_status,
                 checkout_token: order?.customFields?.checkout_token || shopifyOrder.checkout_token,
@@ -328,37 +328,37 @@ export class ParcelLabTrackingService {
          * * tracking_number
          */
         const order: ParcellabOrder = {
-            articles: await this.transformLineItems(shopifyAuth, shopifyOrder, shopifyOrder.line_items),
+            articles: await this.transformLineItems(shopifyAuth, shopifyOrder, shopifyOrder?.line_items),
             // We do not track the courier until we have a tracking number
             // courier: await this.getCourier(parcelLabSettings, null, null, shopifyOrder, shopifyCheckout),
             city: shopifyOrder?.shipping_address?.city,
             client: await this.getClient(shopifyAuth),
-            orderNo: shopifyOrder.order_number?.toString(),
+            orderNo: shopifyOrder?.order_number?.toString(),
             cancelled: this.getCancelled(shopifyOrder),
-            complete: shopifyOrder.fulfillment_status === 'fulfilled',
-            customerNo: shopifyOrder.customer?.id?.toString(),
-            deliveryNo: shopifyOrder.id?.toString(), // TODO CHECKME
-            destination_country_iso3: shopifyOrder.shipping_address?.country_code,
-            email: shopifyOrder.customer?.email,
+            complete: shopifyOrder?.fulfillment_status === 'fulfilled',
+            customerNo: shopifyOrder?.customer?.id?.toString(),
+            deliveryNo: shopifyOrder?.id?.toString(), // TODO CHECKME
+            destination_country_iso3: shopifyOrder?.shipping_address?.country_code,
+            email: shopifyOrder?.customer?.email,
             language_iso3: await this.getLocaleCode(shopifyAuth, shopifyOrder),
-            market: shopifyOrder.source_name,
-            order_date: new Date(shopifyOrder.created_at),
-            phone: shopifyOrder.customer?.phone,
+            market: shopifyOrder?.source_name,
+            order_date: new Date(shopifyOrder?.created_at),
+            phone: shopifyOrder?.customer?.phone,
             recipient: this.getName(shopifyOrder),
             recipient_notification: this.getName(shopifyOrder),
-            statuslink: shopifyOrder.order_status_url,
-            street: shopifyOrder.shipping_address?.address1,
-            warehouse: shopifyOrder.location_id ? shopifyOrder.location_id?.toString() : undefined,
-            weight: shopifyOrder.total_weight?.toString(),
-            xid: shopifyOrder.id?.toString(),
-            zip_code: shopifyOrder.shipping_address?.zip,
+            statuslink: shopifyOrder?.order_status_url,
+            street: shopifyOrder?.shipping_address?.address1,
+            warehouse: shopifyOrder?.location_id ? shopifyOrder?.location_id?.toString() : undefined,
+            weight: shopifyOrder?.total_weight?.toString(),
+            xid: shopifyOrder?.id?.toString(),
+            zip_code: shopifyOrder?.shipping_address?.zip,
             customFields: {
-                verified_email: shopifyOrder.customer?.verified_email,
-                accepts_marketing: shopifyOrder.customer?.accepts_marketing,
-                fulfillment_status: shopifyOrder.fulfillment_status,
-                financial_status: shopifyOrder.financial_status,
-                checkout_token: shopifyOrder.checkout_token,
-                cancelled_at: shopifyOrder.cancelled_at
+                verified_email: shopifyOrder?.customer?.verified_email,
+                accepts_marketing: shopifyOrder?.customer?.accepts_marketing,
+                fulfillment_status: shopifyOrder?.fulfillment_status,
+                financial_status: shopifyOrder?.financial_status,
+                checkout_token: shopifyOrder?.checkout_token,
+                cancelled_at: shopifyOrder?.cancelled_at
             },
         };
 
@@ -451,7 +451,7 @@ export class ParcelLabTrackingService {
     }
 
     protected async getLocaleCode(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>) {
-        const langCode = this.getLocalCodeFromNoteAttributes(shopifyOrder) || shopifyOrder.customer_locale || shopifyOrder.billing_address?.country_code || shopifyOrder.shipping_address?.country_code || shopifyOrder.customer?.default_address?.country_code || shopifyAuth.shop.primary_locale;
+        const langCode = this.getLocalCodeFromNoteAttributes(shopifyOrder) || shopifyOrder?.customer_locale || shopifyOrder?.billing_address?.country_code || shopifyOrder?.shipping_address?.country_code || shopifyOrder?.customer?.default_address?.country_code || shopifyAuth?.shop?.primary_locale;
         return langCode;
     }
 
@@ -472,11 +472,11 @@ export class ParcelLabTrackingService {
     }
 
     protected getName(shopifyOrder: Partial<Interfaces.Order>): string | undefined {
-        if (shopifyOrder.customer?.name) {
-            return shopifyOrder.customer?.name
+        if (shopifyOrder?.customer?.name) {
+            return shopifyOrder?.customer?.name
         }
         
-        if (shopifyOrder.customer?.first_name || shopifyOrder.customer?.last_name) {
+        if (shopifyOrder?.customer?.first_name || shopifyOrder?.customer?.last_name) {
             if (shopifyOrder.customer?.first_name && shopifyOrder.customer?.last_name) {
                 return shopifyOrder.customer?.first_name + ' ' + shopifyOrder.customer?.last_name;
             } else if (shopifyOrder.customer?.first_name) {
