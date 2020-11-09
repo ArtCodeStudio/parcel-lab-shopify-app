@@ -256,7 +256,7 @@ export class ParcelLabTrackingService {
             branchDelivery: false, // TODO set this true of this is a store / branch delivery (Filiallieferung)
             courier: await this.getCourier(parcelLabSettings, shopifyFulfillment, order),
             client: await this.getClient(shopifyAuth) || order?.client,
-            cancelled: shopifyFulfillment.status === 'cancelled' || order?.cancelled !== null,
+            cancelled: this.getCancelled(shopifyOrder, shopifyFulfillment, order),
             complete: shopifyFulfillment.shipment_status === 'delivered' || order?.complete,            
             statuslink: order?.statuslink || shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
             tracking_number: shopifyFulfillment.tracking_numbers ? shopifyFulfillment.tracking_numbers.join(',') : shopifyFulfillment.tracking_number,
@@ -300,10 +300,7 @@ export class ParcelLabTrackingService {
         }
 
         if (tracking.cancelled) {
-            console.debug('tracking cancelled:');
-            console.debug(tracking);
-            console.debug('shopifyOrder cancelled:');
-            console.debug(shopifyOrder);
+            console.warn(`tracking cancelled "${tracking.cancelled}" at "${tracking.customFields.cancelled_at}" for order number "${tracking.orderNo}".`);
         }
 
         return tracking as ParcellabOrder;
@@ -337,7 +334,7 @@ export class ParcelLabTrackingService {
             city: shopifyOrder?.shipping_address?.city,
             client: await this.getClient(shopifyAuth),
             orderNo: shopifyOrder.order_number?.toString(),
-            cancelled: shopifyOrder.cancelled_at !== null ? true : false,
+            cancelled: this.getCancelled(shopifyOrder),
             complete: shopifyOrder.fulfillment_status === 'fulfilled',
             customerNo: shopifyOrder.customer?.id?.toString(),
             deliveryNo: shopifyOrder.id?.toString(), // TODO CHECKME
@@ -366,10 +363,7 @@ export class ParcelLabTrackingService {
         };
 
         if (order.cancelled) {
-            console.debug('order cancelled:');
-            console.debug(order);
-            console.debug('shopifyOrder cancelled:');
-            console.debug(shopifyOrder);
+            console.warn(`order cancelled "${order.cancelled}" at "${order.customFields.cancelled_at}" for order number "${order.orderNo}".`);
         }
 
         return order;
@@ -392,6 +386,19 @@ export class ParcelLabTrackingService {
             articles.push(article);
         }
         return articles;
+    }
+
+    protected getCancelled(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ) {
+        if (order?.cancelled === true) {
+            return true;
+        }
+        if (shopifyFulfillment?.status === 'cancelled') {
+            return true;
+        }
+        if (shopifyOrder?.cancelled_at && typeof (shopifyOrder?.cancelled_at) === 'string') {
+            return true;
+        }
+        return false;
     }
 
     protected async getArticleUrl(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>, product: Partial<Interfaces.Product>, prepend = 'https://'): Promise<string> {
