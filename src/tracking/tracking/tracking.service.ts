@@ -219,7 +219,9 @@ export class ParcelLabTrackingService {
             }
         }
 
-        return [...orderResult, ...trackingResults];
+        const result = [...orderResult, ...trackingResults];
+
+        return result;
     }
 
     /**
@@ -254,9 +256,9 @@ export class ParcelLabTrackingService {
             branchDelivery: false, // TODO set this true of this is a store / branch delivery (Filiallieferung)
             courier: await this.getCourier(parcelLabSettings, shopifyFulfillment, order),
             client: await this.getClient(shopifyAuth) || order?.client,
-            cancelled: shopifyFulfillment.status === 'cancelled' || order?.cancelled,
+            cancelled: shopifyFulfillment.status === 'cancelled' || order?.cancelled !== null,
             complete: shopifyFulfillment.shipment_status === 'delivered' || order?.complete,            
-            statuslink: order.statuslink || shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
+            statuslink: order?.statuslink || shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
             tracking_number: shopifyFulfillment.tracking_numbers ? shopifyFulfillment.tracking_numbers.join(',') : shopifyFulfillment.tracking_number,
             warehouse: shopifyFulfillment.location_id ? shopifyFulfillment.location_id?.toString() : undefined,
             customFields: {
@@ -289,6 +291,11 @@ export class ParcelLabTrackingService {
         // Delete courier property if we do not have a tracking number
         if (!tracking.tracking_number || tracking.tracking_number.length === 0) {
             delete tracking.courier;
+        }
+
+        if (tracking.cancelled) {
+            console.debug('tracking cancelled:');
+            console.debug(tracking);
         }
 
         return tracking as ParcellabOrder;
@@ -350,6 +357,11 @@ export class ParcelLabTrackingService {
             },
         };
 
+        if (order.cancelled) {
+            console.debug('order cancelled:');
+            console.debug(order);
+        }
+
         return order;
     }
 
@@ -390,7 +402,7 @@ export class ParcelLabTrackingService {
      * @param shopifyOrder 
      */
     protected getShopDomainFromNoteAttributes(shopifyOrder: Partial<Interfaces.Order>) {
-        if (!shopifyOrder.note_attributes) {
+        if (!shopifyOrder?.note_attributes) {
             return null;
         }
         for (const noteAttribute of shopifyOrder.note_attributes) {
@@ -431,7 +443,7 @@ export class ParcelLabTrackingService {
      * @param shopifyOrder 
      */
     protected getLocalCodeFromNoteAttributes(shopifyOrder: Partial<Interfaces.Order>) {
-        if (!shopifyOrder.note_attributes) {
+        if (!shopifyOrder?.note_attributes) {
             return null;
         }
         for (const noteAttribute of shopifyOrder.note_attributes) {

@@ -71,12 +71,6 @@ async function bootstrap() {
   const redisIoAdapter = new RedisSessionIoAdapter(session, conf.redis.url, conf.app.host, app);
   app.useWebSocketAdapter(redisIoAdapter);
 
-  // passport session
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  app.setViewEngine('pug');
-
   /**
    * Another built-in adapter is a WsAdapter which in turn acts like a proxy between the framework
    * and integrate blazing fast and thoroughly tested ws library.
@@ -86,6 +80,13 @@ async function bootstrap() {
    * @see https://docs.nestjs.com/websockets/adapter
    */
   // app.useWebSocketAdapter(new WsAdapter(app));
+
+
+  // passport session
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.setViewEngine('pug');
 
   app.use(sassMiddleware({
     /* Options */
