@@ -263,9 +263,15 @@ export class ParcelLabTrackingService {
             warehouse: shopifyFulfillment.location_id ? shopifyFulfillment.location_id?.toString() : undefined,
             customFields: {
                 ...order?.customFields || {},
-                notify_customer: shopifyFulfillment.notify_customer,
-                status: shopifyFulfillment.status,
-                shipment_status: shopifyFulfillment.shipment_status,
+                notify_customer: order?.customFields?.notify_customer || shopifyFulfillment.notify_customer,
+                status: order?.customFields?.status || shopifyFulfillment.status,
+                shipment_status: order?.customFields?.shipment_status || shopifyFulfillment.shipment_status,
+                verified_email: order?.customFields?.verified_email || shopifyOrder.customer?.verified_email,
+                accepts_marketing: order?.customFields?.accepts_marketing || shopifyOrder.customer?.accepts_marketing,
+                fulfillment_status: order?.customFields?.fulfillment_status || shopifyOrder.fulfillment_status,
+                financial_status: order?.customFields?.financial_status || shopifyOrder.financial_status,
+                checkout_token: order?.customFields?.checkout_token || shopifyOrder.checkout_token,
+                cancelled_at: order?.customFields?.cancelled_at || shopifyOrder.cancelled_at
             },
         }
 
@@ -296,6 +302,8 @@ export class ParcelLabTrackingService {
         if (tracking.cancelled) {
             console.debug('tracking cancelled:');
             console.debug(tracking);
+            console.debug('shopifyOrder cancelled:');
+            console.debug(shopifyOrder);
         }
 
         return tracking as ParcellabOrder;
@@ -360,6 +368,8 @@ export class ParcelLabTrackingService {
         if (order.cancelled) {
             console.debug('order cancelled:');
             console.debug(order);
+            console.debug('shopifyOrder cancelled:');
+            console.debug(shopifyOrder);
         }
 
         return order;
