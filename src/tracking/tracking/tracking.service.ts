@@ -196,7 +196,7 @@ export class ParcelLabTrackingService {
         if (tracking.orderNo) {
             result = await api.createOrUpdateOrder(tracking, this.testMode);
         } else {
-            console.warn(`Order number is missing for order id "${tracking.customFields.order_id}".`);
+            console.warn("Order number is missing for tracking", tracking);
         }
         return result;
     }
@@ -216,7 +216,7 @@ export class ParcelLabTrackingService {
         if (order.orderNo) {
             orderResult = await api.createOrUpdateOrder(order, this.testMode);
         } else {
-            console.warn(`Order number is missing for order id "${order.customFields.order_id}".`);
+            console.warn("Order id is missing for order ", order);
         }
 
         // If the order has fulfillments we can create tracking of them and not only a order
@@ -225,10 +225,10 @@ export class ParcelLabTrackingService {
             for (const shopifyFulfillment of shopifyOrder.fulfillments) {
                 const tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment, shopifyOrder, order);
                 let trackingResult: string[] = [];
-                if (order.orderNo) {
+                if (tracking.orderNo) {
                     trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 } else {
-                    console.warn(`Order number is missing for order id "${order.customFields.order_id}".`);
+                    console.warn("Order id is missing for tracking ", tracking);
                 }
                 trackingResults.push(...trackingResult);
             }
@@ -271,6 +271,7 @@ export class ParcelLabTrackingService {
             branchDelivery: false, // TODO set this true of this is a store / branch delivery (Filiallieferung)
             courier: await this.getCourier(parcelLabSettings, shopifyFulfillment, order),
             client: await this.getClient(shopifyAuth) || order?.client,
+            orderNo: this.getOrderNo(shopifyOrder, shopifyFulfillment, order),
             cancelled: this.getCancelled(shopifyOrder, shopifyFulfillment, order),
             complete: shopifyFulfillment.shipment_status === 'delivered' || order?.complete,            
             statuslink: order?.statuslink || shopifyFulfillment.tracking_urls ? shopifyFulfillment.tracking_urls.join(',') : shopifyFulfillment.tracking_url,
@@ -349,7 +350,7 @@ export class ParcelLabTrackingService {
             // courier: await this.getCourier(parcelLabSettings, null, null, shopifyOrder, shopifyCheckout),
             city: shopifyOrder?.shipping_address?.city,
             client: await this.getClient(shopifyAuth),
-            orderNo: shopifyOrder?.order_number?.toString(),
+            orderNo: this.getOrderNo(shopifyOrder),
             cancelled: this.getCancelled(shopifyOrder),
             complete: shopifyOrder?.fulfillment_status === 'fulfilled',
             customerNo: shopifyOrder?.customer?.id?.toString(),
@@ -375,7 +376,6 @@ export class ParcelLabTrackingService {
                 financial_status: shopifyOrder?.financial_status,
                 checkout_token: shopifyOrder?.checkout_token,
                 cancelled_at: shopifyOrder?.cancelled_at,
-                order_id: shopifyOrder?.id,
             },
         };
 
@@ -403,6 +403,10 @@ export class ParcelLabTrackingService {
             articles.push(article);
         }
         return articles;
+    }
+
+    protected getOrderNo(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder) {
+        return shopifyOrder?.id?.toString() || shopifyFulfillment?.order_id?.toString() || order.orderNo || shopifyOrder?.order_number?.toString();
     }
 
     protected getCancelled(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ) {
