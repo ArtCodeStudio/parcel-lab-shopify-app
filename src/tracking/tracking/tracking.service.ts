@@ -196,7 +196,7 @@ export class ParcelLabTrackingService {
         if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
             result = await api.createOrUpdateOrder(tracking, this.testMode);
         } else {
-            console.warn("Missing data for tracking:", tracking);
+            console.warn(`Missing data for tracking with orderId "${tracking.orderNo}"`);
         }
         return result;
     }
@@ -216,7 +216,7 @@ export class ParcelLabTrackingService {
         if (order.orderNo && order.street && order.city && order.zip_code) {
             orderResult = await api.createOrUpdateOrder(order, this.testMode);
         } else {
-            console.warn("Missing data for order:", order);
+            console.warn(`Missing data for order with orderId "${order.orderNo}"`);
         }
 
         // If the order has fulfillments we can create tracking of them and not only a order
@@ -228,7 +228,7 @@ export class ParcelLabTrackingService {
                 if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
                     trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 } else {
-                    console.warn("Missing data for tracking ", tracking);
+                    console.warn(`Missing data for fulfillments with orderId "${tracking.orderNo}"`);
                 }
                 trackingResults.push(...trackingResult);
             }
