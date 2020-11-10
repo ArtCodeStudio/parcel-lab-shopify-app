@@ -406,7 +406,8 @@ export class ParcelLabTrackingService {
     }
 
     protected getOrderNo(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder) {
-        return shopifyOrder?.id?.toString() || shopifyFulfillment?.order_id?.toString() || order.orderNo || shopifyOrder?.order_number?.toString();
+        // return order.orderNo || shopifyOrder?.id?.toString() || shopifyFulfillment?.order_id?.toString() || order.orderNo;
+        return order.orderNo || shopifyOrder?.order_number?.toString();
     }
 
     protected getCancelled(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ) {
