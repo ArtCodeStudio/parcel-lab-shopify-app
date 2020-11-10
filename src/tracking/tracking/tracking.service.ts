@@ -225,10 +225,10 @@ export class ParcelLabTrackingService {
             for (const shopifyFulfillment of shopifyOrder.fulfillments) {
                 const tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment, shopifyOrder, order);
                 let trackingResult: string[] = [];
-                if (tracking.orderNo) {
+                if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
                     trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 } else {
-                    console.warn("Order id is missing for tracking ", tracking);
+                    console.warn("Missing data for tracking ", tracking);
                 }
                 trackingResults.push(...trackingResult);
             }
@@ -407,7 +407,7 @@ export class ParcelLabTrackingService {
 
     protected getOrderNo(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder) {
         // return order.orderNo || shopifyOrder?.id?.toString() || shopifyFulfillment?.order_id?.toString() || order.orderNo;
-        return order.orderNo || shopifyOrder?.order_number?.toString();
+        return order?.orderNo || shopifyOrder?.order_number?.toString();
     }
 
     protected getCancelled(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ) {
