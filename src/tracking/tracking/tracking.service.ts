@@ -193,10 +193,10 @@ export class ParcelLabTrackingService {
         let tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment);
         tracking = {...tracking, ...overwrite};
         let result: string[] = [];
-        if (tracking.orderNo) {
+        if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
             result = await api.createOrUpdateOrder(tracking, this.testMode);
         } else {
-            console.warn("Order number is missing for tracking", tracking);
+            console.warn("Missing data for tracking:", tracking);
         }
         return result;
     }
@@ -213,10 +213,10 @@ export class ParcelLabTrackingService {
 
         order = {...order, ...overwrite};
         let orderResult: string[] = [];
-        if (order.orderNo) {
+        if (order.orderNo && order.street && order.city && order.zip_code) {
             orderResult = await api.createOrUpdateOrder(order, this.testMode);
         } else {
-            console.warn("Order id is missing for order ", order);
+            console.warn("Missing data for order:", order);
         }
 
         // If the order has fulfillments we can create tracking of them and not only a order
