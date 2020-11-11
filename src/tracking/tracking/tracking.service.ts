@@ -194,6 +194,9 @@ export class ParcelLabTrackingService {
         tracking = {...tracking, ...overwrite};
         let result: string[] = [];
         if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
+            if (!tracking.language_iso3) {
+                console.warn(`[${tracking.client}] Locale code is missing for order with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
+            }
             result = await api.createOrUpdateOrder(tracking, this.testMode);
         } else {
             // console.warn(`Missing data for tracking with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
@@ -215,9 +218,12 @@ export class ParcelLabTrackingService {
         order = {...order, ...overwrite};
         let orderResult: string[] = [];
         if (order.orderNo && order.street && order.city && order.zip_code) {
+            if (!order.language_iso3) {
+                console.warn(`[${order.client}] Locale code is missing for order with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || order?.customFields?.order_id }"`);
+            }
             orderResult = await api.createOrUpdateOrder(order, this.testMode);
         } else {
-            // console.warn(`Missing data for order with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || order?.customFields?.order_id }"`);
+            // console.warn(`[${tracking.client}] Missing data for order with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || order?.customFields?.order_id }"`);
             orderResult.push('Missing data.');
         }
 
@@ -228,9 +234,12 @@ export class ParcelLabTrackingService {
                 const tracking = await this.transformTracking(shopifyAuth, settings, shopifyFulfillment, shopifyOrder, order);
                 let trackingResult: string[] = [];
                 if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
+                    if (!tracking.language_iso3) {
+                        console.warn(`[${tracking.client}] Locale code is missing for fulfillment with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || tracking?.customFields?.order_id }"`);
+                    }
                     trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 } else {
-                    // console.warn(`Missing data for fulfillments with order name: "${shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || tracking?.customFields?.order_id}"`);
+                    // console.warn(`[${tracking.client}] Missing data for fulfillment with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || tracking?.customFields?.order_id }"`);
                     trackingResult.push('Missing data.');
                 }
                 trackingResults.push(...trackingResult);
