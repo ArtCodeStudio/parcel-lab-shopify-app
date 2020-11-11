@@ -485,7 +485,10 @@ export class ParcelLabTrackingService {
     }
 
     protected async getLocaleCode(shopifyAuth: IShopifyConnect, shopifyOrder?: Partial<Interfaces.Order>) {
-        const langCode = this.getLocalCodeFromNoteAttributes(shopifyOrder) || shopifyOrder?.customer_locale || shopifyOrder?.billing_address?.country_code || shopifyOrder?.shipping_address?.country_code || shopifyOrder?.customer?.default_address?.country_code || shopifyAuth?.shop?.primary_locale;
+        let langCode = this.getLocalCodeFromNoteAttributes(shopifyOrder) || shopifyOrder?.customer_locale || shopifyOrder?.billing_address?.country_code || shopifyOrder?.shipping_address?.country_code || shopifyOrder?.customer?.default_address?.country_code || shopifyAuth?.shop?.primary_locale;
+        if (typeof langCode === 'string' && langCode.includes('-')) {
+            langCode = langCode.split('-')[0];
+        }
         return langCode;
     }
 
@@ -494,15 +497,20 @@ export class ParcelLabTrackingService {
      * @param shopifyOrder 
      */
     protected getLocalCodeFromNoteAttributes(shopifyOrder?: Partial<Interfaces.Order>) {
+        let locale = ''; 
         if (!shopifyOrder?.note_attributes) {
-            return null;
+            return locale;
         }
         for (const noteAttribute of shopifyOrder.note_attributes) {
+            
             if(noteAttribute.name === 'locale') {
-                return noteAttribute.value?.toString();
+                locale = noteAttribute.value?.toString();
+            }
+            if(noteAttribute.name === 'site') {
+                locale = locale || noteAttribute.value?.toString();
             }
         }
-        return null;
+        return locale;
     }
 
     protected getName(shopifyOrder: Partial<Interfaces.Order>): string | undefined {
