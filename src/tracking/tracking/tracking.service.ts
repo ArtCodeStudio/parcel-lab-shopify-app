@@ -196,7 +196,7 @@ export class ParcelLabTrackingService {
         if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
             result = await api.createOrUpdateOrder(tracking, this.testMode);
         } else {
-            console.warn(`Missing data for tracking with order id: "${tracking?.customFields?.order_id}"`);
+            console.warn(`Missing data for tracking with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
         }
         return result;
     }
@@ -216,7 +216,7 @@ export class ParcelLabTrackingService {
         if (order.orderNo && order.street && order.city && order.zip_code) {
             orderResult = await api.createOrUpdateOrder(order, this.testMode);
         } else {
-            console.warn(`Missing data for order with order id: "${order?.customFields?.order_id}"`);
+            console.warn(`Missing data for order with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || order?.customFields?.order_id }"`);
         }
 
         // If the order has fulfillments we can create tracking of them and not only a order
@@ -228,7 +228,7 @@ export class ParcelLabTrackingService {
                 if (tracking.orderNo && tracking.street && tracking.city && tracking.zip_code) {
                     trackingResult = await api.createOrUpdateOrder(tracking, this.testMode);
                 } else {
-                    console.warn(`Missing data for fulfillments with order id: "${tracking?.customFields?.order_id}"`);
+                    console.warn(`Missing data for fulfillments with order name: "${shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || tracking?.customFields?.order_id}"`);
                 }
                 trackingResults.push(...trackingResult);
             }
