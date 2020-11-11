@@ -354,7 +354,7 @@ export class ParcelLabTrackingService {
             cancelled: this.getCancelled(shopifyOrder),
             complete: shopifyOrder?.fulfillment_status === 'fulfilled',
             customerNo: shopifyOrder?.customer?.id?.toString(),
-            deliveryNo: shopifyOrder?.id?.toString(), // TODO CHECKME
+            deliveryNo: shopifyOrder?.id?.toString(),
             destination_country_iso3: shopifyOrder?.shipping_address?.country_code,
             email: shopifyOrder?.customer?.email,
             language_iso3: await this.getLocaleCode(shopifyAuth, shopifyOrder),
@@ -407,7 +407,7 @@ export class ParcelLabTrackingService {
 
     protected getOrderNo(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder) {
         // return order.orderNo || shopifyOrder?.id?.toString() || shopifyFulfillment?.order_id?.toString() || order.orderNo;
-        return order?.orderNo || shopifyOrder?.order_number?.toString();
+        return order?.orderNo || shopifyOrder?.name?.toString();
     }
 
     protected getCancelled(shopifyOrder?: Partial<Interfaces.Order>, shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder ) {
@@ -472,7 +472,7 @@ export class ParcelLabTrackingService {
         return shopifyAuth.shop.name;
     }
 
-    protected async getLocaleCode(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>) {
+    protected async getLocaleCode(shopifyAuth: IShopifyConnect, shopifyOrder?: Partial<Interfaces.Order>) {
         const langCode = this.getLocalCodeFromNoteAttributes(shopifyOrder) || shopifyOrder?.customer_locale || shopifyOrder?.billing_address?.country_code || shopifyOrder?.shipping_address?.country_code || shopifyOrder?.customer?.default_address?.country_code || shopifyAuth?.shop?.primary_locale;
         return langCode;
     }
@@ -481,7 +481,7 @@ export class ParcelLabTrackingService {
      * Special case (for a private client) if the locale code was passed via additional note attributes 
      * @param shopifyOrder 
      */
-    protected getLocalCodeFromNoteAttributes(shopifyOrder: Partial<Interfaces.Order>) {
+    protected getLocalCodeFromNoteAttributes(shopifyOrder?: Partial<Interfaces.Order>) {
         if (!shopifyOrder?.note_attributes) {
             return null;
         }
