@@ -2,15 +2,23 @@
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
+    "noImplicitAny": false,
     "removeComments": true,
+    "noLib": false,
+    "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
+    "baseUrl": "./src"
   },
-  "exclude": ["node_modules", "frontend", "dist"]
+  "include": [
+    "src/**/*",
+    "node_modules/nest-shopify",
+    "node_modules/shopify-admin-api"
+  ],
+  "exclude": [
+    "**/*.spec.ts"
+  ]
 }

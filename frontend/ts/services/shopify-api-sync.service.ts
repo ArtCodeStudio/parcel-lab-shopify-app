@@ -1,11 +1,10 @@
-import { HttpService } from '@ribajs/core';
+import { HttpService, EventDispatcher } from '@ribajs/core';
 import Debug from 'debug';
 import { ISyncOptions, ISyncProgress } from '../interfaces/shopify-sync';
 import io from 'socket.io-client';
-import { EventEmitter } from 'events';
 
 // TODO singleton?
-export class ShopifyApiSyncService extends EventEmitter {
+export class ShopifyApiSyncService extends EventDispatcher {
   public static instance?: ShopifyApiSyncService;
 
   protected debug = Debug('services:ShopifyApiSyncService');
@@ -14,7 +13,7 @@ export class ShopifyApiSyncService extends EventEmitter {
   protected host: string;
 
   constructor(host: string) {
-    super();
+    super('shopify-api-sync-service');
     this.host = host;
     if (ShopifyApiSyncService.instance) {
       return ShopifyApiSyncService.instance;
@@ -26,42 +25,42 @@ export class ShopifyApiSyncService extends EventEmitter {
     });
     this.socket.on('connect', () => {
       this.debug('connect');
-      this.emit('connect');
+      this.trigger('connect');
     });
 
     this.socket.on('exception', (data: any) => {
       console.error('exception', data);
-      this.emit('exception', data);
+      this.trigger('exception', data);
     });
 
     this.socket.on('sync-exception', (data: any) => {
       console.error('sync-exception', data);
-      this.emit('sync-exception', data);
+      this.trigger('sync-exception', data);
     });
 
     this.socket.on('sync', (progress: ISyncProgress) => {
       this.debug('sync', progress);
-      this.emit('sync', progress);
+      this.trigger('sync', progress);
     });
 
     this.socket.on(`sync-ended`, (progress: ISyncProgress) => {
       this.debug('sync-ended', progress);
-      this.emit('sync-ended', progress);
+      this.trigger('sync-ended', progress);
     });
 
     this.socket.on(`sync-success`, (progress: ISyncProgress) => {
       this.debug('sync-success', progress);
-      this.emit('sync-success', progress);
+      this.trigger('sync-success', progress);
     });
 
     this.socket.on(`sync-failed`, (progress: ISyncProgress) => {
       this.debug('sync-failed', progress);
-      this.emit('sync-failed', progress);
+      this.trigger('sync-failed', progress);
     });
 
     this.socket.on(`sync-cancelled`, (progress: ISyncProgress) => {
       this.debug('sync-cancelled', progress);
-      this.emit('sync-cancelled', progress);
+      this.trigger('sync-cancelled', progress);
     });
 
     ShopifyApiSyncService.instance = this;

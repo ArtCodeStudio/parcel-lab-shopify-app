@@ -8,6 +8,7 @@ import * as expressSession from 'express-session';
 // import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as passport from 'passport';
+import * as cookieParser from 'cookie-parser';
 import scssImporter from './scss-importer.service';
 import config from './config';
 import * as mongoose from 'mongoose';
@@ -27,13 +28,8 @@ async function bootstrap() {
     bodyParser: false,
   };
 
-  // https://github.com/Automattic/mongoose/issues/6890
-  mongoose.set('useCreateIndex', true);
-  mongoose.set('useNewUrlParser', true);
-  mongoose.set('useUnifiedTopology', true);
-  mongoose.set('useFindAndModify', false);
 
-  const mongooseConnection: typeof mongoose = await mongoose.connect(conf.mongodb.url);
+  const mongooseConnection: typeof mongoose = await mongoose.connect(conf.mongodb.url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 
   // const expressServer = express();
   const app = await NestFactory.create<NestExpressApplication>(
@@ -49,6 +45,15 @@ async function bootstrap() {
   app.enableCors({
     origin: '*', // TODO get all allowed domains from database and change this on runtime if a new shop is installed if possible?
   });
+
+  app.use(cookieParser());
+
+  /**
+   * Needed if this app is behind a proxy with secure cookies
+   * TODO checkme on digital ocean app
+   * @see https://github.com/expressjs/session#cookiesecure
+   */
+  app.set('trust proxy', 1) // trust first proxy
 
   /**
    * Init express sesion

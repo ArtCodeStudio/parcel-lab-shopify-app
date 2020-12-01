@@ -68,6 +68,7 @@
     "cache-manager": "^3.4.0",
     "cache-manager-ioredis": "^2.1.0",
     "connect-redis": "^5.0.0",
+    "cookie-parser": "^1.4.5",
     "deepmerge": "^4.2.2",
     "dotenv": "^8.2.0",
     "express-session": "^1.17.1",
@@ -97,6 +98,7 @@
   "devDependencies": {
     "@nestjs/schematics": "^7.1.2",
     "@nestjs/testing": "^7.4.4",
+    "@types/cookie-parser": "^1.4.2",
     "@types/jest": "^26.0.14",
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.3.0",

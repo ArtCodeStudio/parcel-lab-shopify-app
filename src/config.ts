@@ -8,7 +8,7 @@ import redisCacheStore from 'cache-manager-ioredis';
 import Redis from 'ioredis';
 import * as expressSession from 'express-session';
 import * as connectRedis from 'connect-redis';
-import { ConfigApp, ConfigShopify, ConfigCharges, ConfigCache, ConfigRedis, ConfigMongoDB, ShopifyModuleOptions  } from 'nest-shopify';
+import { ConfigApp, ConfigSync, ConfigShopify, ConfigCharges, ConfigCache, ConfigRedis, ConfigMongoDB, ShopifyModuleOptions  } from 'nest-shopify';
 import findRoot = require("find-root");
 
 dotenv.config();
@@ -19,12 +19,18 @@ const redis: ConfigRedis = {
 
 const RedisStore = connectRedis(expressSession);
 
+const sync: ConfigSync = {
+  enabled: false,
+  autoSyncResources: [],
+}
+
 const app: ConfigApp = {
   root: findRoot(process.cwd()),
   protocol: `https`,
   host: process.env.HOST,
   port: Number(process.env.PORT),
   debug: Boolean(process.env.DEBUG),
+  test: process.env.NODE_ENV === "test" || process.env.TEST === "true",
   environment: process.env.NODE_ENV === 'development' ? 'development' : 'production',
 };
 
@@ -39,6 +45,17 @@ const session = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
+  proxy: true, 
+  /**
+   * Required for chrome >= 80
+   * @see https://shopify.dev/tutorials/migrate-your-app-to-support-samesite-cookies
+   * @see https://github.com/expressjs/session#cookiesamesite
+   */
+  cookie: {
+    maxAge: 60 * 60 * 24 * 1000,
+    secure: true,
+    sameSite: 'none' as boolean | "none" | "lax" | "strict"
+  }
 }
 
 /**
@@ -159,6 +176,7 @@ const parcelLab = {
 
 const NestShopifyModuleOptions: ShopifyModuleOptions = {
   app,
+  sync,
   shopify,
   charges,
   redis,

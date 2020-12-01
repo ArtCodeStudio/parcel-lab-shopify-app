@@ -29,7 +29,7 @@ export class SettingsService {
                 return this.settingsModel.updateOne({_id: foundSettings._id}, {
                     user: settings.user,
                     token: settings.token,
-                  }, { runValidators: true })
+                  })
                   .then((updateResult) => {
                     this.logger.debug(`updateOne updateResult`, updateResult);
                     return this.findByShopDomain(settings.shop_domain);
