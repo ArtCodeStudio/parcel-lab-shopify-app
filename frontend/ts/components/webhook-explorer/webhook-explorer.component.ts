@@ -31,8 +31,8 @@ export class WebhookExplorerComponent extends Component {
     environment: 'production',
   };
 
-  constructor(element?: HTMLElement) {
-    super(element);
+  constructor() {
+    super();
     this.debug('constructor', this);
   }
 
@@ -53,6 +53,7 @@ export class WebhookExplorerComponent extends Component {
   }
 
   protected async beforeBind() {
+    await super.beforeBind();
     if (this.scope.environment === 'production') {
       this.initLocales();
     }
@@ -63,9 +64,10 @@ export class WebhookExplorerComponent extends Component {
     this.debug('afterBind', this.scope);
     if (this.scope.environment === 'production') {
       this.cardContainer =
-        this.el.querySelector<HTMLElement>('.card-container') || undefined;
+        this.querySelector<HTMLElement>('.card-container') || undefined;
       this.watchSocketEvents();
     }
+    await super.afterBind();
   }
 
   protected prependNewSocketCard(eventName: string, data: any, role?: string) {
@@ -532,7 +534,7 @@ export class WebhookExplorerComponent extends Component {
   protected template() {
     let template: string | null = null;
     // Only set the component template if there no childs already
-    if (this.el.hasChildNodes()) {
+    if (this.hasChildNodes()) {
       this.debug('Do not template, because element has child nodes');
       return template;
     } else {

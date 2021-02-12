@@ -12,8 +12,6 @@ export class TdaI18nSwitcherComponent extends AI18nSwitcherComponent {
     return [];
   }
 
-  // protected $el: JQuery<HTMLElement>;
-
   protected localesService = LocalesStaticService.getInstance('main');
 
   protected debug = Debug('component:' + TdaI18nSwitcherComponent.tagName);
@@ -25,8 +23,8 @@ export class TdaI18nSwitcherComponent extends AI18nSwitcherComponent {
     ready: <boolean>false,
   };
 
-  constructor(element?: HTMLElement) {
-    super(element);
+  constructor() {
+    super();
   }
 
   protected connectedCallback() {
@@ -58,11 +56,13 @@ export class TdaI18nSwitcherComponent extends AI18nSwitcherComponent {
   }
 
   protected async beforeBind() {
+    await super.beforeBind();
     this.debug('beforeBind', this.scope);
   }
 
   protected async afterBind() {
     this.debug('afterBind', this.scope);
+    await super.afterBind();
   }
 
   protected requiredAttributes() {

@@ -32,7 +32,7 @@ export class SidebarComponent extends Component {
   protected shopifyApp = new EASDKWrapperService();
   protected localesService = LocalesStaticService.getInstance('main');
 
-  protected $el: JQuery<HTMLElement>;
+  protected $el: JQuery<SidebarComponent>;
   protected debug = Debug('component:' + SidebarComponent.tagName);
 
   protected scope: IScope = {
@@ -41,9 +41,9 @@ export class SidebarComponent extends Component {
     reload: this.reload,
   };
 
-  constructor(element?: HTMLElement) {
-    super(element);
-    this.$el = JQuery(this.el);
+  constructor() {
+    super();
+    this.$el = JQuery(this);
 
     this.debug('constructor', this);
   }
@@ -67,11 +67,11 @@ export class SidebarComponent extends Component {
   public hide(force = false) {
     if (this.scope.visable || force) {
       this.scope.visable = false;
-      this.el.style.display = 'none';
+      this.style.display = 'none';
       setTimeout(() => {
         this.event.trigger('afterHide', (<IState>{
-          width: this.el.clientWidth,
-          height: this.el.clientHeight,
+          width: this.clientWidth,
+          height: this.clientHeight,
           visable: this.scope.visable,
         }) as IState);
       }, 0);
@@ -81,12 +81,12 @@ export class SidebarComponent extends Component {
   public show(force = false) {
     if (!this.scope.visable || force) {
       this.scope.visable = true;
-      this.el.style.display = 'flex';
+      this.style.display = 'flex';
       setTimeout(() => {
-        if (this.el.clientWidth > 0) {
+        if (this.clientWidth > 0) {
           this.event.trigger('afterShow', <IState>{
-            width: this.el.clientWidth,
-            height: this.el.clientHeight,
+            width: this.clientWidth,
+            height: this.clientHeight,
             visable: this.scope.visable,
           });
         }
@@ -102,14 +102,11 @@ export class SidebarComponent extends Component {
   }
 
   public state() {
-    if (
-      (this.scope.visable && this.el.clientWidth > 0) ||
-      !this.scope.visable
-    ) {
+    if ((this.scope.visable && this.clientWidth > 0) || !this.scope.visable) {
       // WORKAROUND
       this.event.trigger('onState', <IState>{
-        width: this.el.clientWidth,
-        height: this.el.clientHeight,
+        width: this.clientWidth,
+        height: this.clientHeight,
         visable: this.scope.visable,
       });
     }
@@ -152,11 +149,13 @@ export class SidebarComponent extends Component {
   }
 
   protected async beforeBind() {
+    await super.beforeBind();
     this.debug('beforeBind');
   }
 
   protected async afterBind() {
     this.debug('afterBind', this.scope);
+    await super.afterBind();
   }
 
   protected requiredAttributes() {
@@ -173,7 +172,7 @@ export class SidebarComponent extends Component {
   protected template() {
     let template: string | null = null;
     // Only set the component template if there no childs already
-    if (this.el.hasChildNodes()) {
+    if (this.hasChildNodes()) {
       this.debug('Do not template, because element has child nodes');
       return template;
     } else {

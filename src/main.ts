@@ -2,24 +2,21 @@ import 'source-map-support/register'
 import { NestFactory } from '@nestjs/core';
 import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { AppModule } from './app.module';
-import { join } from 'path';
-import * as sassMiddleware from 'node-sass-middleware';
+import { resolve } from 'path';
+// import * as sassMiddleware from 'node-sass-middleware';
 import * as expressSession from 'express-session';
 // import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as passport from 'passport';
 import * as cookieParser from 'cookie-parser';
-import scssImporter from './scss-importer.service';
 import config from './config';
 import * as mongoose from 'mongoose';
-import { RedisSessionIoAdapter } from 'nest-shopify';
+// import { SessionIoAdapter } from 'nest-shopify';
 
 const conf = config();
 
-const assetsDir = join(conf.app.root, 'public');
-const viewsDir = join(conf.app.root, 'frontend/views');
-const stylesSrc = join(conf.app.root, 'frontend/styles');
-const stylesDest = join(assetsDir, 'styles');
+const assetsDir = resolve(conf.app.root, 'frontend/dist');
+const viewsDir = resolve(conf.app.root, 'frontend/views');
 
 async function bootstrap() {
 
@@ -72,15 +69,8 @@ async function bootstrap() {
    * or servers that can all broadcast and emit events to and from each other.
    * @see https://github.com/socketio/socket.io-redis
    */
-
-  const redisIoAdapter = new RedisSessionIoAdapter(session, conf.redis.url, conf.app.host, app);
-  app.useWebSocketAdapter(redisIoAdapter);
-
-  // passport session
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  app.setViewEngine('pug');
+  // const redisIoAdapter = new RedisSessionIoAdapter(session, conf.redis.url, conf.app.host, app);
+  // app.useWebSocketAdapter(redisIoAdapter);
 
   /**
    * Another built-in adapter is a WsAdapter which in turn acts like a proxy between the framework
@@ -92,19 +82,35 @@ async function bootstrap() {
    */
   // app.useWebSocketAdapter(new WsAdapter(app));
 
-  app.use(sassMiddleware({
-    /* Options */
-    src: stylesSrc,
-    dest: stylesDest,
-    debug: conf.app.debug,
-    outputStyle: 'compressed',
-    prefix:  '/styles', // Where prefix is at <link rel="stylesheets" href="styles/app.css"/>
-    importer: scssImporter,
-  }));
+  /**
+   * Use socket.io with session for socket.io (without redis)
+   * @see https://docs.nestjs.com/websockets/adapter
+   */
+  // const ioAdapter = new SessionIoAdapter(session, conf.app.host, app);
+  // app.useWebSocketAdapter(ioAdapter);
+
+  // passport session
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.setViewEngine('pug');
+
+  // app.use(sassMiddleware({
+  //   /* Options */
+  //   src: stylesSrc,
+  //   dest: stylesDest,
+  //   debug: conf.app.debug,
+  //   outputStyle: 'compressed',
+  //   prefix:  '/styles', // Where prefix is at <link rel="stylesheets" href="styles/app.css"/>
+  //   importer: scssImporter,
+  // }));
   app.useStaticAssets(assetsDir);
   app.setBaseViewsDir(viewsDir);
 
   await app.listen(conf.app.port);
+
+  console.log(`Start app on https://${conf.app.host}:${conf.app.port}`);
+  console.log(`Debug mode is: "${process.env.DEBUG}"`);
 
   // see https://docs.nestjs.com/techniques/hot-reload
   // if (module.hot) {

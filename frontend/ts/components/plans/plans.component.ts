@@ -26,8 +26,8 @@ export class PlansComponent extends Component {
     activate: this.activate,
   };
 
-  constructor(element?: HTMLElement) {
-    super(element);
+  constructor() {
+    super();
     this.debug('constructor', this);
   }
 
@@ -79,11 +79,13 @@ export class PlansComponent extends Component {
   }
 
   protected async beforeBind() {
+    await super.beforeBind();
     this.debug('beforeBind');
   }
 
   protected async afterBind() {
     this.debug('afterBind', this.scope);
+    await super.afterBind();
   }
 
   protected requiredAttributes() {
@@ -97,7 +99,7 @@ export class PlansComponent extends Component {
   protected template() {
     let template: string | null = null;
     // Only set the component template if there no childs already
-    if (this.el.hasChildNodes()) {
+    if (this.hasChildNodes()) {
       this.debug('Do not template, because element has child nodes');
       return template;
     } else {

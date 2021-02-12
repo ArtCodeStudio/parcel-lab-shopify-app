@@ -1,16 +1,16 @@
 import { EventDispatcher } from '@ribajs/core';
 import Debug from 'debug';
-import io from 'socket.io-client';
+import { io, Socket } from '../dependencies/socket-io-client';
 
 export class WebhooksService extends EventDispatcher {
   public static instance?: WebhooksService;
 
-  protected socket?: SocketIOClient.Socket;
+  protected socket?: Socket;
   protected debug = Debug('services:WebhooksService');
   protected host: string;
 
-  constructor(host: string) {
-    super();
+  constructor(host = window.location.protocol + '//' + window.location.host) {
+    super('shopify-webhooks-service');
     this.host = host;
     this.debug('constructor');
     this.debug('host: ' + host);
@@ -25,7 +25,7 @@ export class WebhooksService extends EventDispatcher {
 
   public async init() {
     this.debug('init');
-    this.socket = io(`/socket.io/shopify/api/webhooks`, {
+    this.socket = io(`${this.host}/socket.io/shopify/api/webhooks`, {
       secure: true,
       transports: ['polling'],
     });

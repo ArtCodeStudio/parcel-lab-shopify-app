@@ -339,6 +339,7 @@ export class ParcelLabTrackingService {
         return shopifyAuth.shop.name;
     }
 
+    // TODO get locale over note_attributes, name should be locale or domain?
     protected async getLangCode(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>) {
         const langCode = shopifyOrder.customer_locale || shopifyOrder.billing_address?.country_code || shopifyOrder.shipping_address?.country_code || shopifyOrder.customer?.default_address?.country_code || shopifyAuth.shop.primary_locale;
         return langCode;

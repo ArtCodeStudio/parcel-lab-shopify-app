@@ -8,7 +8,16 @@ import redisCacheStore from 'cache-manager-ioredis';
 import Redis from 'ioredis';
 import * as expressSession from 'express-session';
 import * as connectRedis from 'connect-redis';
-import { ConfigApp, ConfigSync, ConfigShopify, ConfigCharges, ConfigCache, ConfigRedis, ConfigMongoDB, ShopifyModuleOptions  } from 'nest-shopify';
+import {
+  ConfigApp,
+  ConfigSync,
+  ConfigShopify,
+  ConfigCharges,
+  ConfigCache,
+  ConfigRedis,
+  ConfigMongoDB,
+  ShopifyModuleOptions
+} from 'nest-shopify';
 import findRoot = require("find-root");
 
 dotenv.config();
@@ -40,7 +49,7 @@ const app: ConfigApp = {
  */
 const session = {
   store: new RedisStore({
-    client: new Redis(redis.url, { keyPrefix: app.host }),
+    client: new Redis(redis.url, { keyPrefix: app.host }) as any, // TODO
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,

@@ -4,8 +4,11 @@
     "ts/main.ts"
   ],
   "compilerOptions": {
-    "sourceMap": true,
-    "outDir": "../public/scripts/",
+    "outDir": "dist",
     "typeRoots": ["node_modules/@types", "ts/types"]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.d.ts",
+  ]
 }

@@ -1,4 +1,4 @@
-import { Component, EventDispatcher } from '@ribajs/core';
+import { BasicComponent, EventDispatcher } from '@ribajs/core';
 import { getViewportDimensions } from '@ribajs/utils/src/dom';
 
 import Debug from 'debug';
@@ -13,7 +13,7 @@ interface IState {
   visable: boolean;
 }
 
-export class SidebarMaskComponent extends Component {
+export class SidebarMaskComponent extends BasicComponent {
   public static tagName = 'rv-sidebar-mask';
 
   static get observedAttributes() {
@@ -30,9 +30,9 @@ export class SidebarMaskComponent extends Component {
     show: false,
   };
 
-  constructor(element?: HTMLElement) {
-    super(element);
-    this.debug('constructor', this.el.constructor, this);
+  constructor() {
+    super();
+    this.debug('constructor', this.constructor, this);
   }
 
   protected connectedCallback() {
@@ -55,18 +55,10 @@ export class SidebarMaskComponent extends Component {
     }
 
     if (this.scope.show) {
-      this.el.style.display = 'block';
+      this.style.display = 'block';
     } else {
-      this.el.style.display = 'none';
+      this.style.display = 'none';
     }
-  }
-
-  protected async beforeBind() {
-    return this.debug('beforeBind', this.bound);
-  }
-
-  protected async afterBind() {
-    return this.debug('afterBind', this.bound, this.scope);
   }
 
   protected requiredAttributes() {

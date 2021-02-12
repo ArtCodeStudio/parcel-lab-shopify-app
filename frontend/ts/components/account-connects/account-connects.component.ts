@@ -32,7 +32,7 @@ export class AccountConnectsComponent extends Component {
     return ['type'];
   }
 
-  protected $el: JQuery<HTMLElement>;
+  protected $el: JQuery<AccountConnectsComponent>;
   protected debug = Debug('component:' + AccountConnectsComponent.tagName);
   protected authService = new AuthService();
 
@@ -53,9 +53,9 @@ export class AccountConnectsComponent extends Component {
     inIframe: EASDKWrapperService.inIframe(),
   };
 
-  constructor(element?: HTMLElement) {
-    super(element);
-    this.$el = JQuery(this.el);
+  constructor() {
+    super();
+    this.$el = JQuery(this);
     this.debug('constructor', this);
   }
 
@@ -103,11 +103,11 @@ export class AccountConnectsComponent extends Component {
 
   protected async getAvatarUrl() {
     if (this.scope.type === 'shopify') {
-      return '/icons/shopify.svg';
+      return '/images/shopify.svg';
     }
   }
 
-  protected async isConnected(): Promise<IShopifyConnect | null> {
+  protected async accountIsConnected(): Promise<IShopifyConnect | null> {
     if (!this.scope.type) {
       throw new Error('Type attribute is required on this component');
     }
@@ -115,6 +115,7 @@ export class AccountConnectsComponent extends Component {
   }
 
   protected async beforeBind() {
+    await super.beforeBind();
     this.debug('beforeBind');
 
     this.scope.locales.title = this.scope.locales.title.replace(
@@ -130,7 +131,7 @@ export class AccountConnectsComponent extends Component {
       this.scope.type,
     );
 
-    return this.isConnected()
+    return this.accountIsConnected()
       .then((account: IShopifyConnect | null) => {
         if (account) {
           this.scope.isConnected = true;
@@ -169,6 +170,7 @@ export class AccountConnectsComponent extends Component {
 
   protected async afterBind() {
     this.debug('afterBind', this.scope);
+    await super.afterBind();
   }
 
   protected requiredAttributes() {
@@ -182,7 +184,7 @@ export class AccountConnectsComponent extends Component {
   protected template() {
     let template: string | null = null;
     // Only set the component template if there no childs already
-    if (hasChildNodesTrim(this.el)) {
+    if (hasChildNodesTrim(this)) {
       this.debug('Do not template, because element has child nodes');
       return template;
     } else {

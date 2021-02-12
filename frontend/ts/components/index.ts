@@ -9,5 +9,3 @@ export { SidebarTogglerComponent } from './sidebar-toggler/sidebar-toggler.compo
 export { TdaI18nSwitcherComponent } from './switcher/switcher.component';
 export { ParcelLabSettingsComponent } from './parcel-lab-settings/parcel-lab-settings.component';
 export { ParcelLabListTrackingComponent } from './parcel-lab-list-tracking/parcel-lab-list-tracking.component';
-// example
-

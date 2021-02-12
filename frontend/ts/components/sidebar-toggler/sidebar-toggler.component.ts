@@ -27,7 +27,7 @@ export class SidebarTogglerComponent extends Component {
 
   protected event = new EventDispatcher('sidebar');
 
-  protected $el: JQuery<HTMLElement>;
+  protected $el: JQuery<SidebarTogglerComponent>;
   protected debug = Debug('component:' + SidebarTogglerComponent.tagName);
 
   protected scope: IScope = {
@@ -37,10 +37,10 @@ export class SidebarTogglerComponent extends Component {
     toggle: this.toggle,
   };
 
-  constructor(element?: HTMLElement) {
-    super(element);
-    this.$el = JQuery(this.el);
-    this.debug('constructor', this.el.constructor, this);
+  constructor() {
+    super();
+    this.$el = JQuery(this);
+    this.debug('constructor', this.constructor, this);
   }
 
   protected connectedCallback() {
@@ -71,27 +71,29 @@ export class SidebarTogglerComponent extends Component {
   public afterHide(state: IState) {
     this.debug('afterHide', state);
     this.scope.sidebarVisable = state.visable;
-    this.el.style.right = state.width.toString();
+    this.style.right = state.width.toString();
   }
 
   public afterShow(state: IState) {
     this.debug('afterShow', state);
     this.scope.sidebarVisable = state.visable;
-    this.el.style.right = state.width.toString();
+    this.style.right = state.width.toString();
   }
 
   public onState(state: IState) {
     this.debug('onState', state);
     this.scope.sidebarVisable = state.visable;
-    this.el.style.right = state.width.toString();
+    this.style.right = state.width.toString();
   }
 
   protected async beforeBind() {
+    await super.beforeBind();
     return this.debug('beforeBind', this.bound);
   }
 
   protected async afterBind() {
-    return this.debug('afterBind', this.bound, this.scope);
+    this.debug('afterBind', this.bound, this.scope);
+    await super.afterBind();
   }
 
   protected requiredAttributes() {
@@ -120,7 +122,7 @@ export class SidebarTogglerComponent extends Component {
   protected template() {
     let template: string | null = null;
     // Only set the component template if there no childs already
-    if (this.el.hasChildNodes()) {
+    if (this.hasChildNodes()) {
       this.debug('Do not template, because element has child nodes');
       return template;
     } else {
