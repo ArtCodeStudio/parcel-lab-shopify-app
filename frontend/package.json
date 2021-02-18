@@ -16,7 +16,7 @@
     "url": "git@github.com:ArtCodeStudio/parcel-lab-shopify-app.git"
   },
   "author": "Art+Code Studio / Pascal Garber <pascal@artandcode.studio>",
-  "license": "UNLICENSED",
+  "license": "AGPL",
   "devDependencies": {
     "@babel/cli": "^7.12.17",
     "@babel/core": "^7.12.17",

@@ -4,7 +4,7 @@
     "description": "",
     "author": "Pascal Garber <pascal@artandcode.studio>",
     "private": true,
-    "license": "MIT",
+    "license": "AGPL",
     "engines": {
         "node": ">=14.0.0"
     },
