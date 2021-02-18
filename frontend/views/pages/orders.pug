@@ -5,14 +5,15 @@ block content
     .col-12
       h1.mb-5(rv-i18n-text="dataset.title | handleize | prepend 'titles.'")
   section.row.orders
-    //- .col-12
-    //-   .card.overview-card
-    //-     .card-body
-    //-       .card-text.px-3
-    //-         .row
-    //-           .col-12
-    //-             h2(rv-i18n-text="'orders.webhooks.title'")
-    //-         .row
-    //-           webhook-explorer(environment=app.environment)
+    if environment !== 'production'
+      .col-12
+        .card.overview-card
+          .card-body
+            .card-text.px-3
+              .row
+                .col-12
+                  h2(rv-i18n-text="'orders.webhooks.title'")
+              .row
+                webhook-explorer(environment=app.environment)
     .col-12.my-5
       parcel-lab-list-tracking
