@@ -10,23 +10,21 @@
   "scripts": {
     "reinstall": "YARN_CHECKSUM_BEHAVIOR=update yarn install",
     "prebuild": "rimraf dist",
-    "build": "npm run lint && nest build",
-    "build:frontend": "cd frontend && touch yarn.lock && yarn install && yarn run build",
-    "npm:build:frontend": "cd frontend && npm install && npm run build",
+    "build": "yarn run lint && nest build",
+    "build:dev": "yarn run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "watch": "npm run start:debug",
+    "watch": "yarn run start:debug",
     "typecheck": "tsc --project tsconfig.build.json --noEmit",
-    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --ignore-pattern '*.spec.ts' --fix && npm run typecheck",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx --ignore-pattern '*.spec.ts' --fix && yarn run typecheck",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "npm:link:deps": "npm link nest-shopify --private"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "url": "https://github.com/ArtCodeStudio/parcel-lab-shopify-app",
   "repository": {

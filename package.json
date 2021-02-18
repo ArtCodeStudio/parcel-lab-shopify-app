@@ -15,6 +15,7 @@
         "start:prod": "yarn workspace @parcel-lab-shopify-app/backend run start:prod",
         "lint": "yarn workspaces foreach run lint",
         "build": "yarn workspaces foreach run build",
+        "build:dev": "yarn workspaces foreach run build:dev",
         "build:backend": "yarn workspace @parcel-lab-shopify-app/backend run build",
         "clean": "yarn workspaces foreach run clean",
         "bump:prerelease": "yarn workspaces foreach version prerelease",

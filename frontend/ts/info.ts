@@ -2,10 +2,7 @@ import { Riba, View, coreModule } from '@ribajs/core';
 import { ready } from '@ribajs/utils/src/dom';
 import { bs4Module } from '@ribajs/bs4';
 import { i18nModule, LocalesStaticService } from '@ribajs/i18n';
-import {
-  ShopifyNestPermissionsComponent,
-  ShopifyNestShopInputComponent,
-} from '@ribajs/shopify-nest';
+import { ShopifyNestShopInputComponent } from '@ribajs/shopify-nest';
 import { routerModule } from '@ribajs/router';
 import locales from './locales';
 import Debug from 'debug';
@@ -28,7 +25,6 @@ export class InfoApp {
     // Regist custom components
     this.riba.module.regist({
       components: {
-        ShopifyNestPermissionsComponent,
         ShopifyNestShopInputComponent,
       },
       binders: {},

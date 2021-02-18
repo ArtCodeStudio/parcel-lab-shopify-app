@@ -1,11 +1,11 @@
 import { EventDispatcher } from '@ribajs/core';
 import Debug from 'debug';
-import { io, Socket } from '../dependencies/socket-io-client';
+import { io } from '../dependencies/socket-io-client';
 
 export class WebhooksService extends EventDispatcher {
   public static instance?: WebhooksService;
 
-  protected socket?: Socket;
+  protected socket?: ReturnType<typeof io>;
   protected debug = Debug('services:WebhooksService');
   protected host: string;
 

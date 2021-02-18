@@ -9,11 +9,8 @@ block content
         h1.display-4 #[span.text-primary Install] #{page.title}
         p.install-text Just enter your domain of your Shopify online store #[br] and start to sync orders to parcelLab!
       .col-12.col-md-6.mx-auto
-        form(action='/shopify/auth')
-          .input-group
-            input.form-control.form-control-lg(type="text", name="shop", placeholder="your-shop.myshopify.com")
-            .input-group-append
-              input.btn.btn-primary.btn-lg(type="submit", value="Go!")
+        form.form-row(action='/shopify/auth')
+          shopify-nest-shop-input.col-12
       .col-12
         img.d-block.img-fluid.mx-auto.mt-5(src="/images/prozess-icon.svg", alt=page.title + ' Progress Icon', width="120")
     .row
