@@ -13,11 +13,13 @@ import {
   ShopService,
   ProductsService,
   OrdersService,
+  TransactionsService,
   ShopifyConnectService,
   IShopifyConnect,
   SHOPIFY_MODULE_OPTIONS,
   ShopifyModuleOptions,
 } from 'nest-shopify';
+import { ParcelLabSettings } from 'parcel-lab/interfaces/settings';
 
 type AnyWebhookOrder =
   | Interfaces.WebhooksReponse.WebhookOrdersFulfilled
@@ -45,6 +47,7 @@ export class ParcelLabTrackingService {
     protected readonly shop: ShopService,
     protected readonly product: ProductsService,
     protected readonly order: OrdersService,
+    protected readonly transaction: TransactionsService,
   ) {
     this.testMode = !!this.shopifyModuleOptions.app.debug;
     this.addEventListeners();
@@ -261,6 +264,7 @@ export class ParcelLabTrackingService {
     const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
     const api = new ParcelLabApi(settings.user, settings.token);
     let tracking = await this.transformTracking(
+      settings,
       shopifyAuth,
       shopifyFulfillment,
     );
@@ -283,7 +287,7 @@ export class ParcelLabTrackingService {
     }
     const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
     const api = new ParcelLabApi(settings.user, settings.token);
-    let order = await this.transformOrder(shopifyAuth, shopifyOrder);
+    let order = await this.transformOrder(settings, shopifyAuth, shopifyOrder);
 
     order = { ...order, ...overwrite };
     const orderResult = await api.createOrUpdateOrder(order, this.testMode);
@@ -293,6 +297,7 @@ export class ParcelLabTrackingService {
     if (shopifyOrder.fulfillments && shopifyOrder.fulfillments.length > 0) {
       for (const shopifyFulfillment of shopifyOrder.fulfillments) {
         const tracking = await this.transformTracking(
+          settings,
           shopifyAuth,
           shopifyFulfillment,
           order,
@@ -315,13 +320,15 @@ export class ParcelLabTrackingService {
    * @param order Currently only used in updateOrCreateOrder because we already have the order object there and do not need to fetch in again
    */
   protected async transformTracking(
+    settings: Partial<ParcelLabSettings>,
     shopifyAuth: IShopifyConnect,
     shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
     order?: ParcellabOrder,
   ): Promise<ParcellabTracking> {
     if (!order) {
       order =
-        (await this.getOrderData(shopifyAuth, shopifyFulfillment)) || undefined;
+        (await this.getOrderData(settings, shopifyAuth, shopifyFulfillment)) ||
+        undefined;
     }
 
     /**
@@ -361,6 +368,13 @@ export class ParcelLabTrackingService {
       },
     };
 
+    if (settings.customFields) {
+      tracking.customFields = {
+        ...tracking.customFields,
+        ...settings.customFields,
+      };
+    }
+
     if ((shopifyFulfillment as AnyWebhookFulfillment).destination) {
       shopifyFulfillment = shopifyFulfillment as AnyWebhookFulfillment;
       tracking.city = shopifyFulfillment.destination.city || order?.city;
@@ -382,6 +396,7 @@ export class ParcelLabTrackingService {
   }
 
   protected async transformOrder(
+    settings: Partial<ParcelLabSettings>,
     shopifyAuth: IShopifyConnect,
     shopifyOrder: Partial<Interfaces.Order>,
   ): Promise<ParcellabOrder> {
@@ -429,10 +444,22 @@ export class ParcelLabTrackingService {
       xid: shopifyOrder.id.toString(), // TODO CHECKME
       zip_code: shopifyOrder.shipping_address?.zip,
       customFields: {
-        verified_email: shopifyOrder.customer.verified_email,
-        accepts_marketing: shopifyOrder.customer.accepts_marketing,
+        customer: {
+          verified_email: shopifyOrder.customer.verified_email,
+          accepts_marketing: shopifyOrder.customer.accepts_marketing,
+        },
+
+        billing_address:
+          shopifyOrder.billing_address || shopifyOrder.shipping_address,
       },
     };
+
+    if (settings.customFields) {
+      order.customFields = {
+        ...order.customFields,
+        ...settings.customFields,
+      };
+    }
 
     return order;
   }
@@ -475,12 +502,30 @@ export class ParcelLabTrackingService {
     shopifyAuth: IShopifyConnect,
     shopifyOrder: Partial<Interfaces.Order>,
   ) {
-    const langCode =
-      shopifyOrder.customer_locale ||
-      shopifyOrder.billing_address?.country_code ||
-      shopifyOrder.shipping_address?.country_code ||
-      shopifyOrder.customer?.default_address?.country_code ||
-      shopifyAuth.shop.primary_locale;
+    let langCode = '';
+
+    // Parse locale from shopifyOrder.note_attributes
+    if (Array.isArray(shopifyOrder.note_attributes)) {
+      for (const noteAttributes of shopifyOrder.note_attributes) {
+        if (
+          noteAttributes.name === 'locale' &&
+          typeof noteAttributes.value === 'string' &&
+          noteAttributes.value.length >= 2
+        ) {
+          langCode = noteAttributes.value;
+        }
+      }
+    }
+
+    if (!langCode || langCode.toLowerCase().startsWith('en')) {
+      langCode =
+        shopifyOrder.customer_locale ||
+        shopifyOrder.billing_address?.country_code ||
+        shopifyOrder.shipping_address?.country_code ||
+        shopifyOrder.customer?.default_address?.country_code ||
+        shopifyAuth.shop.primary_locale;
+    }
+
     return langCode;
   }
 
@@ -531,6 +576,7 @@ export class ParcelLabTrackingService {
   }
 
   protected async getOrderData(
+    settings: Partial<ParcelLabSettings>,
     shopifyAuth: IShopifyConnect,
     fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
   ): Promise<ParcellabOrder | null> {
@@ -544,7 +590,19 @@ export class ParcelLabTrackingService {
         fulfillment.order_id,
         { status: 'any' } as any,
       ); // By default archived orders are not found by the api
-      return this.transformOrder(shopifyAuth, order);
+
+      const transaction = await this.transaction.listFromShopify(
+        shopifyAuth,
+        fulfillment.order_id,
+        {
+          in_shop_currency: false,
+          fields: 'amount,amount,gateway,gateway,message',
+        },
+      );
+
+      this.logger.debug('transaction', transaction);
+
+      return this.transformOrder(settings, shopifyAuth, order);
     } catch (error) {
       console.error(
         `Error on getOrderData with order_id ${fulfillment.order_id} for shop ${shopifyAuth.myshopify_domain}`,

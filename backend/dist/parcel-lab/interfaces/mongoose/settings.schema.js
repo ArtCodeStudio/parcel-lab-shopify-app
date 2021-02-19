@@ -16,5 +16,12 @@ exports.ParcelLabSettingsSchema = new mongoose_1.Schema({
         required: true,
         unique: true,
     },
+    customFields: {
+        'no-notify': {
+            type: Boolean,
+            required: false,
+            unique: false,
+        },
+    },
 });
 //# sourceMappingURL=settings.schema.js.map

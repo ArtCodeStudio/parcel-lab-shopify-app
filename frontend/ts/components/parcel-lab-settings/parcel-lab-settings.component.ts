@@ -32,7 +32,13 @@ export class ParcelLabSettingsComponent extends Component {
     locales: {
       error: '',
     },
-    settings: { token: 'test' },
+    settings: {
+      token: '',
+      user: 0,
+      customFields: {
+        'no-notify': true,
+      },
+    },
     showPasswort: false,
     passwortInputType: 'password',
     // Methods

@@ -15,4 +15,11 @@ export const ParcelLabSettingsSchema = new Schema({
     required: true,
     unique: true,
   },
+  customFields: {
+    'no-notify': {
+      type: Boolean,
+      required: false,
+      unique: false,
+    },
+  },
 });

@@ -1,4 +1,5 @@
 import { HttpService } from '@ribajs/core';
+import { clearObjFromRiba } from '@ribajs/utils';
 import Debug from 'debug';
 import { ParcelLabSettings, ParcellabSearchResponse } from '../interfaces';
 
@@ -6,15 +7,33 @@ export class ParcelLabService {
   protected debug = Debug('services:ParcelLabService');
 
   public async getSettings() {
-    const settings = (await HttpService.getJSON(
+    let settings = (await HttpService.getJSON(
       `/parcel-lab/settings`,
     )) as ParcelLabSettings | null;
+    if (!settings) {
+      settings = {
+        user: 0,
+        token: '',
+        customFields: { 'no-notify': false },
+      };
+    }
+
+    settings.user = settings.user || 0;
+    settings.token = settings.token || '';
+    settings.customFields = settings.customFields || { 'no-notify': false };
+
     this.debug('settings', settings);
     return settings;
   }
 
   public async setSettings(settings: ParcelLabSettings) {
-    return HttpService.post(`/parcel-lab/settings`, { settings }, 'json');
+    const clearSettings = clearObjFromRiba(settings);
+    this.debug('setSettings', clearSettings);
+    return HttpService.post(
+      `/parcel-lab/settings`,
+      { settings: clearSettings },
+      'json',
+    );
   }
 
   public async listTrackings(

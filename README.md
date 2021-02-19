@@ -40,7 +40,7 @@ yarn run test:cov
 
 ## Support
 
-This app is an MIT-licensed open source project.  If you'd like this app please help us to make the app better.
+This app is an AGPL-licensed open source project. If you'd like this app please help us to make the app better.
 
 ## Stay in touch
 
@@ -48,4 +48,4 @@ This app is an MIT-licensed open source project.  If you'd like this app please 
 
 ## License
 
-  This app is [MIT licensed](LICENSE).
+  This app is licensed under [The GNU Affero General Public License](LICENSE.md).

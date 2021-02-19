@@ -1,6 +1,9 @@
 export interface ParcelLabSettings {
-    _id: string;
+    _id?: string;
     user: number;
     token: string;
     shop_domain?: string;
+    customFields?: {
+        'no-notify': boolean;
+    };
 }

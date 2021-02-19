@@ -1,6 +1,7 @@
 import { ParcellabOrder, ParcellabTracking, ParcellabArticle } from '../api/interfaces';
 import { SettingsService } from '../settings/settings.service';
-import { DebugService, EventService, Interfaces, ShopService, ProductsService, OrdersService, ShopifyConnectService, IShopifyConnect, ShopifyModuleOptions } from 'nest-shopify';
+import { DebugService, EventService, Interfaces, ShopService, ProductsService, OrdersService, TransactionsService, ShopifyConnectService, IShopifyConnect, ShopifyModuleOptions } from 'nest-shopify';
+import { ParcelLabSettings } from 'parcel-lab/interfaces/settings';
 declare type AnyWebhookOrder = Interfaces.WebhooksReponse.WebhookOrdersFulfilled | Interfaces.WebhooksReponse.WebhookOrdersPaid | Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled | Interfaces.WebhooksReponse.WebhookOrdersUpdated | Interfaces.WebhooksReponse.WebhookOrdersCreate;
 declare type AnyWebhookFulfillment = Interfaces.WebhooksReponse.WebhookFulfillmentCreate | Interfaces.WebhooksReponse.WebhookFulfillmentUpdate;
 export declare class ParcelLabTrackingService {
@@ -11,9 +12,10 @@ export declare class ParcelLabTrackingService {
     protected readonly shop: ShopService;
     protected readonly product: ProductsService;
     protected readonly order: OrdersService;
+    protected readonly transaction: TransactionsService;
     protected logger: DebugService;
     protected testMode: boolean;
-    constructor(shopifyModuleOptions: ShopifyModuleOptions, shopifyEvents: EventService, shopify: ShopifyConnectService, parcelLabSettings: SettingsService, shop: ShopService, product: ProductsService, order: OrdersService);
+    constructor(shopifyModuleOptions: ShopifyModuleOptions, shopifyEvents: EventService, shopify: ShopifyConnectService, parcelLabSettings: SettingsService, shop: ShopService, product: ProductsService, order: OrdersService, transaction: TransactionsService);
     list(myshopifyDomain: string, search?: string, page?: number, size?: number): Promise<import("../api/interfaces").ParcellabSearchResponse>;
     protected addEventListeners(): void;
     protected onOrderCancelled(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookOrdersCancelled): Promise<void>;
@@ -27,8 +29,8 @@ export declare class ParcelLabTrackingService {
     protected onFulfillmentsUpdate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate): Promise<void>;
     protected updateOrCreateTracking(myshopifyDomain: any, shopifyFulfillment: AnyWebhookFulfillment, overwrite?: Partial<ParcellabTracking>): Promise<string[]>;
     protected updateOrCreateOrder(myshopifyDomain: any, shopifyOrder: AnyWebhookOrder, overwrite?: Partial<ParcellabOrder>): Promise<string[]>;
-    protected transformTracking(shopifyAuth: IShopifyConnect, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder): Promise<ParcellabTracking>;
-    protected transformOrder(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder>;
+    protected transformTracking(settings: Partial<ParcelLabSettings>, shopifyAuth: IShopifyConnect, shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment, order?: ParcellabOrder): Promise<ParcellabTracking>;
+    protected transformOrder(settings: Partial<ParcelLabSettings>, shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>): Promise<ParcellabOrder>;
     protected transformLineItems(shopifyAuth: IShopifyConnect, lineItems: Interfaces.DraftOrder['line_items'] | Interfaces.Order['line_items']): Promise<ParcellabArticle[]>;
     protected getClient(shopifyAuth: IShopifyConnect): Promise<string>;
     protected getLangCode(shopifyAuth: IShopifyConnect, shopifyOrder: Partial<Interfaces.Order>): Promise<string>;
@@ -40,7 +42,7 @@ export declare class ParcelLabTrackingService {
         articleImageUrl?: string;
         articleUrl?: string;
     }>;
-    protected getOrderData(shopifyAuth: IShopifyConnect, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<ParcellabOrder | null>;
+    protected getOrderData(settings: Partial<ParcelLabSettings>, shopifyAuth: IShopifyConnect, fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<ParcellabOrder | null>;
     protected getVariant(product: Partial<Interfaces.Product>, variant_id: number): Promise<Interfaces.ProductVariant | null>;
     protected getProductImageSource(product: Partial<Interfaces.Product>, variant_id: number): string;
     protected getCourier(fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment): Promise<string>;

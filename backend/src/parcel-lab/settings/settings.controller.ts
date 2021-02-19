@@ -2,18 +2,19 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
   Res,
-  Req,
   Session,
   Body,
   HttpStatus,
 } from '@nestjs/common';
-import { Roles } from 'nest-shopify';
+import { Roles, DebugService } from 'nest-shopify';
 import { SettingsService } from '../settings/settings.service';
 import { ParcelLabSettings } from '../interfaces/settings';
 
 @Controller('parcel-lab/settings')
 export class SettingsController {
+  protected log = new DebugService('parcelLab:SettingsController');
   constructor(protected readonly settings: SettingsService) {}
 
   @Get()
@@ -22,7 +23,7 @@ export class SettingsController {
    * Get the settings
    */
   get(@Res() res, @Session() session) {
-    console.debug('GET parcel-lab/settings', session.currentShop);
+    this.log.debug('GET parcel-lab/settings', session.currentShop);
     return this.settings
       .findByShopDomain(session.currentShop)
       .then((settings) => {
@@ -43,21 +44,41 @@ export class SettingsController {
   set(
     @Res() res,
     @Session() session,
-    @Req() req,
     @Body('settings') settings: ParcelLabSettings,
   ) {
-    console.debug('POST parcel-lab/settings', session.currentShop, settings);
+    this.log.debug('POST parcel-lab/settings', session.currentShop, settings);
     return this.settings
       .createOrUpdate({ ...settings, shop_domain: session.currentShop })
-      .then((settings) => {
-        return res.json(settings);
-      })
+      .then((settings) => res.json(settings))
       .catch((error: any /* TODO */) => {
-        console.error(error);
+        this.log.error(error);
         const statusCode: number =
           error.status || HttpStatus.INTERNAL_SERVER_ERROR;
         return res.status(statusCode).json({
-          message: `Failure on get parcel-lab settings for shop domain ${session.currentShop}`,
+          message: `Failure on set parcel-lab settings for shop domain ${session.currentShop}`,
+        });
+      });
+  }
+
+  @Delete()
+  @Roles('shopify-staff-member')
+  /**
+   * Set the settings
+   */
+  delete(
+    @Res() res,
+    @Session() session,
+    @Body('settings') settings: ParcelLabSettings,
+  ) {
+    this.log.debug('Delete parcel-lab/settings', session.currentShop, settings);
+    return this.settings
+      .delete(session.currentShop)
+      .then((deleteResult) => res.json(deleteResult))
+      .catch((error: Error) => {
+        this.log.error(error);
+        const statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR;
+        return res.status(statusCode).json({
+          message: `Failure on delete parcel-lab settings for shop domain ${session.currentShop}`,
         });
       });
   }

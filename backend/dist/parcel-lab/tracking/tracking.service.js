@@ -17,8 +17,9 @@ const common_1 = require("@nestjs/common");
 const parcel_lab_api_1 = require("../api/parcel-lab-api");
 const settings_service_1 = require("../settings/settings.service");
 const nest_shopify_1 = require("nest-shopify");
+const settings_1 = require("../interfaces/settings");
 let ParcelLabTrackingService = class ParcelLabTrackingService {
-    constructor(shopifyModuleOptions, shopifyEvents, shopify, parcelLabSettings, shop, product, order) {
+    constructor(shopifyModuleOptions, shopifyEvents, shopify, parcelLabSettings, shop, product, order, transaction) {
         this.shopifyModuleOptions = shopifyModuleOptions;
         this.shopifyEvents = shopifyEvents;
         this.shopify = shopify;
@@ -26,6 +27,7 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
         this.shop = shop;
         this.product = product;
         this.order = order;
+        this.transaction = transaction;
         this.logger = new nest_shopify_1.DebugService('parcelLab:ParcelLabTrackingService');
         this.testMode = false;
         this.testMode = !!this.shopifyModuleOptions.app.debug;
@@ -150,7 +152,7 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
         }
         const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
         const api = new parcel_lab_api_1.ParcelLabApi(settings.user, settings.token);
-        let tracking = await this.transformTracking(shopifyAuth, shopifyFulfillment);
+        let tracking = await this.transformTracking(settings, shopifyAuth, shopifyFulfillment);
         tracking = Object.assign(Object.assign({}, tracking), overwrite);
         const result = await api.createOrUpdateTracking(tracking, this.testMode);
         return result;
@@ -163,24 +165,25 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
         }
         const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
         const api = new parcel_lab_api_1.ParcelLabApi(settings.user, settings.token);
-        let order = await this.transformOrder(shopifyAuth, shopifyOrder);
+        let order = await this.transformOrder(settings, shopifyAuth, shopifyOrder);
         order = Object.assign(Object.assign({}, order), overwrite);
         const orderResult = await api.createOrUpdateOrder(order, this.testMode);
         const trackingResults = [];
         if (shopifyOrder.fulfillments && shopifyOrder.fulfillments.length > 0) {
             for (const shopifyFulfillment of shopifyOrder.fulfillments) {
-                const tracking = await this.transformTracking(shopifyAuth, shopifyFulfillment, order);
+                const tracking = await this.transformTracking(settings, shopifyAuth, shopifyFulfillment, order);
                 const trackingResult = await api.createOrUpdateTracking(tracking, this.testMode);
                 trackingResults.push(...trackingResult);
             }
         }
         return [...orderResult, ...trackingResults];
     }
-    async transformTracking(shopifyAuth, shopifyFulfillment, order) {
+    async transformTracking(settings, shopifyAuth, shopifyFulfillment, order) {
         var _a;
         if (!order) {
             order =
-                (await this.getOrderData(shopifyAuth, shopifyFulfillment)) || undefined;
+                (await this.getOrderData(settings, shopifyAuth, shopifyFulfillment)) ||
+                    undefined;
         }
         const tracking = Object.assign(Object.assign({}, (order || {})), { articles: await this.transformLineItems(shopifyAuth, shopifyFulfillment.line_items), branchDelivery: ((_a = shopifyFulfillment.tracking_numbers) === null || _a === void 0 ? void 0 : _a.length) > 1, courier: (await this.getCourier(shopifyFulfillment)) || order.courier, client: (await this.getClient(shopifyAuth)) || order.client, cancelled: shopifyFulfillment.status === 'cancelled' || order.cancelled, complete: shopifyFulfillment.shipment_status === 'delivered' || order.complete, statuslink: shopifyFulfillment.tracking_urls
                 ? shopifyFulfillment.tracking_urls.join(',')
@@ -189,6 +192,9 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
                 : shopifyFulfillment.tracking_number, warehouse: shopifyFulfillment.location_id
                 ? shopifyFulfillment.location_id.toString()
                 : undefined, customFields: Object.assign(Object.assign({}, (order.customFields || {})), { notify_customer: shopifyFulfillment.notify_customer }) });
+        if (settings.customFields) {
+            tracking.customFields = Object.assign(Object.assign({}, tracking.customFields), settings.customFields);
+        }
         if (shopifyFulfillment.destination) {
             shopifyFulfillment = shopifyFulfillment;
             tracking.city = shopifyFulfillment.destination.city || (order === null || order === void 0 ? void 0 : order.city);
@@ -206,7 +212,7 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
         }
         return tracking;
     }
-    async transformOrder(shopifyAuth, shopifyOrder) {
+    async transformOrder(settings, shopifyAuth, shopifyOrder) {
         var _a, _b, _c, _d, _e, _f, _g;
         const order = {
             articles: await this.transformLineItems(shopifyAuth, shopifyOrder.line_items),
@@ -234,10 +240,16 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
             xid: shopifyOrder.id.toString(),
             zip_code: (_g = shopifyOrder.shipping_address) === null || _g === void 0 ? void 0 : _g.zip,
             customFields: {
-                verified_email: shopifyOrder.customer.verified_email,
-                accepts_marketing: shopifyOrder.customer.accepts_marketing,
+                customer: {
+                    verified_email: shopifyOrder.customer.verified_email,
+                    accepts_marketing: shopifyOrder.customer.accepts_marketing,
+                },
+                billing_address: shopifyOrder.billing_address || shopifyOrder.shipping_address,
             },
         };
+        if (settings.customFields) {
+            order.customFields = Object.assign(Object.assign({}, order.customFields), settings.customFields);
+        }
         return order;
     }
     async transformLineItems(shopifyAuth, lineItems) {
@@ -262,8 +274,21 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
     }
     async getLangCode(shopifyAuth, shopifyOrder) {
         var _a, _b, _c, _d;
-        const langCode = shopifyOrder.customer_locale || ((_a = shopifyOrder.billing_address) === null || _a === void 0 ? void 0 : _a.country_code) || ((_b = shopifyOrder.shipping_address) === null || _b === void 0 ? void 0 : _b.country_code) || ((_d = (_c = shopifyOrder.customer) === null || _c === void 0 ? void 0 : _c.default_address) === null || _d === void 0 ? void 0 : _d.country_code) ||
-            shopifyAuth.shop.primary_locale;
+        let langCode = '';
+        if (Array.isArray(shopifyOrder.note_attributes)) {
+            for (const noteAttributes of shopifyOrder.note_attributes) {
+                if (noteAttributes.name === 'locale' &&
+                    typeof noteAttributes.value === 'string' &&
+                    noteAttributes.value.length >= 2) {
+                    langCode = noteAttributes.value;
+                }
+            }
+        }
+        if (!langCode || langCode.toLowerCase().startsWith('en')) {
+            langCode =
+                shopifyOrder.customer_locale || ((_a = shopifyOrder.billing_address) === null || _a === void 0 ? void 0 : _a.country_code) || ((_b = shopifyOrder.shipping_address) === null || _b === void 0 ? void 0 : _b.country_code) || ((_d = (_c = shopifyOrder.customer) === null || _c === void 0 ? void 0 : _c.default_address) === null || _d === void 0 ? void 0 : _d.country_code) ||
+                    shopifyAuth.shop.primary_locale;
+        }
         return langCode;
     }
     getName(shopifyOrder) {
@@ -295,14 +320,19 @@ let ParcelLabTrackingService = class ParcelLabTrackingService {
             };
         }
     }
-    async getOrderData(shopifyAuth, fulfillment) {
+    async getOrderData(settings, shopifyAuth, fulfillment) {
         if (!fulfillment.order_id) {
             console.warn('getOrderData no order_id given!');
             return null;
         }
         try {
             const order = await this.order.getFromShopify(shopifyAuth, fulfillment.order_id, { status: 'any' });
-            return this.transformOrder(shopifyAuth, order);
+            const transaction = await this.transaction.listFromShopify(shopifyAuth, fulfillment.order_id, {
+                in_shop_currency: false,
+                fields: 'amount,amount,gateway,gateway,message',
+            });
+            this.logger.debug('transaction', transaction);
+            return this.transformOrder(settings, shopifyAuth, order);
         }
         catch (error) {
             console.error(`Error on getOrderData with order_id ${fulfillment.order_id} for shop ${shopifyAuth.myshopify_domain}`, error);
@@ -340,7 +370,8 @@ ParcelLabTrackingService = __decorate([
         settings_service_1.SettingsService,
         nest_shopify_1.ShopService,
         nest_shopify_1.ProductsService,
-        nest_shopify_1.OrdersService])
+        nest_shopify_1.OrdersService,
+        nest_shopify_1.TransactionsService])
 ], ParcelLabTrackingService);
 exports.ParcelLabTrackingService = ParcelLabTrackingService;
 //# sourceMappingURL=tracking.service.js.map

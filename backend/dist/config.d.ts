@@ -16,7 +16,7 @@ declare const _default: () => {
         cookie: {
             maxAge: number;
             secure: boolean;
-            sameSite: boolean | "strict" | "lax" | "none";
+            sameSite: boolean | "none" | "lax" | "strict";
         };
     };
     app: ConfigApp;
