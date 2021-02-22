@@ -530,6 +530,11 @@ export class ParcelLabTrackingService {
     if (!tracking.tracking_number || tracking.tracking_number.length === 0) {
       delete tracking.courier;
     }
+
+    if (this.shopifyModuleOptions.app.environment !== 'production') {
+      tracking.tracking_number = 'dev_' + tracking.tracking_number;
+    }
+
     if (tracking.cancelled) {
       this.logger.warn(
         `tracking cancelled "${tracking.cancelled}" at "${tracking.customFields.cancelled_at}" for order number "${tracking.orderNo}".`,

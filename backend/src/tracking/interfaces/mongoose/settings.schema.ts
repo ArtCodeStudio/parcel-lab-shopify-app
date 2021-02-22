@@ -16,8 +16,11 @@ export const ParcelLabSettingsSchema = new Schema({
     required: true,
     unique: true,
   },
-  prefer_checkout_shipping_method: Boolean,
-
+  prefer_checkout_shipping_method: {
+    type: Boolean,
+    required: false,
+    unique: false,
+  },
   customFields: {
     'no-notify': {
       type: Boolean,

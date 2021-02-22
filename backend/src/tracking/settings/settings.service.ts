@@ -33,7 +33,7 @@ export class SettingsService {
       shop_domain: shopDomain,
       user: 0,
       token: '',
-      prefer_checkout_shipping_method: true,
+      prefer_checkout_shipping_method: false,
       customFields: {
         'no-notify': true,
       },
