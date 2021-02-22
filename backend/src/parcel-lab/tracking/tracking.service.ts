@@ -113,7 +113,7 @@ export class ParcelLabTrackingService {
     );
     this.shopifyEvents.on(
       `webhook:order_transactions/create`,
-      this.onOrderCreate.bind(this),
+      this.onOrderTransactionCreate.bind(this),
     );
 
     // fulfillments
@@ -223,6 +223,19 @@ export class ParcelLabTrackingService {
     } catch (error) {
       console.error('onOrderDelete error', error);
     }
+  }
+
+  protected async onOrderTransactionCreate(
+    myshopifyDomain: string,
+    data: Interfaces.WebhooksReponse.WebhookOrderTransactionCreate,
+  ) {
+    this.logger.debug('onOrderTransactionCreate', myshopifyDomain, data);
+    // try {
+    //   const result = await this.updateOrCreateOrder(myshopifyDomain, data);
+    //   this.logger.debug('onOrderDelete result', result);
+    // } catch (error) {
+    //   console.error('onOrderDelete error', error);
+    // }
   }
 
   protected async onFulfillmentsCreate(
@@ -362,10 +375,11 @@ export class ParcelLabTrackingService {
      */
     const tracking: Partial<ParcellabTracking> = {
       ...(order || {}),
-      articles: await this.transformLineItems(
-        shopifyAuth,
-        shopifyFulfillment.line_items,
-      ),
+      // The line items from are fullfilment containing ALL orders inklucing the stoned line items
+      // articles: await this.transformLineItems(
+      //   shopifyAuth,
+      //   shopifyFulfillment.line_items,
+      // ),
       branchDelivery: shopifyFulfillment.tracking_numbers?.length > 1, // TODO checkm,
       courier: (await this.getCourier(shopifyFulfillment)) || order.courier,
       client: (await this.getClient(shopifyAuth)) || order.client,
@@ -383,6 +397,7 @@ export class ParcelLabTrackingService {
         : undefined,
       customFields: {
         notify_customer: shopifyFulfillment.notify_customer,
+        line_items: shopifyFulfillment.line_items,
       },
     };
 
@@ -450,6 +465,7 @@ export class ParcelLabTrackingService {
       articles: await this.transformLineItems(
         shopifyAuth,
         shopifyOrder.line_items,
+        shopifyOrder.refunds,
       ),
       city: shopifyOrder?.shipping_address?.city,
       client: await this.getClient(shopifyAuth),
@@ -480,6 +496,8 @@ export class ParcelLabTrackingService {
           accepts_marketing: shopifyOrder.customer.accepts_marketing,
         },
 
+        line_items: shopifyOrder.line_items,
+        refunds: shopifyOrder.refunds,
         shipping_lines: shopifyOrder.shipping_lines,
 
         // Used for notification template variables
@@ -505,9 +523,17 @@ export class ParcelLabTrackingService {
     lineItems:
       | Interfaces.DraftOrder['line_items']
       | Interfaces.Order['line_items'],
+    refunds: Interfaces.Order['refunds'],
   ): Promise<ParcellabArticle[]> {
     const articles: ParcellabArticle[] = [];
-    for (const lineItem of lineItems) {
+
+    // Line items without refunds
+    const filteredLineItems = await this.filterRefundLineItems(
+      lineItems,
+      refunds,
+    );
+
+    for (const lineItem of filteredLineItems) {
       const article: ParcellabArticle = {
         articleName: lineItem.title + ' ' + lineItem.variant_title,
         articleNo: lineItem.variant_id.toString(),
@@ -526,7 +552,42 @@ export class ParcelLabTrackingService {
       article.articleUrl = articleUrl;
       articles.push(article);
     }
+    this.logger.debug('lineItems', lineItems);
+    // this.logger.debug('refunds', refunds);
+    this.logger.debug('filteredLineItems', filteredLineItems);
     return articles;
+  }
+
+  protected async filterRefundLineItems(
+    lineItems:
+      | Interfaces.DraftOrder['line_items']
+      | Interfaces.Order['line_items'],
+    refunds: Interfaces.Order['refunds'],
+  ) {
+    const filteredLineItems: Interfaces.Order['line_items'] = [];
+    const refundLineItems = await this.getRefundLineItems(refunds);
+
+    for (const lineItem of lineItems) {
+      const equalRefundLineItems = refundLineItems.filter(
+        (refundLineItem) => refundLineItem.line_item_id === lineItem.id,
+      );
+      for (const equalRefundLineItem of equalRefundLineItems) {
+        lineItem.quantity -= equalRefundLineItem.quantity;
+      }
+      if (lineItem.quantity > 0) {
+        filteredLineItems.push(lineItem);
+      }
+    }
+
+    return filteredLineItems;
+  }
+
+  protected async getRefundLineItems(refunds: Interfaces.Order['refunds']) {
+    const refundLineItems: Interfaces.RefundLineItem[] = [];
+    for (const refund of refunds) {
+      refundLineItems.push(...refund.refund_line_items);
+    }
+    return refundLineItems;
   }
 
   protected async getClient(shopifyAuth: IShopifyConnect) {
