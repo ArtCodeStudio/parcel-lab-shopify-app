@@ -86,7 +86,8 @@
         "@ribajs/node-graphql-client": "portal:../riba/backend/node-graphql-client",
         "@ribajs/events": "portal:../riba/packages/events",
         "@ribajs/shopify-nest": "portal:../riba/packages/shopify-nest",
-        "@ribajs/ssr": "portal:../riba/packages/ssr"
+        "@ribajs/ssr": "portal:../riba/packages/ssr",
+        "parcellab": "portal:../parcellab-node"
     },
     "dependencies": {
         "@parcel-lab-shopify-app/backend": "workspace:backend",

@@ -1,10 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { ParcelLabApi } from '../api/parcel-lab-api';
 import {
+  ParcelLabApi,
   ParcellabOrder,
   ParcellabTracking,
   ParcellabArticle,
-} from '../api/interfaces';
+} from 'parcellab';
+
 import { SettingsService } from '../settings/settings.service';
 import {
   DebugService,
@@ -19,7 +20,7 @@ import {
   SHOPIFY_MODULE_OPTIONS,
   ShopifyModuleOptions,
 } from 'nest-shopify';
-import { ParcelLabSettings } from 'parcel-lab/interfaces/settings';
+import { ParcelLabSettings } from '../interfaces/settings';
 
 type AnyWebhookOrder =
   | Interfaces.WebhooksReponse.WebhookOrdersFulfilled

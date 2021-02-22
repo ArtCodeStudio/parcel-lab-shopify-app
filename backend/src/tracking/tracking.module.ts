@@ -20,14 +20,14 @@ import { TrackingController } from './tracking/tracking.controller';
   ],
   controllers: [SettingsController, TrackingController],
 })
-export class ParcelLabModule {
+export class TrackingModule {
   static forRoot(
     options: ShopifyModuleOptions,
     database: Mongoose,
     passport: PassportStatic,
   ): DynamicModule {
     return {
-      module: ParcelLabModule,
+      module: TrackingModule,
       imports: [ShopifyModule.forRoot(options, database, passport)],
     };
   }

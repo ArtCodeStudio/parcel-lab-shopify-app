@@ -8,7 +8,7 @@ import config from './config';
 import { ShopifyModule, ShopifyModuleOptions } from 'nest-shopify';
 import { Mongoose } from 'mongoose';
 import { PassportStatic } from 'passport';
-import { ParcelLabModule } from './parcel-lab/parcel-lab.module';
+import { TrackingModule } from './tracking/tracking.module';
 
 @Module({
   imports: [
@@ -31,7 +31,7 @@ export class AppModule {
       imports: [
         CacheModule.register(options.cache),
         ShopifyModule.forRoot(options, database, passport),
-        ParcelLabModule.forRoot(options, database, passport),
+        TrackingModule.forRoot(options, database, passport),
       ],
     };
   }
