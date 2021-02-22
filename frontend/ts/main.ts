@@ -1,9 +1,8 @@
 import { Riba, HttpService, coreModule, EventDispatcher } from '@ribajs/core';
-import { ready } from "@ribajs/utils/src/dom";
+import { ready } from '@ribajs/utils/src/dom';
 import Debug from 'debug';
 
 // Extensions / Modules
-import { JQuery } from '@ribajs/jquery';
 import { routerModule } from '@ribajs/router';
 import { i18nModule, LocalesStaticService } from '@ribajs/i18n';
 import { bs4Module } from '@ribajs/bs4';
@@ -123,7 +122,6 @@ export class Main {
     ready(() => {
       this.riba.bind(document.body, this.model);
     });
-    
   }
 }
 
@@ -151,4 +149,3 @@ const bootstrap = () => {
 ready(() => {
   bootstrap();
 });
-

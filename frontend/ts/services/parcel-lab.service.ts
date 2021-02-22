@@ -7,23 +7,20 @@ export class ParcelLabService {
   protected debug = Debug('services:ParcelLabService');
 
   public async getSettings() {
-    let settings = (await HttpService.getJSON(
+    let settings: any = (await HttpService.getJSON(
       `/parcel-lab/settings`,
     )) as ParcelLabSettings | null;
-    if (!settings) {
-      settings = {
-        user: 0,
-        token: '',
-        customFields: { 'no-notify': false },
-      };
-    }
-
+    settings = settings || {};
     settings.user = settings.user || 0;
     settings.token = settings.token || '';
-    settings.customFields = settings.customFields || { 'no-notify': false };
+    settings.customFields = settings.customFields || {};
+    settings.customFields['no-notify'] =
+      settings.customFields['no-notify'] || false;
+    settings.prefer_checkout_shipping_method =
+      settings.prefer_checkout_shipping_method || false;
 
     this.debug('settings', settings);
-    return settings;
+    return settings as ParcelLabSettings;
   }
 
   public async setSettings(settings: ParcelLabSettings) {

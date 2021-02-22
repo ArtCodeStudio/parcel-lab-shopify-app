@@ -23,8 +23,6 @@ interface IScope {
   inIframe: boolean;
 }
 
-declare const shop: string;
-
 export class AccountConnectsComponent extends Component {
   public static tagName = 'rv-account-connects';
 

@@ -65,7 +65,7 @@
     "@ribajs/jquery": "next",
     "@ribajs/router": "next",
     "@ribajs/shopify-easdk": "next",
-    "@ribajs/shopify-nest": "^2.0.0-alpha.0",
+    "@ribajs/shopify-nest": "next",
     "@ribajs/utils": "next",
     "@types/events": "^3.0.0",
     "@types/jquery": "^3.5.5",
