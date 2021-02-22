@@ -2,10 +2,10 @@ import { Injectable, Inject } from '@nestjs/common';
 import {
   ParcelLabApi,
   ParcellabOrder,
-  ParcellabTracking,
   ParcellabArticle,
+  ParcellabSearchResponse,
 } from 'parcellab';
-
+import { ParcelLabSettings } from '../interfaces';
 import { SettingsService } from '../settings/settings.service';
 import {
   DebugService,
@@ -20,7 +20,9 @@ import {
   SHOPIFY_MODULE_OPTIONS,
   ShopifyModuleOptions,
 } from 'nest-shopify';
-import { ParcelLabSettings } from '../interfaces/settings';
+
+// Options TODO make this configurable?
+const PREFER_SKU = true;
 
 type AnyWebhookOrder =
   | Interfaces.WebhooksReponse.WebhookOrdersFulfilled
@@ -51,7 +53,7 @@ export class ParcelLabTrackingService {
     protected readonly transaction: TransactionsService,
   ) {
     // TODO add this to the pacelLab settings
-    // this.testMode = !!this.shopifyModuleOptions.app.debug;
+    this.testMode = !!this.shopifyModuleOptions.app.test;
     this.addEventListeners();
   }
 
@@ -68,12 +70,12 @@ export class ParcelLabTrackingService {
     search?: string,
     page?: number,
     size?: number,
-  ) {
+  ): Promise<ParcellabSearchResponse> {
     const settings = await this.parcelLabSettings.findByShopDomain(
       myshopifyDomain,
     );
     if (!settings) {
-      this.logger.debug('No parcelLab settings found for ' + myshopifyDomain);
+      this.logger.debug('No parcelLab settings found for: %s', myshopifyDomain);
       return;
     }
     const api = new ParcelLabApi(settings.user, settings.token);
@@ -129,100 +131,104 @@ export class ParcelLabTrackingService {
   }
 
   // async onDraftOrderCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderCreate) {
-  //     this.logger.debug('onDraftOrderCreate', myshopifyDomain, data);
+  //     this.logger.debug('onDraftOrderCreate: %s - %O', myshopifyDomain, data);
   // }
   // async onDraftOrderDelete(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderDelete) {
-  //     this.logger.debug('onDraftOrderDelete', myshopifyDomain, data);
+  //     this.logger.debug('onDraftOrderDelete: %s - %O', myshopifyDomain, data);
   // }
   // async onDraftOrderUpdate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderCreate) {
-  //     this.logger.debug('onDraftOrderUpdate', myshopifyDomain, data);
+  //     this.logger.debug('onDraftOrderUpdate: %s - %O', myshopifyDomain, data);
   // }
 
   protected async onOrderCancelled(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrdersCancelled,
   ) {
-    this.logger.debug('onOrderCancelled', myshopifyDomain, data);
+    // this.logger.debug('onOrderCancelled: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug('onOrderCancelled result', result);
+      // this.logger.debug('onOrderCancelled result: %O', result);
     } catch (error) {
-      console.error('onOrderCancelled error', error);
+      this.logger.error('onOrderCancelled error', error);
     }
   }
   protected async onOrderCreate(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrdersCreate,
   ) {
-    this.logger.debug('onOrderCreate', myshopifyDomain, data);
+    // this.logger.debug('onOrderCreate: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug('onOrderCreate result', result);
+      // this.logger.debug('onOrderCreate result: %O', result);
     } catch (error) {
-      console.error('onOrderCreate error', error);
+      this.logger.error('onOrderCreate error', error);
     }
   }
   protected async onOrderFulfilled(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrdersFulfilled,
   ) {
-    this.logger.debug('onOrderFulfilled', myshopifyDomain, data);
+    // this.logger.debug('onOrderFulfilled: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug('onOrderFulfilled result', result);
+      // this.logger.debug('onOrderFulfilled result: %O', result);
     } catch (error) {
-      console.error('onOrderFulfilled error', error);
+      this.logger.error('onOrderFulfilled error', error);
     }
   }
   protected async onOrderPaid(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrdersPaid,
   ) {
-    this.logger.debug('onOrderPaid', myshopifyDomain, data);
+    // this.logger.debug('onOrderPaid: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug('onOrderPaid result', result);
+      // this.logger.debug('onOrderPaid result: %O', result);
     } catch (error) {
-      console.error('onOrderPaid error', error);
+      this.logger.error('onOrderPaid error', error);
     }
   }
   protected async onOrderPartiallyFulfilled(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled,
   ) {
-    this.logger.debug('onOrderPartiallyFulfilled', myshopifyDomain, data);
+    // this.logger.debug(
+    //   'onOrderPartiallyFulfilled: %s - %O',
+    //   myshopifyDomain,
+    //   data,
+    // );
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug(
-        'onOrdonOrderPartiallyFulfillederUpdated result',
-        result,
-      );
+      // this.logger.debug(
+      //   'onOrdonOrderPartiallyFulfillederUpdated result',
+      //   result,
+      // );
     } catch (error) {
-      console.error('onOrderPartiallyFulfilled error', error);
+      this.logger.error('onOrderPartiallyFulfilled error', error);
     }
   }
   protected async onOrderUpdated(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrdersUpdated,
   ) {
-    this.logger.debug('onOrderUpdated', myshopifyDomain, data);
+    // this.logger.debug('onOrderUpdated: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug('onOrderUpdated result', result);
+      // this.logger.debug('onOrderUpdated result: %O', result);
     } catch (error) {
-      console.error('onOrderUpdated error', error);
+      this.logger.error('onOrderUpdated error', error);
     }
   }
   protected async onOrderDelete(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrdersCreate,
   ) {
-    this.logger.debug('onOrderDelete', myshopifyDomain, data);
+    // this.logger.debug('onOrderDelete: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug('onOrderDelete result', result);
+      // this.logger.debug('onOrderDelete result: %O', result);
     } catch (error) {
-      console.error('onOrderDelete error', error);
+      this.logger.error('onOrderDelete error', error);
     }
   }
 
@@ -230,12 +236,16 @@ export class ParcelLabTrackingService {
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrderTransactionCreate,
   ) {
-    this.logger.debug('onOrderTransactionCreate', myshopifyDomain, data);
+    // this.logger.debug(
+    //   'onOrderTransactionCreate: %s - %O',
+    //   myshopifyDomain,
+    //   data,
+    // );
     // try {
     //   const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-    //   this.logger.debug('onOrderDelete result', result);
+    //   this.logger.debug('onOrderDelete result: %O', result);
     // } catch (error) {
-    //   console.error('onOrderDelete error', error);
+    //   this.logger.error('onOrderDelete error', error);
     // }
   }
 
@@ -243,31 +253,31 @@ export class ParcelLabTrackingService {
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookFulfillmentCreate,
   ) {
-    this.logger.debug('onFulfillmentsCreate', myshopifyDomain, data);
+    // this.logger.debug('onFulfillmentsCreate: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateTracking(myshopifyDomain, data);
-      this.logger.debug('onFulfillmentsCreate result', result);
+      // this.logger.debug('onFulfillmentsCreate result: %O', result);
     } catch (error) {
-      console.error('onFulfillmentsCreate error', error);
+      this.logger.error('onFulfillmentsCreate error', error);
     }
   }
   protected async onFulfillmentsUpdate(
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate,
   ) {
-    this.logger.debug('onFulfillmentsUpdate', myshopifyDomain, data);
+    // this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateTracking(myshopifyDomain, data);
-      this.logger.debug('onFulfillmentsUpdate result', result);
+      // this.logger.debug('onFulfillmentsUpdate result: %O', result);
     } catch (error) {
-      console.error('onFulfillmentsUpdate error', error);
+      this.logger.error('onFulfillmentsUpdate error', error);
     }
   }
 
   protected async updateOrCreateTracking(
-    myshopifyDomain,
+    myshopifyDomain: string,
     shopifyFulfillment: AnyWebhookFulfillment,
-    overwrite: Partial<ParcellabTracking> = {},
+    overwrite: Partial<ParcellabOrder> = {},
   ) {
     const settings = await this.parcelLabSettings.findByShopDomain(
       myshopifyDomain,
@@ -289,12 +299,38 @@ export class ParcelLabTrackingService {
       ...(settings?.customFields || {}),
     };
     tracking = { ...tracking, ...overwrite, customFields };
-    const result = await api.createOrUpdateTracking(tracking, this.testMode);
+
+    let result: string[] = [];
+    if (
+      tracking.orderNo &&
+      tracking.street &&
+      tracking.city &&
+      tracking.zip_code
+    ) {
+      if (!tracking.language_iso3) {
+        this.logger.warn(
+          `[${
+            tracking.client
+          }] Locale code is missing for order with order name: "${
+            shopifyFulfillment?.name ||
+            shopifyFulfillment?.order_id ||
+            tracking?.customFields?.order_id
+          }"`,
+        );
+      }
+      this.logger.debug('tracking', tracking);
+      this.logger.debug('testMode', this.testMode);
+      result = await api.createOrUpdateOrder(tracking, this.testMode);
+    } else {
+      // this.logger.warn(`Missing data for tracking with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
+      result = ['Missing data.'];
+    }
+
     return result;
   }
 
   protected async updateOrCreateOrder(
-    myshopifyDomain,
+    myshopifyDomain: string,
     shopifyOrder: AnyWebhookOrder,
     overwrite: Partial<ParcellabOrder> = {},
   ) {
@@ -308,22 +344,30 @@ export class ParcelLabTrackingService {
     const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
     const api = new ParcelLabApi(settings.user, settings.token);
 
-    const transactions = await this.transaction.listFromShopify(
-      shopifyAuth,
-      shopifyOrder.id,
-      {
-        in_shop_currency: false,
-        fields:
-          'id,amount,authorization_expires_at,extended_authorization_attributes,receipt,created_at,currency,error_code,gateway,kind,processed_at,source_name,status,test,amount,message',
-      },
-    );
-
-    this.logger.debug('transactions', transactions);
-
     let order = await this.transformOrder(settings, shopifyAuth, shopifyOrder);
 
     order = { ...order, ...overwrite };
-    const orderResult = await api.createOrUpdateOrder(order, this.testMode);
+    let orderResult: string[] = [];
+    if (order.orderNo && order.street && order.city && order.zip_code) {
+      if (!order.language_iso3) {
+        this.logger.warn(
+          `[${
+            order.client
+          }] Locale code is missing for order with order name: "${
+            shopifyOrder?.name ||
+            shopifyOrder?.number ||
+            shopifyOrder?.id ||
+            order?.customFields?.order_id
+          }"`,
+        );
+      }
+      this.logger.debug('order', order);
+      this.logger.debug('testMode', this.testMode);
+      orderResult = await api.createOrUpdateOrder(order, this.testMode);
+    } else {
+      // this.logger.warn(`[${tracking.client}] Missing data for order with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || order?.customFields?.order_id }"`);
+      orderResult.push('Missing data.');
+    }
 
     // If the order has fulfillments we can create tracking of them and not only a order
     const trackingResults: string[] = [];
@@ -333,17 +377,42 @@ export class ParcelLabTrackingService {
           settings,
           shopifyAuth,
           shopifyFulfillment,
+          shopifyOrder,
           order,
         );
-        const trackingResult = await api.createOrUpdateTracking(
-          tracking,
-          this.testMode,
-        );
+        let trackingResult: string[] = [];
+        if (
+          tracking.orderNo &&
+          tracking.street &&
+          tracking.city &&
+          tracking.zip_code
+        ) {
+          if (!tracking.language_iso3) {
+            this.logger.warn(
+              `[${
+                tracking.client
+              }] Locale code is missing for fulfillment with order name: "${
+                shopifyOrder?.name ||
+                shopifyOrder?.number ||
+                shopifyOrder?.id ||
+                tracking?.customFields?.order_id
+              }"`,
+            );
+          }
+          trackingResult = await api.createOrUpdateOrder(
+            tracking,
+            this.testMode,
+          );
+        } else {
+          // this.logger.warn(`[${tracking.client}] Missing data for fulfillment with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || tracking?.customFields?.order_id }"`);
+          trackingResult.push('Missing data.');
+        }
         trackingResults.push(...trackingResult);
       }
     }
 
-    return [...orderResult, ...trackingResults];
+    const result = [...orderResult, ...trackingResults];
+    return result;
   }
 
   /**
@@ -353,15 +422,26 @@ export class ParcelLabTrackingService {
    * @param order Currently only used in updateOrCreateOrder because we already have the order object there and do not need to fetch in again
    */
   protected async transformTracking(
-    settings: Partial<ParcelLabSettings>,
+    parcelLabSettings: ParcelLabSettings,
     shopifyAuth: IShopifyConnect,
     shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
+    shopifyOrder?: Partial<Interfaces.Order>,
     order?: ParcellabOrder,
-  ): Promise<ParcellabTracking> {
-    if (!order) {
+  ): Promise<ParcellabOrder> {
+    if (!shopifyOrder) {
+      shopifyOrder = await this.getShopifyOrder(
+        shopifyAuth,
+        shopifyFulfillment,
+      );
+    }
+    if (!order && shopifyOrder) {
       order =
-        (await this.getOrderData(settings, shopifyAuth, shopifyFulfillment)) ||
-        undefined;
+        (await this.getOrderData(
+          parcelLabSettings,
+          shopifyAuth,
+          shopifyFulfillment,
+          shopifyOrder,
+        )) || undefined;
     }
 
     /**
@@ -374,27 +454,34 @@ export class ParcelLabTrackingService {
      * * upgrade
      * * announced_delivery_date
      */
-    const tracking: Partial<ParcellabTracking> = {
+    const tracking: Partial<ParcellabOrder> = {
       ...(order || {}),
       // The line items from are fullfilment containing ALL orders inklucing the stoned line items
       // articles: await this.transformLineItems(
       //   shopifyAuth,
+      //   shopifyOrder,
       //   shopifyFulfillment.line_items,
       // ),
-      branchDelivery: shopifyFulfillment.tracking_numbers?.length > 1, // TODO checkm,
-      courier: (await this.getCourier(shopifyFulfillment)) || order.courier,
-      client: (await this.getClient(shopifyAuth)) || order.client,
-      cancelled: shopifyFulfillment.status === 'cancelled' || order.cancelled,
+      branchDelivery: false, // TODO set this true of this is a store / branch delivery (Filiallieferung)
+      courier: await this.getCourier(
+        parcelLabSettings,
+        shopifyFulfillment,
+        order,
+      ),
+      client: (await this.getClient(shopifyAuth)) || order?.client,
+      orderNo: await this.getOrderNo(shopifyOrder, shopifyFulfillment, order),
+      cancelled: this.getCancelled(shopifyOrder, shopifyFulfillment, order),
       complete:
-        shopifyFulfillment.shipment_status === 'delivered' || order.complete,
-      statuslink: shopifyFulfillment.tracking_urls
-        ? shopifyFulfillment.tracking_urls.join(',')
-        : shopifyFulfillment.tracking_url,
+        shopifyFulfillment.shipment_status === 'delivered' || order?.complete,
+      statuslink:
+        order?.statuslink || shopifyFulfillment.tracking_urls
+          ? shopifyFulfillment.tracking_urls.join(',')
+          : shopifyFulfillment.tracking_url,
       tracking_number: shopifyFulfillment.tracking_numbers
         ? shopifyFulfillment.tracking_numbers.join(',')
         : shopifyFulfillment.tracking_number,
       warehouse: shopifyFulfillment.location_id
-        ? shopifyFulfillment.location_id.toString()
+        ? shopifyFulfillment.location_id?.toString()
         : undefined,
       customFields: {
         notify_customer: shopifyFulfillment.notify_customer,
@@ -405,7 +492,7 @@ export class ParcelLabTrackingService {
     const customFields = {
       ...(tracking?.customFields || {}),
       ...(order?.customFields || {}),
-      ...(settings?.customFields || {}),
+      ...(parcelLabSettings?.customFields || {}),
     };
 
     tracking.customFields = customFields;
@@ -415,23 +502,45 @@ export class ParcelLabTrackingService {
       tracking.city = shopifyFulfillment.destination.city || order?.city;
       tracking.destination_country_iso3 =
         shopifyFulfillment.destination.country_code ||
-        order.destination_country_iso3;
+        order?.destination_country_iso3;
       tracking.phone = shopifyFulfillment.destination.phone;
       tracking.recipient =
-        shopifyFulfillment.destination.name || order.recipient_notification;
+        shopifyFulfillment.destination.name || order?.recipient_notification;
       tracking.recipient_notification =
-        shopifyFulfillment.destination.name || order.recipient_notification;
+        shopifyFulfillment.destination.name || order?.recipient_notification;
       tracking.street = shopifyFulfillment.destination.address1;
       tracking.zip_code = shopifyFulfillment.destination.zip;
 
       tracking.email = shopifyFulfillment?.email || order?.email;
     }
 
-    return tracking as ParcellabTracking;
+    if (
+      tracking.tracking_number &&
+      typeof tracking.tracking_number === 'string'
+    ) {
+      const { courier, trackingNumber } = await this.validateCourier(
+        parcelLabSettings,
+        tracking.tracking_number,
+        tracking.courier,
+      );
+      tracking.tracking_number = trackingNumber || tracking.tracking_number;
+      tracking.courier = courier || tracking.courier;
+    }
+    // Delete courier property if we do not have a tracking number
+    if (!tracking.tracking_number || tracking.tracking_number.length === 0) {
+      delete tracking.courier;
+    }
+    if (tracking.cancelled) {
+      this.logger.warn(
+        `tracking cancelled "${tracking.cancelled}" at "${tracking.customFields.cancelled_at}" for order number "${tracking.orderNo}".`,
+      );
+    }
+
+    return tracking as ParcellabOrder;
   }
 
   protected async transformOrder(
-    settings: Partial<ParcelLabSettings>,
+    parcelLabSettings: ParcelLabSettings,
     shopifyAuth: IShopifyConnect,
     shopifyOrder: Partial<Interfaces.Order>,
   ): Promise<ParcellabOrder> {
@@ -445,7 +554,7 @@ export class ParcelLabTrackingService {
       },
     );
 
-    this.logger.debug('transactions', transactions);
+    // this.logger.debug('transactions', transactions);
 
     /**
      * TODO transform missing properties:
@@ -465,45 +574,50 @@ export class ParcelLabTrackingService {
     const order: ParcellabOrder = {
       articles: await this.transformLineItems(
         shopifyAuth,
+        shopifyOrder,
         shopifyOrder.line_items,
         shopifyOrder.refunds,
       ),
       city: shopifyOrder?.shipping_address?.city,
       client: await this.getClient(shopifyAuth),
       orderNo: await this.getOrderNo(shopifyOrder),
-      cancelled: shopifyOrder.cancelled_at !== null ? true : false,
-      complete: shopifyOrder.fulfillment_status === 'fulfilled',
-      customerNo: shopifyOrder.customer?.id.toString(),
+      cancelled: this.getCancelled(shopifyOrder),
+      complete: shopifyOrder?.fulfillment_status === 'fulfilled',
+      customerNo: shopifyOrder?.customer?.id.toString(),
       deliveryNo: await this.getDeliveryNo(shopifyOrder),
-      destination_country_iso3: shopifyOrder.shipping_address?.country_code,
-      email: shopifyOrder.customer?.email,
-      language_iso3: await this.getLangCode(shopifyAuth, shopifyOrder),
-      market: shopifyOrder.source_name,
-      order_date: new Date(shopifyOrder.created_at),
-      phone: shopifyOrder.customer?.phone,
+      destination_country_iso3: shopifyOrder?.shipping_address?.country_code,
+      email: shopifyOrder?.customer?.email,
+      language_iso3: await this.getLocaleCode(shopifyAuth, shopifyOrder),
+      market: shopifyOrder?.source_name,
+      order_date: new Date(shopifyOrder?.created_at),
+      phone: shopifyOrder?.customer?.phone,
       recipient: this.getName(shopifyOrder),
       recipient_notification: this.getName(shopifyOrder),
-      statuslink: shopifyOrder.order_status_url,
-      street: shopifyOrder.shipping_address?.address1,
-      warehouse: shopifyOrder.location_id
-        ? shopifyOrder.location_id.toString()
+      statuslink: shopifyOrder?.order_status_url,
+      street: shopifyOrder?.shipping_address?.address1,
+      warehouse: shopifyOrder?.location_id
+        ? shopifyOrder?.location_id.toString()
         : undefined,
-      weight: shopifyOrder.total_weight.toString(),
-      xid: shopifyOrder.id.toString(), // TODO CHECKME
-      zip_code: shopifyOrder.shipping_address?.zip,
+      weight: shopifyOrder?.total_weight.toString(),
+      xid: shopifyOrder?.id.toString(), // TODO CHECKME
+      zip_code: shopifyOrder?.shipping_address?.zip,
       customFields: {
         customer: {
-          verified_email: shopifyOrder.customer.verified_email,
-          accepts_marketing: shopifyOrder.customer.accepts_marketing,
+          verified_email: shopifyOrder?.customer.verified_email,
+          accepts_marketing: shopifyOrder?.customer.accepts_marketing,
         },
 
-        line_items: shopifyOrder.line_items,
-        refunds: shopifyOrder.refunds,
-        shipping_lines: shopifyOrder.shipping_lines,
+        line_items: shopifyOrder?.line_items,
+        refunds: shopifyOrder?.refunds,
+        shipping_lines: shopifyOrder?.shipping_lines,
+
+        fulfillment_status: shopifyOrder?.fulfillment_status,
+        financial_status: shopifyOrder?.financial_status,
+        cancelled_at: shopifyOrder?.cancelled_at,
 
         // Used for notification template variables
         billing_address:
-          shopifyOrder.billing_address || shopifyOrder.shipping_address,
+          shopifyOrder?.billing_address || shopifyOrder?.shipping_address,
 
         transactions,
       },
@@ -511,20 +625,27 @@ export class ParcelLabTrackingService {
 
     const customFields = {
       ...(order?.customFields || {}),
-      ...(settings?.customFields || {}),
+      ...(parcelLabSettings?.customFields || {}),
     };
 
     order.customFields = customFields;
+
+    if (order.cancelled) {
+      this.logger.warn(
+        `order cancelled "${order.cancelled}" at "${order.customFields.cancelled_at}" for order number "${order.orderNo}".`,
+      );
+    }
 
     return order;
   }
 
   protected async transformLineItems(
     shopifyAuth: IShopifyConnect,
+    shopifyOrder: Partial<Interfaces.Order>,
     lineItems:
       | Interfaces.DraftOrder['line_items']
-      | Interfaces.Order['line_items'],
-    refunds: Interfaces.Order['refunds'],
+      | Interfaces.Order['line_items'] = [],
+    refunds: Interfaces.Order['refunds'] = [],
   ): Promise<ParcellabArticle[]> {
     const articles: ParcellabArticle[] = [];
 
@@ -537,7 +658,7 @@ export class ParcelLabTrackingService {
     for (const lineItem of filteredLineItems) {
       const article: ParcellabArticle = {
         articleName: lineItem.title + ' ' + lineItem.variant_title,
-        articleNo: lineItem.variant_id.toString(),
+        articleNo: await this.getArticleNo(lineItem),
         quantity: lineItem.quantity,
       };
       const {
@@ -545,7 +666,7 @@ export class ParcelLabTrackingService {
         articleCategory,
         articleImageUrl,
         articleUrl,
-      } = await this.getProductData(shopifyAuth, lineItem);
+      } = await this.getProductData(shopifyAuth, shopifyOrder, lineItem);
 
       article.articleNo = articleNo || article.articleNo;
       article.articleCategory = articleCategory;
@@ -553,9 +674,9 @@ export class ParcelLabTrackingService {
       article.articleUrl = articleUrl;
       articles.push(article);
     }
-    this.logger.debug('lineItems', lineItems);
+    // this.logger.debug('lineItems', lineItems);
     // this.logger.debug('refunds', refunds);
-    this.logger.debug('filteredLineItems', filteredLineItems);
+    // this.logger.debug('filteredLineItems', filteredLineItems);
     return articles;
   }
 
@@ -595,12 +716,102 @@ export class ParcelLabTrackingService {
     return shopifyAuth.shop.name;
   }
 
-  protected async getOrderNo(shopifyOrder: Partial<Interfaces.Order>) {
+  protected async getOrderNo(
+    shopifyOrder: Partial<Interfaces.Order>,
+    shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment,
+    order?: ParcellabOrder,
+  ) {
+    if (order?.orderNo) {
+      return order.orderNo;
+    }
     let prefix = '';
     if (this.shopifyModuleOptions.app.environment !== 'production') {
       prefix = 'dev_';
     }
-    return prefix + shopifyOrder.order_number.toString();
+    return prefix + shopifyOrder?.name?.toString();
+  }
+
+  protected getCancelled(
+    shopifyOrder?: Partial<Interfaces.Order>,
+    shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment,
+    order?: ParcellabOrder,
+  ) {
+    if (order?.cancelled === true) {
+      return true;
+    }
+    if (shopifyFulfillment?.status === 'cancelled') {
+      return true;
+    }
+    if (
+      shopifyOrder?.cancelled_at &&
+      typeof shopifyOrder?.cancelled_at === 'string'
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  protected async getArticleUrl(
+    shopifyAuth: IShopifyConnect,
+    shopifyOrder: Partial<Interfaces.Order>,
+    product: Partial<Interfaces.Product>,
+    prepend = 'https://',
+  ): Promise<string> {
+    const domain = await this.getShopDomain(shopifyAuth, shopifyOrder);
+    let url = domain + '/products/' + product.handle;
+    if (!url.startsWith('http')) {
+      url = prepend + url;
+    }
+    return url;
+  }
+
+  protected async getShopDomain(
+    shopifyAuth: IShopifyConnect,
+    shopifyOrder: Partial<Interfaces.Order>,
+  ): Promise<string> {
+    return (
+      this.getShopDomainFromNoteAttributes(shopifyOrder) ||
+      shopifyAuth.shop.domain
+    );
+  }
+
+  /**
+   * Special case (for a private client) if the real domain was passed via additional note attributes
+   * @param shopifyOrder
+   */
+  protected getShopDomainFromNoteAttributes(
+    shopifyOrder: Partial<Interfaces.Order>,
+  ) {
+    if (!shopifyOrder?.note_attributes) {
+      return null;
+    }
+    for (const noteAttribute of shopifyOrder.note_attributes) {
+      if (noteAttribute.name === 'domain') {
+        return noteAttribute.value?.toString();
+      }
+    }
+    return null;
+  }
+
+  protected async getArticleNo(
+    lineItem:
+      | Interfaces.DraftLineItem
+      | Interfaces.LineItem
+      | Interfaces.ProductVariant,
+  ): Promise<string> {
+    if (PREFER_SKU && lineItem.sku) {
+      return lineItem.sku;
+    }
+    if ((lineItem as Interfaces.ProductVariant).barcode) {
+      return (lineItem as Interfaces.ProductVariant).barcode;
+    }
+    if ((lineItem as Interfaces.LineItem).variant_id) {
+      return (lineItem as Interfaces.LineItem).variant_id.toString();
+    }
+    if (lineItem.product_id) {
+      return lineItem.product_id.toString();
+    }
+    return lineItem.id.toString();
   }
 
   protected async getDeliveryNo(shopifyOrder: Partial<Interfaces.Order>) {
@@ -611,43 +822,72 @@ export class ParcelLabTrackingService {
     return prefix + shopifyOrder.id.toString(); // TODO CHECKME
   }
 
-  protected async getLangCode(
+  protected async getLocaleCode(
     shopifyAuth: IShopifyConnect,
-    shopifyOrder: Partial<Interfaces.Order>,
+    shopifyOrder?: Partial<Interfaces.Order>,
   ) {
-    let langCode = '';
-    let langNote = '';
-
-    // Parse locale from shopifyOrder.note_attributes
-    if (Array.isArray(shopifyOrder.note_attributes)) {
-      for (const noteAttributes of shopifyOrder.note_attributes) {
-        if (
-          noteAttributes.name === 'locale' &&
-          typeof noteAttributes.value === 'string' &&
-          noteAttributes.value.length >= 2 && // 'en'
-          noteAttributes.value.length <= 5 // 'en-EN'
-        ) {
-          langNote = noteAttributes.value;
-        }
-      }
+    let langCode =
+      this.getLocalCodeFromNoteAttributes(shopifyOrder) ||
+      shopifyOrder?.customer_locale ||
+      shopifyOrder?.billing_address?.country_code ||
+      shopifyOrder?.shipping_address?.country_code ||
+      shopifyOrder?.customer?.default_address?.country_code ||
+      shopifyAuth?.shop?.primary_locale;
+    if (typeof langCode === 'string' && langCode.includes('-')) {
+      langCode = langCode.split('-')[0];
     }
-
-    langCode =
-      shopifyOrder.customer_locale ||
-      langNote ||
-      shopifyOrder.billing_address?.country_code ||
-      shopifyOrder.shipping_address?.country_code ||
-      shopifyOrder.customer?.default_address?.country_code ||
-      shopifyAuth.shop.primary_locale;
-
     return langCode;
   }
 
-  protected getName(shopifyOrder: Partial<Interfaces.Order>) {
-    return (
-      shopifyOrder.customer?.name ||
-      shopifyOrder.customer?.first_name + ' ' + shopifyOrder.customer?.last_name
-    );
+  /**
+   * Special case (for a private client) if the locale code was passed via additional note attributes
+   * @param shopifyOrder
+   */
+  protected getLocalCodeFromNoteAttributes(
+    shopifyOrder?: Partial<Interfaces.Order>,
+  ) {
+    let locale = '';
+    if (!shopifyOrder?.note_attributes) {
+      return locale;
+    }
+    for (const noteAttribute of shopifyOrder.note_attributes) {
+      if (noteAttribute.name === 'locale') {
+        locale = noteAttribute.value?.toString();
+      }
+      if (noteAttribute.name === 'site') {
+        locale = locale || noteAttribute.value?.toString();
+      }
+    }
+    return locale;
+  }
+
+  protected getName(
+    shopifyOrder: Partial<Interfaces.Order>,
+  ): string | undefined {
+    if (shopifyOrder?.customer?.name) {
+      return shopifyOrder?.customer?.name;
+    }
+
+    if (
+      shopifyOrder?.customer?.first_name ||
+      shopifyOrder?.customer?.last_name
+    ) {
+      if (
+        shopifyOrder.customer?.first_name &&
+        shopifyOrder.customer?.last_name
+      ) {
+        return (
+          shopifyOrder.customer?.first_name +
+          ' ' +
+          shopifyOrder.customer?.last_name
+        );
+      } else if (shopifyOrder.customer?.first_name) {
+        return shopifyOrder.customer?.first_name;
+      } else if (shopifyOrder.customer?.last_name) {
+        return shopifyOrder.customer?.last_name;
+      }
+    }
+    return undefined;
   }
 
   protected async getShopifyAuth(domain: string) {
@@ -656,6 +896,7 @@ export class ParcelLabTrackingService {
 
   protected async getProductData(
     shopifyAuth: IShopifyConnect,
+    shopifyOrder: Partial<Interfaces.Order>,
     lineItem: Interfaces.LineItem,
   ): Promise<{
     articleNo?: string;
@@ -670,18 +911,22 @@ export class ParcelLabTrackingService {
       );
       const variant = await this.getVariant(product, lineItem.variant_id);
       return {
-        articleNo: variant.barcode || lineItem.variant_id.toString(), // TODO make configurable what the articleNo should be
+        articleNo: await this.getArticleNo(variant || lineItem), // TODO make configurable what the articleNo should be
         articleCategory: undefined, // TODO how can we get the collections of a product?
         articleImageUrl: this.getProductImageSource(
           product,
           lineItem.variant_id,
         ),
-        articleUrl: shopifyAuth.shop.domain + '/products/' + product.handle,
+        articleUrl: await this.getArticleUrl(
+          shopifyAuth,
+          shopifyOrder,
+          product,
+        ),
       };
     } catch (error) {
-      console.error('getProductData', error);
+      this.logger.error('getProductData', error);
       return {
-        articleNo: lineItem.variant_id.toString(),
+        articleNo: await this.getArticleNo(lineItem),
         articleCategory: undefined,
         articleImageUrl: undefined,
         articleUrl: undefined,
@@ -689,25 +934,44 @@ export class ParcelLabTrackingService {
     }
   }
 
-  protected async getOrderData(
-    settings: Partial<ParcelLabSettings>,
+  protected async getShopifyOrder(
     shopifyAuth: IShopifyConnect,
     fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
-  ): Promise<ParcellabOrder | null> {
+  ): Promise<Partial<Interfaces.Order> | null> {
     if (!fulfillment.order_id) {
-      console.warn('getOrderData no order_id given!');
+      this.logger.warn('getOrderData no order_id given!');
       return null;
     }
     try {
-      const order = await this.order.getFromShopify(
+      const shopifyOrder = await this.order.getFromShopify(
         shopifyAuth,
         fulfillment.order_id,
         { status: 'any' } as any,
       ); // By default archived orders are not found by the api
-
-      return this.transformOrder(settings, shopifyAuth, order);
+      return shopifyOrder;
     } catch (error) {
-      console.error(
+      this.logger.error(
+        `Error on getOrderData with order_id ${fulfillment.order_id} for shop ${shopifyAuth.myshopify_domain}`,
+        error,
+      );
+      return null;
+    }
+  }
+
+  protected async getOrderData(
+    settings: ParcelLabSettings,
+    shopifyAuth: IShopifyConnect,
+    fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
+    shopifyOrder: Partial<Interfaces.Order>,
+  ): Promise<ParcellabOrder | null> {
+    if (!fulfillment.order_id) {
+      this.logger.warn('getOrderData no order_id given!');
+      return null;
+    }
+    try {
+      return this.transformOrder(settings, shopifyAuth, shopifyOrder);
+    } catch (error) {
+      this.logger.error(
         `Error on getOrderData with order_id ${fulfillment.order_id} for shop ${shopifyAuth.myshopify_domain}`,
         error,
       );
@@ -742,9 +1006,171 @@ export class ParcelLabTrackingService {
     return product.image?.src;
   }
 
-  protected async getCourier(
-    fulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
+  /**
+   * "DHL Express" -> "dhl-express"
+   * @param courier
+   */
+  protected handleCourierName(courier?: string) {
+    if (typeof courier === 'string') {
+      courier = courier.trim().toLowerCase().replace(/\s/g, '-');
+    }
+    if (courier === 'other' || courier === 'any' || courier === 'std') {
+      courier = undefined;
+    }
+    return courier;
+  }
+
+  protected async validateCourier(
+    parcelLabSettings: ParcelLabSettings,
+    trackingNumber?: string,
+    courier?: string,
   ) {
-    return fulfillment.tracking_company;
+    if (!trackingNumber || typeof trackingNumber !== 'string') {
+      return { courier, trackingNumber };
+    }
+
+    return { courier: courier, trackingNumber };
+  }
+
+  protected async getCourier(
+    parcelLabSettings: ParcelLabSettings,
+    shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment | null,
+    order?: ParcellabOrder | null,
+    shopifyOrder?: Partial<Interfaces.Order>,
+    shopifyCheckout?: Partial<Interfaces.Checkout>,
+  ) {
+    let courier = shopifyFulfillment?.tracking_company || order?.courier;
+    courier = this.handleCourierName(courier);
+    // If this option is true we prefer the courier from the shipping method title the customer has selected in the checkout process otherwise this is just the fallback
+    if (parcelLabSettings.prefer_checkout_shipping_method || !courier) {
+      courier = this.transformCheckoutShippingToCourier(
+        shopifyCheckout?.shipping_line?.title ||
+          shopifyCheckout?.shipping_rate?.title,
+        courier,
+      );
+    }
+
+    return courier;
+  }
+
+  protected transformCheckoutShippingToCourier(
+    shippingMethodTitle: string,
+    fallbackName?: string,
+  ) {
+    let courier: string | undefined;
+    if (!shippingMethodTitle) {
+      courier = fallbackName;
+      return courier;
+    }
+    courier = this.handleCourierName(shippingMethodTitle);
+
+    const search = [
+      {
+        includes: ['dhl', 'express'],
+        corresponds: 'dhl-express',
+      },
+      {
+        includes: ['dhl', 'germany'],
+        corresponds: 'dhl-germany',
+      },
+      {
+        includes: ['dhl', 'de'],
+        corresponds: 'dhl-germany',
+      },
+      {
+        includes: ['dhl'],
+        corresponds: 'dhl',
+      },
+      {
+        includes: ['dpd', 'express'],
+        corresponds: 'dpd-express',
+      },
+      {
+        includes: ['dpd'],
+        corresponds: 'dpd',
+      },
+      {
+        includes: ['hermes'],
+        corresponds: 'hermes',
+      },
+      {
+        includes: ['wn', 'direct'],
+        corresponds: 'wn-direct',
+      },
+      {
+        includes: ['colis', 'priv'], // Colis Privé
+        corresponds: 'colisprivee',
+      },
+      {
+        includes: ['asendia'],
+        corresponds: 'asendia',
+      },
+      {
+        includes: ['gls'],
+        corresponds: 'gls',
+      },
+      {
+        includes: ['ontrac'],
+        corresponds: 'ontrac',
+      },
+      {
+        includes: ['fedex'],
+        corresponds: 'fedex',
+      },
+      {
+        includes: ['tnt'],
+        corresponds: 'tnt',
+      },
+      {
+        includes: ['liefery'],
+        corresponds: 'liefery',
+      },
+      {
+        includes: ['chronopost'],
+        corresponds: 'chronopost',
+      },
+      {
+        includes: ['mondial', 'relay'],
+        corresponds: 'mondial-relay',
+      },
+      {
+        includes: ['seur'],
+        corresponds: 'seur',
+      },
+      {
+        includes: ['poczta', 'polska'],
+        corresponds: 'poczta-polska',
+      },
+      {
+        includes: ['ppl'],
+        corresponds: 'ppl',
+      },
+      {
+        includes: ['pošta'],
+        corresponds: 'pošta',
+      },
+      {
+        includes: ['post'],
+        corresponds: 'post',
+      },
+      {
+        includes: ['ups', 'express'],
+        corresponds: 'ups-express',
+      },
+      {
+        includes: ['ups'],
+        corresponds: 'ups',
+      },
+    ];
+
+    for (const curSearch of search) {
+      const match = curSearch.includes.every((item) => courier.includes(item));
+      if (match) {
+        courier = curSearch.corresponds;
+        return courier;
+      }
+    }
+
+    return fallbackName;
   }
 }

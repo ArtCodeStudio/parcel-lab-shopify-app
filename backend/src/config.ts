@@ -18,8 +18,8 @@ import {
   ConfigMongoDB,
   ShopifyModuleOptions,
 } from 'nest-shopify';
-import findRoot = require('find-root');
 import { resolve, dirname } from 'path';
+import findRoot = require('find-root');
 
 dotenv.config();
 
@@ -53,6 +53,10 @@ const frontend = {
   path: FRONTEND_PATH,
   assetsDir: resolve(FRONTEND_PATH, 'dist'),
   viewsDir: resolve(FRONTEND_PATH, 'views'),
+  debug: process.env.DEBUG !== 'false' && process.env.DEBUG.length > 0, // TODO store debug string?
+  test: process.env.NODE_ENV === 'test' || process.env.TEST === 'true',
+  environment:
+    process.env.NODE_ENV === 'development' ? 'development' : 'production',
 };
 
 /**
@@ -106,6 +110,7 @@ const shopify: ConfigShopify = {
     'read_shipping',
     'read_customers',
     'read_fulfillments',
+    // 'read_checkouts'
   ],
   webhooks: {
     autoSubscribe: [
@@ -158,8 +163,8 @@ const shopify: ConfigShopify = {
       // 'product_listings/remove',
       // 'product_listings/update',
       // 'refunds/create',
-      // 'app/uninstalled',
-      // 'shop/update',
+      'app/uninstalled',
+      'shop/update',
       // 'themes/create',
       // 'themes/publish',
       // 'themes/update',
@@ -222,5 +227,6 @@ export default () => ({
   session,
   app,
   frontend,
+  sync,
   parcelLab,
 });

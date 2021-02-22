@@ -1,4 +1,5 @@
 import { Riba, HttpService, coreModule, EventDispatcher } from '@ribajs/core';
+import { ready } from "@ribajs/utils/src/dom";
 import Debug from 'debug';
 
 // Extensions / Modules
@@ -119,11 +120,10 @@ export class Main {
     //   this.debug('newPageReady', viewId, currentStatus, dataset);
     // });
 
-    JQuery((/*$: JQueryStatic*/) => {
-      const bindToElement = JQuery('body')[0];
-      this.debug('bind to', bindToElement);
-      /*this.view = */ this.riba.bind(bindToElement, this.model);
+    ready(() => {
+      this.riba.bind(document.body, this.model);
     });
+    
   }
 }
 
@@ -148,4 +148,7 @@ const bootstrap = () => {
   });
 };
 
-bootstrap();
+ready(() => {
+  bootstrap();
+});
+
