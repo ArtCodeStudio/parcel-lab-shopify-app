@@ -1,1 +1,0 @@
-{"version":3,"file":"settings.model.provider.js","sourceRoot":"","sources":["../../../src/tracking/settings/settings.model.provider.ts"],"names":[],"mappings":";;;AACA,4EAAiF;AAEpE,QAAA,8BAA8B,GAAG;IACxC,OAAO,EAAE,wBAAwB;IACjC,UAAU,EAAE,CAAC,UAAsB,EAAE,EAAE,CAAC,UAAU,CAAC,KAAK,CAAC,qBAAqB,EAAE,yCAAuB,CAAC;IACxG,MAAM,EAAE,CAAC,iBAAiB,CAAC;CAChC,CAAC"}

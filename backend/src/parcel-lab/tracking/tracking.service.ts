@@ -503,6 +503,7 @@ export class ParcelLabTrackingService {
     shopifyOrder: Partial<Interfaces.Order>,
   ) {
     let langCode = '';
+    let langNote = '';
 
     // Parse locale from shopifyOrder.note_attributes
     if (Array.isArray(shopifyOrder.note_attributes)) {
@@ -510,21 +511,21 @@ export class ParcelLabTrackingService {
         if (
           noteAttributes.name === 'locale' &&
           typeof noteAttributes.value === 'string' &&
-          noteAttributes.value.length >= 2
+          noteAttributes.value.length >= 2 && // 'en'
+          noteAttributes.value.length <= 5 // 'en-EN'
         ) {
-          langCode = noteAttributes.value;
+          langNote = noteAttributes.value;
         }
       }
     }
 
-    if (!langCode || langCode.toLowerCase().startsWith('en')) {
-      langCode =
-        shopifyOrder.customer_locale ||
-        shopifyOrder.billing_address?.country_code ||
-        shopifyOrder.shipping_address?.country_code ||
-        shopifyOrder.customer?.default_address?.country_code ||
-        shopifyAuth.shop.primary_locale;
-    }
+    langCode =
+      shopifyOrder.customer_locale ||
+      langNote ||
+      shopifyOrder.billing_address?.country_code ||
+      shopifyOrder.shipping_address?.country_code ||
+      shopifyOrder.customer?.default_address?.country_code ||
+      shopifyAuth.shop.primary_locale;
 
     return langCode;
   }
