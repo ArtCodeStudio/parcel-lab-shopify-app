@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { DebugService, EventService, IShopifyConnect } from 'nest-shopify';
 import { ParcelLabSettingsDocument } from '../interfaces/mongoose/settings.document';
 import { ParcelLabSettings } from '../interfaces/settings';
-import { copyObjOfKeys } from '../../helper/keys';
 
 @Injectable()
 export class SettingsService {

@@ -49,7 +49,8 @@ export class ParcelLabTrackingService {
     protected readonly order: OrdersService,
     protected readonly transaction: TransactionsService,
   ) {
-    this.testMode = !!this.shopifyModuleOptions.app.debug;
+    // TODO add this to the pacelLab settings
+    // this.testMode = !!this.shopifyModuleOptions.app.debug;
     this.addEventListeners();
   }
 
@@ -268,7 +269,12 @@ export class ParcelLabTrackingService {
       shopifyAuth,
       shopifyFulfillment,
     );
-    tracking = { ...tracking, ...overwrite };
+    const customFields = {
+      ...(tracking?.customFields || {}),
+      ...(overwrite?.customFields || {}),
+      ...(settings?.customFields || {}),
+    };
+    tracking = { ...tracking, ...overwrite, customFields };
     const result = await api.createOrUpdateTracking(tracking, this.testMode);
     return result;
   }
@@ -287,6 +293,19 @@ export class ParcelLabTrackingService {
     }
     const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
     const api = new ParcelLabApi(settings.user, settings.token);
+
+    const transactions = await this.transaction.listFromShopify(
+      shopifyAuth,
+      shopifyOrder.id,
+      {
+        in_shop_currency: false,
+        fields:
+          'id,amount,authorization_expires_at,extended_authorization_attributes,receipt,created_at,currency,error_code,gateway,kind,processed_at,source_name,status,test,amount,message',
+      },
+    );
+
+    this.logger.debug('transactions', transactions);
+
     let order = await this.transformOrder(settings, shopifyAuth, shopifyOrder);
 
     order = { ...order, ...overwrite };
@@ -363,17 +382,17 @@ export class ParcelLabTrackingService {
         ? shopifyFulfillment.location_id.toString()
         : undefined,
       customFields: {
-        ...(order.customFields || {}),
         notify_customer: shopifyFulfillment.notify_customer,
       },
     };
 
-    if (settings.customFields) {
-      tracking.customFields = {
-        ...tracking.customFields,
-        ...settings.customFields,
-      };
-    }
+    const customFields = {
+      ...(tracking?.customFields || {}),
+      ...(order?.customFields || {}),
+      ...(settings?.customFields || {}),
+    };
+
+    tracking.customFields = customFields;
 
     if ((shopifyFulfillment as AnyWebhookFulfillment).destination) {
       shopifyFulfillment = shopifyFulfillment as AnyWebhookFulfillment;
@@ -400,6 +419,18 @@ export class ParcelLabTrackingService {
     shopifyAuth: IShopifyConnect,
     shopifyOrder: Partial<Interfaces.Order>,
   ): Promise<ParcellabOrder> {
+    const transactions = await this.transaction.listFromShopify(
+      shopifyAuth,
+      shopifyOrder.id,
+      {
+        in_shop_currency: false,
+        fields:
+          'id,amount,authorization_expires_at,extended_authorization_attributes,receipt,created_at,currency,error_code,gateway,kind,processed_at,source_name,status,test,amount,message',
+      },
+    );
+
+    this.logger.debug('transactions', transactions);
+
     /**
      * TODO transform missing properties:
      * * announced_delivery_date
@@ -422,11 +453,11 @@ export class ParcelLabTrackingService {
       ),
       city: shopifyOrder?.shipping_address?.city,
       client: await this.getClient(shopifyAuth),
-      orderNo: shopifyOrder.order_number.toString(),
+      orderNo: await this.getOrderNo(shopifyOrder),
       cancelled: shopifyOrder.cancelled_at !== null ? true : false,
       complete: shopifyOrder.fulfillment_status === 'fulfilled',
       customerNo: shopifyOrder.customer?.id.toString(),
-      deliveryNo: shopifyOrder.id.toString(), // TODO CHECKME
+      deliveryNo: await this.getDeliveryNo(shopifyOrder),
       destination_country_iso3: shopifyOrder.shipping_address?.country_code,
       email: shopifyOrder.customer?.email,
       language_iso3: await this.getLangCode(shopifyAuth, shopifyOrder),
@@ -449,17 +480,22 @@ export class ParcelLabTrackingService {
           accepts_marketing: shopifyOrder.customer.accepts_marketing,
         },
 
+        shipping_lines: shopifyOrder.shipping_lines,
+
+        // Used for notification template variables
         billing_address:
           shopifyOrder.billing_address || shopifyOrder.shipping_address,
+
+        transactions,
       },
     };
 
-    if (settings.customFields) {
-      order.customFields = {
-        ...order.customFields,
-        ...settings.customFields,
-      };
-    }
+    const customFields = {
+      ...(order?.customFields || {}),
+      ...(settings?.customFields || {}),
+    };
+
+    order.customFields = customFields;
 
     return order;
   }
@@ -497,7 +533,22 @@ export class ParcelLabTrackingService {
     return shopifyAuth.shop.name;
   }
 
-  // TODO get locale over note_attributes, name should be locale or domain?
+  protected async getOrderNo(shopifyOrder: Partial<Interfaces.Order>) {
+    let prefix = '';
+    if (this.shopifyModuleOptions.app.environment !== 'production') {
+      prefix = 'dev_';
+    }
+    return prefix + shopifyOrder.order_number.toString();
+  }
+
+  protected async getDeliveryNo(shopifyOrder: Partial<Interfaces.Order>) {
+    let prefix = '';
+    if (this.shopifyModuleOptions.app.environment !== 'production') {
+      prefix = 'dev_';
+    }
+    return prefix + shopifyOrder.id.toString(); // TODO CHECKME
+  }
+
   protected async getLangCode(
     shopifyAuth: IShopifyConnect,
     shopifyOrder: Partial<Interfaces.Order>,
@@ -591,17 +642,6 @@ export class ParcelLabTrackingService {
         fulfillment.order_id,
         { status: 'any' } as any,
       ); // By default archived orders are not found by the api
-
-      const transaction = await this.transaction.listFromShopify(
-        shopifyAuth,
-        fulfillment.order_id,
-        {
-          in_shop_currency: false,
-          fields: 'amount,amount,gateway,gateway,message',
-        },
-      );
-
-      this.logger.debug('transaction', transaction);
 
       return this.transformOrder(settings, shopifyAuth, order);
     } catch (error) {
