@@ -36,7 +36,7 @@ export class ParcelLabSettingsComponent extends Component {
       token: '',
       user: 0,
       customFields: {
-        'no-notify': true,
+        'no-notify': false,
       },
     },
     showPasswort: false,
