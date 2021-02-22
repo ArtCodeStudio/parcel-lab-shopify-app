@@ -53,10 +53,6 @@ const frontend = {
   path: FRONTEND_PATH,
   assetsDir: resolve(FRONTEND_PATH, 'dist'),
   viewsDir: resolve(FRONTEND_PATH, 'views'),
-  debug: process.env.DEBUG !== 'false' && process.env.DEBUG.length > 0, // TODO store debug string?
-  test: process.env.NODE_ENV === 'test' || process.env.TEST === 'true',
-  environment:
-    process.env.NODE_ENV === 'development' ? 'development' : 'production',
 };
 
 /**
@@ -202,11 +198,6 @@ const mongodb: ConfigMongoDB = {
   url: process.env.MONGODB_URL,
 };
 
-const parcelLab = {
-  user: process.env.PARCELLAB_USER,
-  token: process.env.PARCELLAB_TOKEN,
-};
-
 const NestShopifyModuleOptions: ShopifyModuleOptions = {
   app,
   sync,
@@ -228,5 +219,4 @@ export default () => ({
   app,
   frontend,
   sync,
-  parcelLab,
 });
