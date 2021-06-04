@@ -1,11 +1,6 @@
-@import "account-connects/account-connects.component.scss";
-@import "webhook-explorer/webhook-explorer.component.scss";
-@import "webhook-explorer/webhook-card/webhook-card.component.scss";
-@import "plans/plans.component.scss";
+@import 'parcel-lab-list-tracking/parcel-lab-list-tracking.component';
+@import 'parcel-lab-settings/parcel-lab-settings.component';
 @import "sidebar/sidebar.component.scss";
 @import "sidebar-mask/sidebar-mask.component.scss";
 @import "sidebar-toggler/sidebar-toggler.component.scss";
-@import "switcher/switcher.component.scss";
-@import './parcel-lab-settings/parcel-lab-settings.component';
 
-@import './parcel-lab-list-tracking/parcel-lab-list-tracking.component';

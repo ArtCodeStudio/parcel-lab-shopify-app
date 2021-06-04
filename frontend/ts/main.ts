@@ -6,6 +6,7 @@ import Debug from 'debug';
 import { routerModule } from '@ribajs/router';
 import { i18nModule, LocalesStaticService } from '@ribajs/i18n';
 import { bs4Module } from '@ribajs/bs4';
+import { AuthService, shopifyNestModule } from '@ribajs/shopify-nest';
 import {
   ShopifyApp,
   shopifyEasdkModule,
@@ -16,8 +17,6 @@ import {
 import * as CustomComponents from './components';
 import * as customBinders from './binders/index';
 import locales from './locales';
-
-import { AuthService } from './services/auth.service';
 
 declare global {
   interface Window {
@@ -54,7 +53,10 @@ export class Main {
 
   constructor() {
     this.debug('init the main application');
+    this.init();
+  }
 
+  async init() {
     this.shopifyApp.Bar.initialize({
       title: 'The Developer App',
     });
@@ -65,51 +67,48 @@ export class Main {
       return this.localesService.getByCurrentLang(['titles', handleize(title)]);
     });
 
-    this.authService
-      .loggedIn()
-      .then((loggedIn) => {
-        if (loggedIn) {
-          this.debug('ok');
-        } else {
-          // not logged in
-          console.warn('Not logged in', loggedIn);
-          if (EASDKWrapperService.inIframe()) {
-            return this.authService
-              .shopifyConnectIframe(window.shop)
-              .then((result) => {
-                console.warn('Redirect to auth url', result);
-                return this.shopifyApp.redirect(result.authUrl);
-              })
-              .catch((error) => {
-                console.error(error);
-                return error;
-              });
-          }
+    try {
+      const loggedIn = await this.authService.loggedIn();
 
-          if (window.shop && window.shop.length) {
-            window.location.href = '/shopify/auth?shop=' + window.shop;
-          } else {
-            window.location.href = '/'; // login / install input
-          }
+      if (loggedIn) {
+        this.debug('ok');
+      } else {
+        // not logged in
+        if (EASDKWrapperService.inIframe()) {
+          const result = await this.authService.shopifyConnectIframe(
+            window.shop,
+          );
+          return this.shopifyApp.redirect(result.authUrl);
         }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+        if (window.shop && window.shop.length) {
+          window.location.href = '/shopify/auth?shop=' + window.shop;
+        } else {
+          window.location.href = '/'; // login / install input
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
 
     // Regist custom components
-    this.riba.module.regist({
-      components: CustomComponents,
-      binders: { ...customBinders },
-    });
+    this.riba.module.component.regists(CustomComponents);
+    this.riba.module.binder.regists(customBinders);
 
     // Regist modules
     console.debug('regist coreModule');
     this.riba.module.regist(coreModule);
     console.debug('regist routerModule', routerModule);
     this.riba.module.regist(routerModule);
-    console.debug('regist i18nModule');
-    this.riba.module.regist(i18nModule(this.localesService));
+    console.debug(
+      'regist i18nModule: ',
+      await this.localesService.getAvailableLangcodes(),
+    );
+    this.riba.module.regist(
+      i18nModule.init({ localesService: this.localesService }),
+    );
+    console.debug('regist shopifyNestModule');
+    this.riba.module.regist(shopifyNestModule);
     console.debug('regist shopifyEasdkModule');
     this.riba.module.regist(shopifyEasdkModule);
     console.debug('regist bs4Module');
@@ -125,7 +124,7 @@ export class Main {
   }
 }
 
-const bootstrap = () => {
+const bootstrap = async () => {
   if (window.shop) {
     // set shop in header for all javascript requests
     HttpService.setRequestHeaderEachRequest('shop', window.shop);

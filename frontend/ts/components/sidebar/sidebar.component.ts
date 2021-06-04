@@ -8,7 +8,7 @@ import pugTemplate from './sidebar.component.pug';
 import { EASDKWrapperService } from '@ribajs/shopify-easdk';
 import { LocalesStaticService } from '@ribajs/i18n';
 
-interface IScope {
+interface Scope {
   environment: 'production' | 'development';
   visable: boolean;
   reload: SidebarComponent['reload'];
@@ -35,7 +35,7 @@ export class SidebarComponent extends Component {
   protected $el: JQuery<SidebarComponent>;
   protected debug = Debug('component:' + SidebarComponent.tagName);
 
-  protected scope: IScope = {
+  public scope: Scope = {
     environment: 'production',
     visable: false,
     reload: this.reload,

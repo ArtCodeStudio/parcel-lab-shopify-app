@@ -5,8 +5,7 @@ export default {
   components: {
     parcelLabSettings: {
       title: 'ParcelLab',
-      info:
-        'Hinterlege hier deine Parcel Lab Daten um es dieser App zu ermöglichen Bestellungen an Parcel Lab zu senden.',
+      info: 'Hinterlege hier deine Parcel Lab Daten um es dieser App zu ermöglichen Bestellungen an Parcel Lab zu senden.',
       saveLabel: 'Speichern',
       showPasswordLabel: 'Anzeigen',
       hidePasswordLabel: 'Verstecken',
@@ -27,8 +26,7 @@ export default {
     accountConnects: {
       shopify: {
         title: 'Shopify-Konto',
-        info:
-          'Das Shopify-Konto, in dem Sie diese App installiert haben oder Zugriff gewährt bekommen haben.',
+        info: 'Das Shopify-Konto, in dem Sie diese App installiert haben oder Zugriff gewährt bekommen haben.',
         notConnected:
           'Diese App wurde noch nicht mit Shopify verbunden. Geben Sie unten ihre Shopify-Domain ein um diese App mit Shopify zu verbinden.',
       },
@@ -68,8 +66,7 @@ export default {
       roles: {
         'shopify-staff-member': {
           label: 'Nur Backend',
-          info:
-            'Diese API kann aus Sicherheitsgründen nur im Backend und nicht im Theme verwendet werden.',
+          info: 'Diese API kann aus Sicherheitsgründen nur im Backend und nicht im Theme verwendet werden.',
         },
       },
       query: {
@@ -161,16 +158,14 @@ export default {
       },
       simulate: {
         label: 'Simuliere',
-        info:
-          'Erzeugt ein Dummy-Produkt und entfernt es wieder um die entsprechenden Webhooks auszulösen.',
+        info: 'Erzeugt ein Dummy-Produkt und entfernt es wieder um die entsprechenden Webhooks auszulösen.',
       },
     },
     socketEventCard: {
       roles: {
         'shopify-staff-member': {
           label: 'Nur Backend',
-          info:
-            'Dieser Webhook kann aus Sicherheitsbedenken nur im Backend und nicht im Theme empfangen werden.',
+          info: 'Dieser Webhook kann aus Sicherheitsbedenken nur im Backend und nicht im Theme empfangen werden.',
         },
       },
     },

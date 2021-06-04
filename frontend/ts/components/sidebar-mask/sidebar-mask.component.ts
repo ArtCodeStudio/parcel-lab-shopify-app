@@ -3,7 +3,7 @@ import { getViewportDimensions } from '@ribajs/utils/src/dom';
 
 import Debug from 'debug';
 
-interface IScope {
+interface Scope {
   show: boolean;
 }
 
@@ -26,7 +26,7 @@ export class SidebarMaskComponent extends BasicComponent {
 
   protected debug = Debug('component:' + SidebarMaskComponent.tagName);
 
-  protected scope: IScope = {
+  public scope: Scope = {
     show: false,
   };
 
@@ -65,7 +65,7 @@ export class SidebarMaskComponent extends BasicComponent {
     return [];
   }
 
-  protected attributeChangedCallback(
+  protected async attributeChangedCallback(
     attributeName: string,
     oldValue: any,
     newValue: any,

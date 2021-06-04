@@ -25,7 +25,7 @@ export class ParcelLabListTrackingComponent extends Component {
     return [];
   }
 
-  protected scope: Scope = {
+  public scope: Scope = {
     list: [],
   };
 

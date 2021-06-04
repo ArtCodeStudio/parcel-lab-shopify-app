@@ -5,7 +5,7 @@ import Debug from 'debug';
 
 import pugTemplate from './sidebar-toggler.component.pug';
 
-interface IScope {
+interface Scope {
   sidebarVisable: boolean;
   hide: SidebarTogglerComponent['hide'];
   show: SidebarTogglerComponent['show'];
@@ -30,7 +30,7 @@ export class SidebarTogglerComponent extends Component {
   protected $el: JQuery<SidebarTogglerComponent>;
   protected debug = Debug('component:' + SidebarTogglerComponent.tagName);
 
-  protected scope: IScope = {
+  public scope: Scope = {
     sidebarVisable: false,
     hide: this.hide,
     show: this.show,
@@ -100,7 +100,7 @@ export class SidebarTogglerComponent extends Component {
     return [];
   }
 
-  protected attributeChangedCallback(
+  protected async attributeChangedCallback(
     attributeName: string,
     oldValue: any,
     newValue: any,

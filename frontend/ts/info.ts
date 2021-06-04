@@ -23,19 +23,15 @@ export class InfoApp {
     this.debug('init the info application');
 
     // Regist custom components
-    this.riba.module.regist({
-      components: {
-        ShopifyNestShopInputComponent,
-      },
-      binders: {},
-      formatters: {},
-    });
+    this.riba.module.component.regists({ ShopifyNestShopInputComponent });
 
     // Regist modules
     this.riba.module.regist(coreModule);
     this.riba.module.regist(routerModule);
     this.riba.module.regist(bs4Module);
-    this.riba.module.regist(i18nModule(this.localesService));
+    this.riba.module.regist(
+      i18nModule.init({ localesService: this.localesService }),
+    );
 
     this.view = this.riba.bind(document.body, this.model);
   }

@@ -29,7 +29,7 @@ export class ParcelLabSettingsComponent extends Component {
     return [];
   }
 
-  protected scope: Scope = {
+  public scope: Scope = {
     locales: {
       error: '',
     },
@@ -77,9 +77,12 @@ export class ParcelLabSettingsComponent extends Component {
       );
       this.resetErrors();
 
-      const successfullySavedMessage = await this.localesService.getByCurrentLang(
-        ['components', 'parcelLabSettings', 'successfullySavedMessage'],
-      );
+      const successfullySavedMessage =
+        await this.localesService.getByCurrentLang([
+          'components',
+          'parcelLabSettings',
+          'successfullySavedMessage',
+        ]);
 
       this.easdk.flashNotice(successfullySavedMessage);
       return result;
@@ -88,9 +91,12 @@ export class ParcelLabSettingsComponent extends Component {
       this.scope.locales.error =
         'components.parcelLabSettings.errors.generalSave';
 
-      const notSuccessfullySavedMessage = await this.localesService.getByCurrentLang(
-        ['components', 'parcelLabSettings', 'notSuccessfullySavedMessage'],
-      );
+      const notSuccessfullySavedMessage =
+        await this.localesService.getByCurrentLang([
+          'components',
+          'parcelLabSettings',
+          'notSuccessfullySavedMessage',
+        ]);
 
       this.easdk.flashError(notSuccessfullySavedMessage);
     }
@@ -137,7 +143,7 @@ export class ParcelLabSettingsComponent extends Component {
     return [];
   }
 
-  protected attributeChangedCallback(
+  protected async attributeChangedCallback(
     attributeName: string,
     oldValue: any,
     newValue: any,

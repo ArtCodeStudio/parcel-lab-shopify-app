@@ -1,0 +1,12 @@
+[submodule "packages/riba"]
+	path = packages/riba
+	url = https://github.com/ribajs/riba.git
+[submodule "packages/nestjs-shopify-module"]
+	path = packages/nestjs-shopify-module
+	url = https://github.com/ArtCodeStudio/nestjs-shopify-module.git
+[submodule "packages/shopify-admin-api"]
+	path = packages/shopify-admin-api
+	url = https://github.com/ArtCodeStudio/shopify-admin-api.git
+[submodule "packages/parcellab-node"]
+	path = packages/parcellab-node
+	url = https://github.com/ArtCodeStudio/parcellab-node.git

@@ -146,7 +146,7 @@ export class ParcelLabTrackingService {
   ) {
     // this.logger.debug('onOrderCancelled: %s - %O', myshopifyDomain, data);
     try {
-      const result = await this.updateOrCreateOrder(myshopifyDomain, data);
+      await this.updateOrCreateOrder(myshopifyDomain, data);
       // this.logger.debug('onOrderCancelled result: %O', result);
     } catch (error) {
       this.logger.error('onOrderCancelled error', error);
@@ -158,7 +158,7 @@ export class ParcelLabTrackingService {
   ) {
     // this.logger.debug('onOrderCreate: %s - %O', myshopifyDomain, data);
     try {
-      const result = await this.updateOrCreateOrder(myshopifyDomain, data);
+      await this.updateOrCreateOrder(myshopifyDomain, data);
       // this.logger.debug('onOrderCreate result: %O', result);
     } catch (error) {
       this.logger.error('onOrderCreate error', error);
@@ -666,12 +666,8 @@ export class ParcelLabTrackingService {
         articleNo: await this.getArticleNo(lineItem),
         quantity: lineItem.quantity,
       };
-      const {
-        articleNo,
-        articleCategory,
-        articleImageUrl,
-        articleUrl,
-      } = await this.getProductData(shopifyAuth, shopifyOrder, lineItem);
+      const { articleNo, articleCategory, articleImageUrl, articleUrl } =
+        await this.getProductData(shopifyAuth, shopifyOrder, lineItem);
 
       article.articleNo = articleNo || article.articleNo;
       article.articleCategory = articleCategory;

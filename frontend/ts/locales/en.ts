@@ -5,8 +5,7 @@ export default {
   components: {
     parcelLabSettings: {
       title: 'ParcelLab',
-      info:
-        'Enter your Parcel Lab data here to enable this app to send orders to Parcel Lab.',
+      info: 'Enter your Parcel Lab data here to enable this app to send orders to Parcel Lab.',
       saveLabel: 'Save',
       showPasswordLabel: 'Show',
       hidePasswordLabel: 'Hide',
@@ -24,8 +23,7 @@ export default {
     accountConnects: {
       shopify: {
         title: 'Shopify account',
-        info:
-          'The Shopify account where you installed this app or have been granted access.',
+        info: 'The Shopify account where you installed this app or have been granted access.',
         notConnected:
           'This app has not yet been connected with Shopify. Enter your Shopify domain below to connect this app with Shopify.',
       },
@@ -64,8 +62,7 @@ export default {
       roles: {
         'shopify-staff-member': {
           label: 'Backend only',
-          info:
-            'For security reasons, this API can only be used in the backend and not in the theme.',
+          info: 'For security reasons, this API can only be used in the backend and not in the theme.',
         },
       },
       query: {
@@ -157,16 +154,14 @@ export default {
       },
       simulate: {
         label: 'Simulate',
-        info:
-          'Creates a dummy product and removes it again to trigger the appropriate webhooks.',
+        info: 'Creates a dummy product and removes it again to trigger the appropriate webhooks.',
       },
     },
     socketEventCard: {
       roles: {
         'shopify-staff-member': {
           label: 'Backend only',
-          info:
-            'For security reasons, this webhook can only be received in the backend and not in the theme.',
+          info: 'For security reasons, this webhook can only be received in the backend and not in the theme.',
         },
       },
     },

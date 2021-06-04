@@ -10,7 +10,7 @@
     bs4-icon.mr-3(src="/iconset/svg/icon_cogs.svg" size="20")
     span(rv-i18n-text="'titles.orders'")
   .list-group-item.list-group-item-action
-    rv-i18n-switcher
+    i18n-switcher
       .btn-group.btn-group-toggle(data-toggle="buttons")
         label.btn.btn-outline-primary(rv-each-langcode="langcodes" rv-class-active="langcode.active")
           input(type="radio" name="langs" id="langcode.code" autocomplete="off" rv-on-click="switch | args langcode" rv-checked="langcode.active")

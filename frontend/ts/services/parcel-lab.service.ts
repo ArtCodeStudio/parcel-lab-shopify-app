@@ -7,13 +7,16 @@ export class ParcelLabService {
   protected debug = Debug('services:ParcelLabService');
 
   public async getSettings() {
-    let settings: any = (await HttpService.getJSON(
+    const req = await HttpService.getJSON<ParcelLabSettings | 'null' | null>(
       `/parcel-lab/settings`,
-    )) as ParcelLabSettings | null;
-    settings = settings || {};
+    );
+    const settings: Partial<ParcelLabSettings> =
+      req.body && req.body !== 'null' ? req.body : {};
     settings.user = settings.user || 0;
     settings.token = settings.token || '';
-    settings.customFields = settings.customFields || {};
+    settings.customFields = settings.customFields || {
+      'no-notify': false,
+    };
     settings.customFields['no-notify'] =
       settings.customFields['no-notify'] || false;
     settings.prefer_checkout_shipping_method =
@@ -47,7 +50,8 @@ export class ParcelLabService {
       '/parcel-lab/tracking/list' +
       (queryStr && queryStr.length > 0 ? '?' + queryStr : '');
 
-    const list = (await HttpService.getJSON(url)) as ParcellabSearchResponse;
+    const list = (await HttpService.getJSON(url))
+      .body as ParcellabSearchResponse;
     this.debug('list', list);
     return list;
   }
