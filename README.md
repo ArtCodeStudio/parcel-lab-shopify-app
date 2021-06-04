@@ -4,6 +4,21 @@
 
 Sync your Shopify orders to [parcelLab](https://parcellab.com).
 
+## Clone
+
+This repository has submodules, so you need to clone this repository with it's submodules:
+
+```sh
+git clone --recurse-submodules https://github.com/ArtCodeStudio/parcel-lab-shopify-app.git
+cd parcel-lab-shopify-app
+```
+
+If you have already pulled the repository you can just run:
+
+```sh
+git pull --recurse-submodules
+```
+
 ## Installation
 
 ```bash
