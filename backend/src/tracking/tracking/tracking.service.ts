@@ -837,6 +837,7 @@ export class ParcelLabTrackingService {
     if (typeof langCode === 'string' && langCode.includes('-')) {
       langCode = langCode.split('-')[0];
     }
+    console.log('got langCode', langCode);
     return langCode;
   }
 

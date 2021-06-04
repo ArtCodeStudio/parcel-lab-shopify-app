@@ -21,6 +21,16 @@ export const ParcelLabSettingsSchema = new Schema({
     required: false,
     unique: false,
   },
+  languageFallbacks: {
+    type: [
+      {
+        from: String,
+        to: String,
+      },
+    ],
+    required: false,
+    unique: false,
+  },
   customFields: {
     'no-notify': {
       type: Boolean,

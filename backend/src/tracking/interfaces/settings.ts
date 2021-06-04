@@ -1,3 +1,8 @@
+export interface ParcelLabSettingsLanguageFallback {
+  from: string;
+  to: string;
+}
+
 export interface ParcelLabSettings {
   user: number;
   token: string;
@@ -7,6 +12,7 @@ export interface ParcelLabSettings {
    * We recommend to leave this option disabled and to activate it only if there are problems with the courier sent to ParcelLab
    */
   prefer_checkout_shipping_method: boolean;
+  languageFallbacks: ParcelLabSettingsLanguageFallback[];
 
   customFields?: {
     'no-notify': boolean;

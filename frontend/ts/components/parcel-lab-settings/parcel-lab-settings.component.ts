@@ -14,6 +14,8 @@ interface Scope {
   showPasswort: boolean;
   passwortInputType: 'text' | 'password';
   save: ParcelLabSettingsComponent['save'];
+  addLanguageFallback: ParcelLabSettingsComponent['addLanguageFallback'];
+  removeLanguageFallback: ParcelLabSettingsComponent['removeLanguageFallback'];
   togglePassword: ParcelLabSettingsComponent['togglePassword'];
 }
 
@@ -40,12 +42,15 @@ export class ParcelLabSettingsComponent extends Component {
         'no-notify': false,
       },
       prefer_checkout_shipping_method: false,
+      languageFallbacks: [],
     },
     showPasswort: false,
     passwortInputType: 'password',
     // Methods
     save: this.save,
     togglePassword: this.togglePassword,
+    addLanguageFallback: this.addLanguageFallback,
+    removeLanguageFallback: this.removeLanguageFallback,
   };
 
   constructor() {
@@ -61,6 +66,24 @@ export class ParcelLabSettingsComponent extends Component {
     } catch (error) {
       console.error(error);
       return null;
+    }
+  }
+
+  public addLanguageFallback() {
+    if (!this.scope.settings.languageFallbacks) {
+      this.scope.settings.languageFallbacks = [];
+    }
+    this.scope.settings.languageFallbacks.push({
+      from: '',
+      to: '',
+    });
+  }
+
+  public removeLanguageFallback(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.id.startsWith('remove-lang-')) {
+      const index = parseInt(target.id.substr(12));
+      this.scope.settings.languageFallbacks?.splice(index, 1);
     }
   }
 

@@ -21,6 +21,7 @@ export class ParcelLabService {
       settings.customFields['no-notify'] || false;
     settings.prefer_checkout_shipping_method =
       settings.prefer_checkout_shipping_method || false;
+    settings.languageFallbacks = settings.languageFallbacks || [];
 
     this.debug('settings', settings);
     return settings as ParcelLabSettings;
@@ -28,6 +29,7 @@ export class ParcelLabService {
 
   public async setSettings(settings: ParcelLabSettings) {
     const clearSettings = clearObjFromRiba(settings);
+
     this.debug('setSettings', clearSettings);
     return HttpService.post(
       `/parcel-lab/settings`,

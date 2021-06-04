@@ -27,5 +27,14 @@ section.row
                 input#prefer_checkout_shipping_method.custom-control-input(type='checkbox', rv-checked="settings.prefer_checkout_shipping_method", aria-describedby='prefer-checkout-shipping-method-info')
                 label.custom-control-label(for='prefer_checkout_shipping_method', rv-i18n-text="'components.parcelLabSettings.preferCheckoutShippingMethodLabel'")
               small#prefer-checkout-shipping-method-info.form-text.text-muted(rv-i18n-text="'components.parcelLabSettings.preferCheckoutShippingMethodInfo'")
+            h5 Language fallbacks
+              .form-group(rv-each-lang="settings.languageFallbacks")
+                label From
+                input(type='text' rv-value="lang.from")
+                label To
+                input(type='text' rv-value="lang.to")
+                button.btn.btn-link.card-link(type='button' rv-id="'remove-lang-' | append %lang%" rv-on-click="removeLanguageFallback" rv-i18n-text="'components.parcelLabSettings.addLangFallbackLabel'") Delete
+            button.btn.btn-link.card-link(type='button' rv-on-click="addLanguageFallback" rv-i18n-text="'components.parcelLabSettings.addLangFallbackLabel'") Add language fallback
+            hr
             .alert.alert-danger(role='alert', rv-if="locales.error", rv-i18n-text="locales.error")
             button.btn.btn-link.card-link(type='button' rv-on-click="save" rv-i18n-text="'components.parcelLabSettings.saveLabel'")
