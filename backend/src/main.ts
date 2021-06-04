@@ -3,7 +3,6 @@ import { NestFactory } from '@nestjs/core';
 import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { AppModule } from './app.module';
 import { resolve } from 'path';
-// import * as sassMiddleware from 'node-sass-middleware';
 import * as expressSession from 'express-session';
 // import * as express from 'express';
 import { NestExpressApplication } from '@nestjs/platform-express';

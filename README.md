@@ -16,6 +16,7 @@ cd parcel-lab-shopify-app
 If you have already pulled the repository you can just run:
 
 ```sh
+git submodule update --init --recursive
 git pull --recurse-submodules
 ```
 
