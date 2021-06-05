@@ -31,11 +31,11 @@ section.row
             small#parcel-lab-language-override-info.form-text.text-muted(rv-i18n-text="'components.parcelLabSettings.languageOverrideInfo'")
             .form-group(rv-each-lang="settings.languageOverrides")
               label.mr-2(for="'lang-override-from' | append %lang%" rv-i18n-text="'components.parcelLabSettings.languageOverrideFromLabel'") From
-              input(rv-id="'lang-override-from' | append %lang%" rv-list="'lang-override-from-list-' | append %lang%" rv-value="lang.from")
+              input(rv-id="'lang-override-from' | append %lang%" rv-list="'lang-override-from-list-' | append %lang%" rv-value="lang.from" autocomplete="off" spellcheck="false")
               datalist(rv-id="'lang-override-from-list-' | append %lang%")
                 option(rv-each-option="langSelectOptionsFrom | call %lang%" rv-value="option.code") { option.code } ({ 'components.parcelLabSettings.languages.' | append option.code | t | default option.label })
               label.mx-2(for="'lang-override-to' | append %lang%" rv-i18n-text="'components.parcelLabSettings.languageOverrideToLabel'") To
-              input(rv-id="'lang-override-to' | append %lang%" rv-list="'lang-override-to-list-' | append %lang%" rv-value="lang.to")
+              input(rv-id="'lang-override-to' | append %lang%" rv-list="'lang-override-to-list-' | append %lang%" rv-value="lang.to" autocomplete="off" spellcheck="false")
               datalist(rv-id="'lang-override-to-list-' | append %lang%")
                 option(rv-each-option="langSelectOptionsTo | call lang.from" rv-value="option.code") { option.code } ({ 'components.parcelLabSettings.languages.' | append option.code | t | default option.label })
               button.btn.btn-link.card-link(type='button' rv-id="'remove-lang-override-' | append %lang%" rv-on-click="removeLanguageOverride" rv-i18n-text="'components.parcelLabSettings.deleteLanguageOverrideLabel'") Delete
