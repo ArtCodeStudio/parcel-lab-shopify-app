@@ -8,15 +8,26 @@ import pugTemplate from './parcel-lab-settings.component.pug';
 import { ParcelLabService } from '../../services/parcel-lab.service';
 import { ParcelLabSettings } from '../../interfaces';
 
+import defaultLocales from '../../locales/en';
+
+const langCodes = Object.entries(
+  defaultLocales.components.parcelLabSettings.languages,
+).map(([code, label]) => ({
+  code,
+  label,
+}));
+
 interface Scope {
   locales: any;
   settings: Partial<ParcelLabSettings>;
   showPasswort: boolean;
   passwortInputType: 'text' | 'password';
   save: ParcelLabSettingsComponent['save'];
-  addLanguageFallback: ParcelLabSettingsComponent['addLanguageFallback'];
-  removeLanguageFallback: ParcelLabSettingsComponent['removeLanguageFallback'];
+  addLanguageOverride: ParcelLabSettingsComponent['addLanguageOverride'];
+  removeLanguageOverride: ParcelLabSettingsComponent['removeLanguageOverride'];
   togglePassword: ParcelLabSettingsComponent['togglePassword'];
+  langSelectOptionsFrom: ParcelLabSettingsComponent['langSelectOptionsFrom'];
+  langSelectOptionsTo: ParcelLabSettingsComponent['langSelectOptionsTo'];
 }
 
 export class ParcelLabSettingsComponent extends Component {
@@ -42,15 +53,17 @@ export class ParcelLabSettingsComponent extends Component {
         'no-notify': false,
       },
       prefer_checkout_shipping_method: false,
-      languageFallbacks: [],
+      languageOverrides: [],
     },
     showPasswort: false,
     passwortInputType: 'password',
     // Methods
     save: this.save,
-    togglePassword: this.togglePassword,
-    addLanguageFallback: this.addLanguageFallback,
-    removeLanguageFallback: this.removeLanguageFallback,
+    togglePassword: this.togglePassword.bind(this),
+    addLanguageOverride: this.addLanguageOverride.bind(this),
+    removeLanguageOverride: this.removeLanguageOverride.bind(this),
+    langSelectOptionsFrom: this.langSelectOptionsFrom.bind(this),
+    langSelectOptionsTo: this.langSelectOptionsTo.bind(this),
   };
 
   constructor() {
@@ -69,21 +82,40 @@ export class ParcelLabSettingsComponent extends Component {
     }
   }
 
-  public addLanguageFallback() {
-    if (!this.scope.settings.languageFallbacks) {
-      this.scope.settings.languageFallbacks = [];
+  public langSelectOptionsFrom(index: number) {
+    // Return all language codes that are not already set as 'from' in other overrides.
+    return langCodes.filter(
+      (x) =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        !this.scope.settings
+          .languageOverrides!.map((l) => l.from)
+          .find((y, i) => i !== index && y.trim() === x.code),
+    );
+  }
+
+  public langSelectOptionsTo(from: string) {
+    // Return all language codes except the corresponding 'from' field.
+    return langCodes.filter(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      (x) => x.code !== from,
+    );
+  }
+
+  public addLanguageOverride() {
+    if (!this.scope.settings.languageOverrides) {
+      this.scope.settings.languageOverrides = [];
     }
-    this.scope.settings.languageFallbacks.push({
+    this.scope.settings.languageOverrides.push({
       from: '',
       to: '',
     });
   }
 
-  public removeLanguageFallback(event: MouseEvent) {
+  public removeLanguageOverride(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (target.id.startsWith('remove-lang-')) {
       const index = parseInt(target.id.substr(12));
-      this.scope.settings.languageFallbacks?.splice(index, 1);
+      this.scope.settings.languageOverrides?.splice(index, 1);
     }
   }
 

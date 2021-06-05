@@ -21,7 +21,7 @@ export const ParcelLabSettingsSchema = new Schema({
     required: false,
     unique: false,
   },
-  languageFallbacks: {
+  languageOverrides: {
     type: [
       {
         from: String,

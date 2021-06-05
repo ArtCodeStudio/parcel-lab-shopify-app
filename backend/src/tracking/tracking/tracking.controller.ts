@@ -26,7 +26,7 @@ export class TrackingController {
     @Query('size') size?: number,
   ) {
     console.debug(
-      'GET parcel-lab/settings',
+      'GET parcel-lab/tracking/list',
       session.currentShop,
       search,
       page,

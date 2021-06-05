@@ -5,7 +5,10 @@ import {
   ParcellabArticle,
   ParcellabSearchResponse,
 } from 'parcellab';
-import { ParcelLabSettings } from '../interfaces';
+import {
+  ParcelLabSettings,
+  ParcelLabSettingsLanguageOverride,
+} from '../interfaces';
 import { SettingsService } from '../settings/settings.service';
 import {
   DebugService,
@@ -592,7 +595,11 @@ export class ParcelLabTrackingService {
       deliveryNo: await this.getDeliveryNo(shopifyOrder),
       destination_country_iso3: shopifyOrder?.shipping_address?.country_code,
       email: shopifyOrder?.customer?.email,
-      language_iso3: await this.getLocaleCode(shopifyAuth, shopifyOrder),
+      language_iso3: await this.getLocaleCode(
+        shopifyAuth,
+        shopifyOrder,
+        parcelLabSettings.languageOverrides,
+      ),
       market: shopifyOrder?.source_name,
       order_date: new Date(shopifyOrder?.created_at),
       phone: shopifyOrder?.customer?.phone,
@@ -826,9 +833,10 @@ export class ParcelLabTrackingService {
   protected async getLocaleCode(
     shopifyAuth: IShopifyConnect,
     shopifyOrder?: Partial<Interfaces.Order>,
+    languageOverrides?: ParcelLabSettingsLanguageOverride[],
   ) {
     let langCode =
-      this.getLocalCodeFromNoteAttributes(shopifyOrder) ||
+      this.getLocaleCodeFromNoteAttributes(shopifyOrder) ||
       shopifyOrder?.customer_locale ||
       shopifyOrder?.billing_address?.country_code ||
       shopifyOrder?.shipping_address?.country_code ||
@@ -837,7 +845,14 @@ export class ParcelLabTrackingService {
     if (typeof langCode === 'string' && langCode.includes('-')) {
       langCode = langCode.split('-')[0];
     }
-    console.log('got langCode', langCode);
+    if (languageOverrides && languageOverrides.length > 0) {
+      for (const override of languageOverrides) {
+        if (override.from === langCode && override.to) {
+          langCode = override.to;
+          break;
+        }
+      }
+    }
     return langCode;
   }
 
@@ -845,7 +860,7 @@ export class ParcelLabTrackingService {
    * Special case (for a private client) if the locale code was passed via additional note attributes
    * @param shopifyOrder
    */
-  protected getLocalCodeFromNoteAttributes(
+  protected getLocaleCodeFromNoteAttributes(
     shopifyOrder?: Partial<Interfaces.Order>,
   ) {
     let locale = '';

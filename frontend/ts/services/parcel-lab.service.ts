@@ -21,7 +21,7 @@ export class ParcelLabService {
       settings.customFields['no-notify'] || false;
     settings.prefer_checkout_shipping_method =
       settings.prefer_checkout_shipping_method || false;
-    settings.languageFallbacks = settings.languageFallbacks || [];
+    settings.languageOverrides = settings.languageOverrides || [];
 
     this.debug('settings', settings);
     return settings as ParcelLabSettings;

@@ -37,7 +37,7 @@ export class SettingsService {
       customFields: {
         'no-notify': true,
       },
-      languageFallbacks: [],
+      languageOverrides: [],
     };
     this.log.debug('[setDefaults] Set default settings', settings);
     return this.createOrUpdate(settings);
