@@ -113,7 +113,7 @@
         "@types/express-serve-static-core": "^4.17.21"
     },
     "dependencies": {
-        "@parcel-lab-shopify-app/backend": "workspace:backend",
+        "@parcel-lab-shopify-app/backend": "workspace:*",
         "@ribajs/eslint-config": "next",
         "@typescript-eslint/eslint-plugin": "^4.26.0",
         "@typescript-eslint/experimental-utils": "^4.26.0",

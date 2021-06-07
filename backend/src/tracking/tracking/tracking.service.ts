@@ -149,8 +149,8 @@ export class ParcelLabTrackingService {
   ) {
     // this.logger.debug('onOrderCancelled: %s - %O', myshopifyDomain, data);
     try {
-      await this.updateOrCreateOrder(myshopifyDomain, data);
-      // this.logger.debug('onOrderCancelled result: %O', result);
+      const result = await this.updateOrCreateOrder(myshopifyDomain, data);
+      this.logger.debug('onOrderCancelled result: %O', result);
     } catch (error) {
       this.logger.error('onOrderCancelled error', error);
     }
@@ -161,8 +161,8 @@ export class ParcelLabTrackingService {
   ) {
     // this.logger.debug('onOrderCreate: %s - %O', myshopifyDomain, data);
     try {
-      await this.updateOrCreateOrder(myshopifyDomain, data);
-      // this.logger.debug('onOrderCreate result: %O', result);
+      const result = await this.updateOrCreateOrder(myshopifyDomain, data);
+      this.logger.debug('onOrderCreate result: %O', result);
     } catch (error) {
       this.logger.error('onOrderCreate error', error);
     }
@@ -174,7 +174,7 @@ export class ParcelLabTrackingService {
     // this.logger.debug('onOrderFulfilled: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      // this.logger.debug('onOrderFulfilled result: %O', result);
+      this.logger.debug('onOrderFulfilled result: %O', result);
     } catch (error) {
       this.logger.error('onOrderFulfilled error', error);
     }
@@ -186,7 +186,7 @@ export class ParcelLabTrackingService {
     // this.logger.debug('onOrderPaid: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      // this.logger.debug('onOrderPaid result: %O', result);
+      this.logger.debug('onOrderPaid result: %O', result);
     } catch (error) {
       this.logger.error('onOrderPaid error', error);
     }
@@ -202,10 +202,10 @@ export class ParcelLabTrackingService {
     // );
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      // this.logger.debug(
-      //   'onOrdonOrderPartiallyFulfillederUpdated result',
-      //   result,
-      // );
+      this.logger.debug(
+        'onOrdonOrderPartiallyFulfillederUpdated result',
+        result,
+      );
     } catch (error) {
       this.logger.error('onOrderPartiallyFulfilled error', error);
     }
@@ -217,7 +217,7 @@ export class ParcelLabTrackingService {
     // this.logger.debug('onOrderUpdated: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      // this.logger.debug('onOrderUpdated result: %O', result);
+      this.logger.debug('onOrderUpdated result: %O', result);
     } catch (error) {
       this.logger.error('onOrderUpdated error', error);
     }
@@ -229,7 +229,7 @@ export class ParcelLabTrackingService {
     // this.logger.debug('onOrderDelete: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateOrder(myshopifyDomain, data);
-      // this.logger.debug('onOrderDelete result: %O', result);
+      this.logger.debug('onOrderDelete result: %O', result);
     } catch (error) {
       this.logger.error('onOrderDelete error', error);
     }
@@ -259,7 +259,7 @@ export class ParcelLabTrackingService {
     // this.logger.debug('onFulfillmentsCreate: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateTracking(myshopifyDomain, data);
-      // this.logger.debug('onFulfillmentsCreate result: %O', result);
+      this.logger.debug('onFulfillmentsCreate result: %O', result);
     } catch (error) {
       this.logger.error('onFulfillmentsCreate error', error);
     }
@@ -271,7 +271,7 @@ export class ParcelLabTrackingService {
     // this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateTracking(myshopifyDomain, data);
-      // this.logger.debug('onFulfillmentsUpdate result: %O', result);
+      this.logger.debug('onFulfillmentsUpdate result: %O', result);
     } catch (error) {
       this.logger.error('onFulfillmentsUpdate error', error);
     }
