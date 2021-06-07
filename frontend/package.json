@@ -66,7 +66,7 @@
     "@ribajs/jquery": "next",
     "@ribajs/router": "next",
     "@ribajs/shopify-easdk": "next",
-    "@ribajs/shopify-nest": "workspace:packages/riba/packages/shopify-nest",
+    "@ribajs/shopify-nest": "workspace:*",
     "@ribajs/utils": "next",
     "@types/events": "^3.0.0",
     "@types/jquery": "^3.5.5",
