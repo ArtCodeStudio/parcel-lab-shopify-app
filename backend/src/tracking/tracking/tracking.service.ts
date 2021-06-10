@@ -240,11 +240,11 @@ export class ParcelLabTrackingService {
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookOrderTransactionCreate,
   ) {
-    // this.logger.debug(
-    //   'onOrderTransactionCreate: %s - %O',
-    //   myshopifyDomain,
-    //   data,
-    // );
+    this.logger.debug(
+      'Ignore onOrderTransactionCreate: %s - %O',
+      myshopifyDomain,
+      data,
+    );
     // try {
     //   const result = await this.updateOrCreateOrder(myshopifyDomain, data);
     //   this.logger.debug('onOrderDelete result: %O', result);
@@ -278,18 +278,23 @@ export class ParcelLabTrackingService {
     }
   }
 
+  protected async getSettings(myshopifyDomain: string) {
+    const settingsDocument = await this.parcelLabSettings.findByShopDomain(
+      myshopifyDomain,
+    );
+    const settings = settingsDocument.toObject();
+    if (!settings) {
+      throw new Error('No parcelLab settings found for ' + myshopifyDomain);
+    }
+    return settings;
+  }
+
   protected async updateOrCreateTracking(
     myshopifyDomain: string,
     shopifyFulfillment: AnyWebhookFulfillment,
     overwrite: Partial<ParcellabOrder> = {},
   ) {
-    const settings = await this.parcelLabSettings.findByShopDomain(
-      myshopifyDomain,
-    );
-    if (!settings) {
-      this.logger.debug('No parcelLab settings found for ' + myshopifyDomain);
-      return ['Missing settings.'];
-    }
+    const settings = await this.getSettings(myshopifyDomain);
     const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
     const api = new ParcelLabApi(settings.user, settings.token);
     let tracking = await this.transformTracking(
@@ -302,6 +307,9 @@ export class ParcelLabTrackingService {
       ...(overwrite?.customFields || {}),
       ...(settings?.customFields || {}),
     };
+
+    customFields['no-notify'] = customFields['no-notify'] || false;
+
     tracking = { ...tracking, ...overwrite, customFields };
 
     let result: string[] = [];
@@ -338,13 +346,7 @@ export class ParcelLabTrackingService {
     shopifyOrder: AnyWebhookOrder,
     overwrite: Partial<ParcellabOrder> = {},
   ) {
-    const settings = await this.parcelLabSettings.findByShopDomain(
-      myshopifyDomain,
-    );
-    if (!settings) {
-      this.logger.debug('No parcelLab settings found for ' + myshopifyDomain);
-      return;
-    }
+    const settings = await this.getSettings(myshopifyDomain);
     const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
     const api = new ParcelLabApi(settings.user, settings.token);
 
@@ -930,7 +932,7 @@ export class ParcelLabTrackingService {
       const variant = await this.getVariant(product, lineItem.variant_id);
       return {
         articleNo: await this.getArticleNo(variant || lineItem), // TODO make configurable what the articleNo should be
-        articleCategory: undefined, // TODO how can we get the collections of a product?
+        articleCategory: undefined, // TODO get the collections of a product
         articleImageUrl: this.getProductImageSource(
           product,
           lineItem.variant_id,

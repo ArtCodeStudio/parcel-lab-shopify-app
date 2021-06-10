@@ -45,7 +45,8 @@ export class SettingsService {
 
   async findByShopDomain(shopDomain: string) {
     const query = { shop_domain: shopDomain };
-    return this.settingsModel.findOne(query).exec();
+    const result = await this.settingsModel.findOne(query).exec();
+    return result;
   }
 
   async createOrUpdate(settings: ParcelLabSettings) {
