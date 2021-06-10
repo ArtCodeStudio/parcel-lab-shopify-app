@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg width="593" height="684" version="1.1" viewBox="0 0 593 684" xmlns="http://www.w3.org/2000/svg">
- <g transform="translate(.28566 -1.7996)">
+<svg width="800" height="800" version="1.1" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+ <rect width="800" height="800" rx="51.113" ry="56.462" stroke-width="5.3721"/>
+ <g transform="translate(103.79 56.348)">
   <g transform="translate(.38158 .12398)" fill="#fff">
    <path d="m360.78 2.377-232.59 134.29-2.1406 344.56 96.314 55.605v-325.51l120.94 69.824v136.61l-91.316-52.723v107.15l108.34 62.553 231.12-133.44v-265.74zm-0.53516 109.06 121.76 70.297-122.15 70.521-118.49-68.412zm135.9 102.05v133.39l-117.98 68.115v-130.75z" fill-opacity=".97801"/>
    <path d="m0.21434 212.27v344.57l221.43 127.84v-105.46l-125.9-72.691v-347.03z"/>
-   <g transform="translate(66.045 -62.808)">
+   <g transform="translate(66.045,-62.808)">
     <path d="m517.96 560.55c0 11.875-9.6095 21.51-21.484 21.541-11.875 0.0317-21.535-9.5521-21.599-21.427-0.0633-11.874 9.4946-21.561 21.369-21.656 11.874-0.095 21.586 9.4371 21.713 21.311z" fill="none" stroke="#fff" stroke-width="5"/>
     <text x="483.4729" y="573.16638" fill="#ffffff" font-family="'DejaVu Sans'" font-size="35.112px" font-weight="bold" stroke="#fbffff" stroke-width=".87779" style="line-height:1.25" xml:space="preserve"><tspan x="483.4729" y="573.16638" fill="#ffffff" font-family="'DejaVu Sans'" font-weight="bold" stroke="#fbffff" stroke-width=".87779">R</tspan></text>
    </g>
