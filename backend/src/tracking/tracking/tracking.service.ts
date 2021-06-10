@@ -269,7 +269,7 @@ export class ParcelLabTrackingService {
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate,
   ) {
-    // this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
+    this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateOrCreateTracking(myshopifyDomain, data);
       this.logger.debug('onFulfillmentsUpdate result: %O', result);
