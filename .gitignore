@@ -46,3 +46,7 @@ lerna-debug.log*
 # Config
 .env
 *.env
+
+
+# Typescript
+*.tsbuildinfo

@@ -4,6 +4,7 @@ import {
   ParcellabOrder,
   ParcellabArticle,
   ParcellabSearchResponse,
+  ParcellabTracking,
 } from 'parcellab';
 import {
   ParcelLabSettings,
@@ -323,7 +324,7 @@ export class ParcelLabTrackingService {
       }
       this.logger.debug('tracking', tracking);
       this.logger.debug('testMode', this.testMode);
-      result = await api.createOrUpdateOrder(tracking, this.testMode);
+      result = await api.createOrUpdateTracking(tracking, this.testMode);
     } else {
       // this.logger.warn(`Missing data for tracking with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
       result = ['Missing data.'];
@@ -402,7 +403,7 @@ export class ParcelLabTrackingService {
               }"`,
             );
           }
-          trackingResult = await api.createOrUpdateOrder(
+          trackingResult = await api.createOrUpdateTracking(
             tracking,
             this.testMode,
           );
@@ -430,7 +431,7 @@ export class ParcelLabTrackingService {
     shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
     shopifyOrder?: Partial<Interfaces.Order>,
     order?: ParcellabOrder,
-  ): Promise<ParcellabOrder> {
+  ): Promise<ParcellabTracking> {
     if (!shopifyOrder) {
       shopifyOrder = await this.getShopifyOrder(
         shopifyAuth,
@@ -457,7 +458,7 @@ export class ParcelLabTrackingService {
      * * upgrade
      * * announced_delivery_date
      */
-    const tracking: Partial<ParcellabOrder> = {
+    const tracking: Partial<ParcellabTracking> = {
       ...(order || {}),
       // The line items from are fullfilment containing ALL orders inklucing the stoned line items
       // articles: await this.transformLineItems(
@@ -544,7 +545,7 @@ export class ParcelLabTrackingService {
       );
     }
 
-    return tracking as ParcellabOrder;
+    return tracking as ParcellabTracking;
   }
 
   protected async transformOrder(
