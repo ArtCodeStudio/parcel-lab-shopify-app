@@ -332,7 +332,7 @@ export class ParcelLabTrackingService {
       }
       this.logger.debug('tracking', tracking);
       this.logger.debug('testMode', this.testMode);
-      result = await api.createOrUpdateTracking(tracking, this.testMode);
+      result = await api.createTracking(tracking, this.testMode);
     } else {
       // this.logger.warn(`Missing data for tracking with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
       result = ['Missing data.'];
@@ -452,10 +452,7 @@ export class ParcelLabTrackingService {
               }"`,
             );
           }
-          trackingResult = await api.createOrUpdateTracking(
-            tracking,
-            this.testMode,
-          );
+          trackingResult = await api.createTracking(tracking, this.testMode);
         } else {
           // this.logger.warn(`[${tracking.client}] Missing data for fulfillment with order name: "${ shopifyOrder?.name || shopifyOrder?.number || shopifyOrder?.id || tracking?.customFields?.order_id }"`);
           trackingResult.push('Missing data.');
