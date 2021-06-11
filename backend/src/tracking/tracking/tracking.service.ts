@@ -269,7 +269,7 @@ export class ParcelLabTrackingService {
     myshopifyDomain: string,
     data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate,
   ) {
-    this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
+    //this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
     try {
       const result = await this.updateTracking(myshopifyDomain, data);
       this.logger.debug('onFulfillmentsUpdate result: %O', result);
@@ -349,39 +349,44 @@ export class ParcelLabTrackingService {
     const settings = await this.getSettings(myshopifyDomain);
     const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
     const api = new ParcelLabApi(settings.user, settings.token);
-    let order = await this.transformOrder(
+    let tracking = await this.transformTracking(
       settings,
       shopifyAuth,
       shopifyFulfillment,
     );
     const customFields = {
-      ...(order?.customFields || {}),
+      ...(tracking?.customFields || {}),
       ...(overwrite?.customFields || {}),
       ...(settings?.customFields || {}),
     };
 
     customFields['no-notify'] = customFields['no-notify'] || false;
 
-    order = { ...order, ...overwrite, customFields };
+    tracking = { ...tracking, ...overwrite, customFields };
 
     let result: string[] = [];
-    if (order.orderNo && order.street && order.city && order.zip_code) {
-      if (!order.language_iso3) {
+    if (
+      tracking.orderNo &&
+      tracking.street &&
+      tracking.city &&
+      tracking.zip_code
+    ) {
+      if (!tracking.language_iso3) {
         this.logger.warn(
           `[${
-            order.client
+            tracking.client
           }] Locale code is missing for order with order name: "${
             shopifyFulfillment?.name ||
             shopifyFulfillment?.order_id ||
-            order?.customFields?.order_id
+            tracking?.customFields?.order_id
           }"`,
         );
       }
-      this.logger.debug('order', order);
+      this.logger.debug('updateTracking', tracking);
       this.logger.debug('testMode', this.testMode);
-      result = await api.createOrUpdateOrder(order, this.testMode);
+      result = await api.createOrUpdateOrder(tracking, this.testMode);
     } else {
-      // this.logger.warn(`Missing data for order with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || order?.customFields?.order_id }"`);
+      // this.logger.warn(`Missing data for tracking with tracking name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
       result = ['Missing data.'];
     }
 
@@ -601,7 +606,7 @@ export class ParcelLabTrackingService {
   ): Promise<ParcellabOrder> {
     const transactions = await this.transaction.listFromShopify(
       shopifyAuth,
-      shopifyOrder.id,
+      (shopifyOrder as AnyWebhookFulfillment).order_id || shopifyOrder.id,
       {
         in_shop_currency: false,
         fields:
