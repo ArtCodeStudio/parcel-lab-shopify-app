@@ -259,7 +259,7 @@ export class ParcelLabTrackingService {
   ) {
     // this.logger.debug('onFulfillmentsCreate: %s - %O', myshopifyDomain, data);
     try {
-      const result = await this.updateOrCreateTracking(myshopifyDomain, data);
+      const result = await this.createTracking(myshopifyDomain, data);
       this.logger.debug('onFulfillmentsCreate result: %O', result);
     } catch (error) {
       this.logger.error('onFulfillmentsCreate error', error);
@@ -271,7 +271,7 @@ export class ParcelLabTrackingService {
   ) {
     this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
     try {
-      const result = await this.updateOrCreateTracking(myshopifyDomain, data);
+      const result = await this.updateTracking(myshopifyDomain, data);
       this.logger.debug('onFulfillmentsUpdate result: %O', result);
     } catch (error) {
       this.logger.error('onFulfillmentsUpdate error', error);
@@ -289,7 +289,7 @@ export class ParcelLabTrackingService {
     return settings;
   }
 
-  protected async updateOrCreateTracking(
+  protected async createTracking(
     myshopifyDomain: string,
     shopifyFulfillment: AnyWebhookFulfillment,
     overwrite: Partial<ParcellabOrder> = {},
@@ -335,6 +335,53 @@ export class ParcelLabTrackingService {
       result = await api.createOrUpdateTracking(tracking, this.testMode);
     } else {
       // this.logger.warn(`Missing data for tracking with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || tracking?.customFields?.order_id }"`);
+      result = ['Missing data.'];
+    }
+
+    return result;
+  }
+
+  protected async updateTracking(
+    myshopifyDomain: string,
+    shopifyFulfillment: AnyWebhookFulfillment,
+    overwrite: Partial<ParcellabOrder> = {},
+  ) {
+    const settings = await this.getSettings(myshopifyDomain);
+    const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
+    const api = new ParcelLabApi(settings.user, settings.token);
+    let order = await this.transformOrder(
+      settings,
+      shopifyAuth,
+      shopifyFulfillment,
+    );
+    const customFields = {
+      ...(order?.customFields || {}),
+      ...(overwrite?.customFields || {}),
+      ...(settings?.customFields || {}),
+    };
+
+    customFields['no-notify'] = customFields['no-notify'] || false;
+
+    order = { ...order, ...overwrite, customFields };
+
+    let result: string[] = [];
+    if (order.orderNo && order.street && order.city && order.zip_code) {
+      if (!order.language_iso3) {
+        this.logger.warn(
+          `[${
+            order.client
+          }] Locale code is missing for order with order name: "${
+            shopifyFulfillment?.name ||
+            shopifyFulfillment?.order_id ||
+            order?.customFields?.order_id
+          }"`,
+        );
+      }
+      this.logger.debug('order', order);
+      this.logger.debug('testMode', this.testMode);
+      result = await api.createOrUpdateOrder(order, this.testMode);
+    } else {
+      // this.logger.warn(`Missing data for order with order name: "${ shopifyFulfillment?.name || shopifyFulfillment?.order_id || order?.customFields?.order_id }"`);
       result = ['Missing data.'];
     }
 
