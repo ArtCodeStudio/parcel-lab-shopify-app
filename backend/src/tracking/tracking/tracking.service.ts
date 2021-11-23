@@ -29,15 +29,15 @@ import {
 const PREFER_SKU = true;
 
 type AnyWebhookOrder =
-  | Interfaces.WebhooksReponse.WebhookOrdersFulfilled
-  | Interfaces.WebhooksReponse.WebhookOrdersPaid
-  | Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled
-  | Interfaces.WebhooksReponse.WebhookOrdersUpdated
-  | Interfaces.WebhooksReponse.WebhookOrdersCreate;
+  | Interfaces.WebhookOrdersFulfilled
+  | Interfaces.WebhookOrdersPaid
+  | Interfaces.WebhookOrdersPartiallyFulfilled
+  | Interfaces.WebhookOrdersUpdated
+  | Interfaces.WebhookOrdersCreate;
 
 type AnyWebhookFulfillment =
-  | Interfaces.WebhooksReponse.WebhookFulfillmentCreate
-  | Interfaces.WebhooksReponse.WebhookFulfillmentUpdate;
+  | Interfaces.WebhookFulfillmentCreate
+  | Interfaces.WebhookFulfillmentUpdate;
 
 @Injectable()
 export class ParcelLabTrackingService {
@@ -134,19 +134,19 @@ export class ParcelLabTrackingService {
     );
   }
 
-  // async onDraftOrderCreate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderCreate) {
+  // async onDraftOrderCreate(myshopifyDomain: string, data: Interfaces.WebhookDraftOrderCreate) {
   //     this.logger.debug('onDraftOrderCreate: %s - %O', myshopifyDomain, data);
   // }
-  // async onDraftOrderDelete(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderDelete) {
+  // async onDraftOrderDelete(myshopifyDomain: string, data: Interfaces.WebhookDraftOrderDelete) {
   //     this.logger.debug('onDraftOrderDelete: %s - %O', myshopifyDomain, data);
   // }
-  // async onDraftOrderUpdate(myshopifyDomain: string, data: Interfaces.WebhooksReponse.WebhookDraftOrderCreate) {
+  // async onDraftOrderUpdate(myshopifyDomain: string, data: Interfaces.WebhookDraftOrderCreate) {
   //     this.logger.debug('onDraftOrderUpdate: %s - %O', myshopifyDomain, data);
   // }
 
   protected async onOrderCancelled(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrdersCancelled,
+    data: Interfaces.WebhookOrdersCancelled,
   ) {
     // this.logger.debug('onOrderCancelled: %s - %O', myshopifyDomain, data);
     try {
@@ -158,7 +158,7 @@ export class ParcelLabTrackingService {
   }
   protected async onOrderCreate(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrdersCreate,
+    data: Interfaces.WebhookOrdersCreate,
   ) {
     // this.logger.debug('onOrderCreate: %s - %O', myshopifyDomain, data);
     try {
@@ -170,7 +170,7 @@ export class ParcelLabTrackingService {
   }
   protected async onOrderFulfilled(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrdersFulfilled,
+    data: Interfaces.WebhookOrdersFulfilled,
   ) {
     // this.logger.debug('onOrderFulfilled: %s - %O', myshopifyDomain, data);
     try {
@@ -182,7 +182,7 @@ export class ParcelLabTrackingService {
   }
   protected async onOrderPaid(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrdersPaid,
+    data: Interfaces.WebhookOrdersPaid,
   ) {
     // this.logger.debug('onOrderPaid: %s - %O', myshopifyDomain, data);
     try {
@@ -194,7 +194,7 @@ export class ParcelLabTrackingService {
   }
   protected async onOrderPartiallyFulfilled(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrdersPartiallyFulfilled,
+    data: Interfaces.WebhookOrdersPartiallyFulfilled,
   ) {
     // this.logger.debug(
     //   'onOrderPartiallyFulfilled: %s - %O',
@@ -213,7 +213,7 @@ export class ParcelLabTrackingService {
   }
   protected async onOrderUpdated(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrdersUpdated,
+    data: Interfaces.WebhookOrdersUpdated,
   ) {
     // this.logger.debug('onOrderUpdated: %s - %O', myshopifyDomain, data);
     try {
@@ -225,7 +225,7 @@ export class ParcelLabTrackingService {
   }
   protected async onOrderDelete(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrdersCreate,
+    data: Interfaces.WebhookOrdersCreate,
   ) {
     // this.logger.debug('onOrderDelete: %s - %O', myshopifyDomain, data);
     try {
@@ -238,7 +238,7 @@ export class ParcelLabTrackingService {
 
   protected async onOrderTransactionCreate(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookOrderTransactionCreate,
+    data: Interfaces.WebhookOrderTransactionCreate,
   ) {
     this.logger.debug(
       'Ignore onOrderTransactionCreate: %s - %O',
@@ -255,7 +255,7 @@ export class ParcelLabTrackingService {
 
   protected async onFulfillmentsCreate(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookFulfillmentCreate,
+    data: Interfaces.WebhookFulfillmentCreate,
   ) {
     // this.logger.debug('onFulfillmentsCreate: %s - %O', myshopifyDomain, data);
     try {
@@ -267,7 +267,7 @@ export class ParcelLabTrackingService {
   }
   protected async onFulfillmentsUpdate(
     myshopifyDomain: string,
-    data: Interfaces.WebhooksReponse.WebhookFulfillmentUpdate,
+    data: Interfaces.WebhookFulfillmentUpdate,
   ) {
     //this.logger.debug('onFulfillmentsUpdate: %s - %O', myshopifyDomain, data);
     try {
