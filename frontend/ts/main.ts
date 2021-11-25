@@ -97,9 +97,9 @@ export class Main {
 
     // Regist modules
     console.debug('regist coreModule');
-    this.riba.module.regist(coreModule);
-    console.debug('regist routerModule', routerModule);
-    this.riba.module.regist(routerModule);
+    this.riba.module.regist(coreModule.init());
+    console.debug('regist routerModule', routerModule.init());
+    this.riba.module.regist(routerModule.init());
     console.debug(
       'regist i18nModule: ',
       await this.localesService.getAvailableLangcodes(),
@@ -108,11 +108,11 @@ export class Main {
       i18nModule.init({ localesService: this.localesService }),
     );
     console.debug('regist shopifyNestModule');
-    this.riba.module.regist(shopifyNestModule);
+    this.riba.module.regist(shopifyNestModule.init());
     console.debug('regist shopifyEasdkModule');
-    this.riba.module.regist(shopifyEasdkModule);
+    this.riba.module.regist(shopifyEasdkModule.init());
     console.debug('regist bs4Module');
-    this.riba.module.regist(bs4Module);
+    this.riba.module.regist(bs4Module.init());
 
     // this.dispatcher.on('newPageReady', (viewId: string, currentStatus: IState, prevStatus: IState, $container: JQuery<HTMLElement>, newPageRawHTML: string, dataset: any, isFirstPageLoad: boolean) => {
     //   this.debug('newPageReady', viewId, currentStatus, dataset);

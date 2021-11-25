@@ -84,7 +84,7 @@ const session = {
  * @see https://github.com/BryanDonovan/node-cache-manager
  */
 const cache: ConfigCache = {
-  store: redisCacheStore as any,
+  store: redisCacheStore,
   redisInstance: new Redis(redis.url, { keyPrefix: app.host }),
   ttl: 60, // app.environment === 'production' ? 300 : 60, // second
   max: 100,

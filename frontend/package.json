@@ -49,12 +49,12 @@
     "html-loader": "^3.0.1",
     "monaco-editor-webpack-plugin": "^6.0.0",
     "pnp-webpack-plugin": "^1.7.0",
-    "postcss-preset-env": "^6.7.0",
+    "postcss-preset-env": "^7.0.1",
     "prettier": "^2.4.1",
     "pug-loader": "^2.4.0",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.2.5",
-    "webpack": "^5.64.2",
+    "webpack": "^5.64.3",
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {

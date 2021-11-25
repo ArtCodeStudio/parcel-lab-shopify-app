@@ -26,9 +26,9 @@ export class InfoApp {
     this.riba.module.component.regists({ ShopifyNestShopInputComponent });
 
     // Regist modules
-    this.riba.module.regist(coreModule);
-    this.riba.module.regist(routerModule);
-    this.riba.module.regist(bs4Module);
+    this.riba.module.regist(coreModule.init());
+    this.riba.module.regist(routerModule.init());
+    this.riba.module.regist(bs4Module.init());
     this.riba.module.regist(
       i18nModule.init({ localesService: this.localesService }),
     );

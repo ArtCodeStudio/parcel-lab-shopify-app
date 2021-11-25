@@ -45,7 +45,6 @@
         "!packages/riba/infra/schematics"
     ],
     "resolutions": {
-        "@graphql-tools/merge": "6.2.7",
         "nest-shopify": "workspace:*",
         "shopify-admin-api": "workspace:*",
         "@ribajs/bs4": "workspace:*",
@@ -106,9 +105,7 @@
         "@ribajs/esbuild": "workspace:*",
         "@ribajs/npm-package": "workspace:*",
         "@ribajs/postcss-config": "workspace:*",
-        "@ribajs/bs5": "workspace:*",
-        "@types/express": "^4.17.12",
-        "@types/express-serve-static-core": "^4.17.21"
+        "@ribajs/bs5": "workspace:*"
     },
     "dependencies": {
         "@parcel-lab-shopify-app/backend": "workspace:*",
