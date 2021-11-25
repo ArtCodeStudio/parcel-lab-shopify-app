@@ -35,13 +35,13 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # Yarn see https://next.yarnpkg.com/advanced/qa#which-files-should-be-gitignored
+.pnp.*
 .yarn/*
-!.yarn/releases
+!.yarn/patches
 !.yarn/plugins
+!.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-!.yarn/cache
-.pnp.*
 
 # Config
 .env
