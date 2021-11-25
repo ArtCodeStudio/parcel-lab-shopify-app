@@ -6,7 +6,7 @@
     "private": true,
     "license": "AGPL",
     "engines": {
-        "node": ">=14.0.0"
+        "node": "16"
     },
     "scripts": {
         "start": "yarn workspace @parcel-lab-shopify-app/backend run start",
