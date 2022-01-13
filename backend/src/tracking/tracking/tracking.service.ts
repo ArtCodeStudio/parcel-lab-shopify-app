@@ -271,7 +271,8 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookFulfillmentUpdate,
   ) {
     try {
-      const result = await this.updateTracking(myshopifyDomain, data);
+      // const result = await this.updateTracking(myshopifyDomain, data);
+      const result = await this.createTracking(myshopifyDomain, data);
       this.logger.debug(
         `[${myshopifyDomain}] onFulfillmentsUpdate result: %O`,
         result,
@@ -346,6 +347,10 @@ export class ParcelLabTrackingService {
     return result;
   }
 
+  /**
+   * Update tracking is not supported by parcellab, we can only submit a tracking number once
+   * This method only updates the order
+   */
   protected async updateTracking(
     myshopifyDomain: string,
     shopifyFulfillment: AnyWebhookFulfillment,
