@@ -131,9 +131,10 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookOrdersCancelled,
   ) {
     try {
-      const {
-        orderResults,
-      } = await this.updateOrCreateOrder(myshopifyDomain, data);
+      const { orderResults } = await this.updateOrCreateOrder(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onOrderCancelled result: %O`,
         orderResults,
@@ -147,9 +148,10 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookOrdersCreate,
   ) {
     try {
-      const {
-        orderResults,
-      } = await this.updateOrCreateOrder(myshopifyDomain, data);
+      const { orderResults } = await this.updateOrCreateOrder(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onOrderCreate result: %O`,
         orderResults,
@@ -163,9 +165,10 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookOrdersFulfilled,
   ) {
     try {
-      const {
-        orderResults,
-      } = await this.updateOrCreateOrder(myshopifyDomain, data);
+      const { orderResults } = await this.updateOrCreateOrder(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onOrderFulfilled result: %O`,
         orderResults,
@@ -179,10 +182,14 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookOrdersPaid,
   ) {
     try {
-      const {
+      const { orderResults } = await this.updateOrCreateOrder(
+        myshopifyDomain,
+        data,
+      );
+      this.logger.debug(
+        `[${myshopifyDomain}] onOrderPaid result: %O`,
         orderResults,
-      } = await this.updateOrCreateOrder(myshopifyDomain, data);
-      this.logger.debug(`[${myshopifyDomain}] onOrderPaid result: %O`, orderResults);
+      );
     } catch (error) {
       this.logger.error(`[${myshopifyDomain}] onOrderPaid error`, error);
     }
@@ -192,9 +199,10 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookOrdersPartiallyFulfilled,
   ) {
     try {
-      const {
-        orderResults,
-      } = await this.updateOrCreateOrder(myshopifyDomain, data);
+      const { orderResults } = await this.updateOrCreateOrder(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onOrdonOrderPartiallyFulfillederUpdated: %O`,
         orderResults,
@@ -211,9 +219,10 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookOrdersUpdated,
   ) {
     try {
-      const {
-        orderResults,
-      } = await this.updateOrCreateOrder(myshopifyDomain, data);
+      const { orderResults } = await this.updateOrCreateOrder(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onOrderUpdated result: %O`,
         orderResults,
@@ -227,9 +236,10 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookOrdersCreate,
   ) {
     try {
-      const {
-        orderResults,
-      } = await this.updateOrCreateOrder(myshopifyDomain, data);
+      const { orderResults } = await this.updateOrCreateOrder(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onOrderDelete result: %O`,
         orderResults,
@@ -298,13 +308,15 @@ export class ParcelLabTrackingService {
       shopifyAuth,
       shopifyFulfillment,
     );
+
+    // const customFields = getCustomFields
     const customFields = {
       ...(tracking?.customFields || {}),
       ...(overwrite?.customFields || {}),
       ...(settings?.customFields || {}),
     };
 
-    customFields['no-notify'] = customFields['no-notify'] || false;
+    this.transformCustomFields(customFields);
 
     tracking = { ...tracking, ...overwrite, customFields };
 
@@ -353,7 +365,7 @@ export class ParcelLabTrackingService {
       ...(settings?.customFields || {}),
     };
 
-    customFields['no-notify'] = customFields['no-notify'] || false;
+    this.transformCustomFields(customFields);
 
     tracking = { ...tracking, ...overwrite, customFields };
 
@@ -414,18 +426,17 @@ export class ParcelLabTrackingService {
           }"`,
         );
       }
-      
+
       try {
-        orderResults = await api.createOrUpdateOrder(
-          order,
-          this.testMode,
-        );
+        orderResults = await api.createOrUpdateOrder(order, this.testMode);
       } catch (error) {
-        this.logger.error(`[${myshopifyDomain}] updateOrCreateOrder createOrUpdateOrder error`, error);
-        this.logger.error('Failed order data: ', order)
+        this.logger.error(
+          `[${myshopifyDomain}] updateOrCreateOrder createOrUpdateOrder error`,
+          error,
+        );
+        this.logger.error('Failed order data: ', order);
         orderResults.push(error.message);
       }
-
     } else {
       orderResults.push('Missing data.');
     }
@@ -516,6 +527,8 @@ export class ParcelLabTrackingService {
       ...(parcelLabSettings?.customFields || {}),
     };
 
+    this.transformCustomFields(customFields);
+
     tracking.customFields = customFields;
 
     if ((shopifyFulfillment as AnyWebhookFulfillment).destination) {
@@ -570,17 +583,6 @@ export class ParcelLabTrackingService {
     shopifyAuth: IShopifyConnect,
     shopifyOrder: Partial<Interfaces.Order>,
   ): Promise<ParcellabOrder> {
-    const orderID = (shopifyOrder as AnyWebhookFulfillment).order_id || shopifyOrder.id;
-    const transactions = await this.transaction.listFromShopify(
-      shopifyAuth,
-      orderID,
-      {
-        in_shop_currency: false,
-        fields:
-          'id,amount,authorization_expires_at,extended_authorization_attributes,receipt,created_at,currency,error_code,gateway,kind,processed_at,source_name,status,test,amount,message',
-      },
-    );
-
     // this.logger.debug('transactions', transactions);
 
     /**
@@ -649,8 +651,6 @@ export class ParcelLabTrackingService {
         // Used for notification template variables
         billing_address:
           shopifyOrder?.billing_address || shopifyOrder?.shipping_address,
-
-        transactions,
       },
     };
 
@@ -658,6 +658,8 @@ export class ParcelLabTrackingService {
       ...(order?.customFields || {}),
       ...(parcelLabSettings?.customFields || {}),
     };
+
+    this.transformCustomFields(customFields);
 
     order.customFields = customFields;
 
@@ -688,8 +690,11 @@ export class ParcelLabTrackingService {
 
     for (const lineItem of filteredLineItems) {
       const article: ParcellabArticle = {
-        articleName:
-          (lineItem.title.trim() + ' ' + lineItem.variant_title.trim()).trim(),
+        articleName: (
+          lineItem.title.trim() +
+          ' ' +
+          lineItem.variant_title.trim()
+        ).trim(),
         articleNo: await this.getArticleNo(lineItem),
         quantity: lineItem.quantity,
       };
@@ -922,6 +927,34 @@ export class ParcelLabTrackingService {
       }
     }
     return undefined;
+  }
+
+  protected transformCustomFields(
+    customFields: ParcellabTracking['customFields'],
+  ) {
+    customFields['no-notify'] = customFields['no-notify'] || false;
+
+    if (Array.isArray(customFields.line_items)) {
+      for (const lineItem of customFields.line_items) {
+        delete lineItem.admin_graphql_api_id;
+
+        if (Array.isArray(lineItem.properties)) {
+          const properties: any = {};
+          for (const property of lineItem.properties) {
+            if (property.name && property.value) {
+              properties[property.name] = property.value;
+            }
+          }
+          lineItem.properties = properties;
+        }
+      }
+    }
+
+    if (customFields.transactions) {
+      delete customFields.transactions;
+    }
+
+    return customFields;
   }
 
   protected async getShopifyAuth(domain: string) {
