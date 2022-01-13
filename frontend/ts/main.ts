@@ -1,4 +1,5 @@
-import { Riba, HttpService, coreModule, EventDispatcher } from '@ribajs/core';
+import { Riba, HttpService, coreModule } from '@ribajs/core';
+import { EventDispatcher } from '@ribajs/events';
 import { ready } from '@ribajs/utils/src/dom';
 import Debug from 'debug';
 

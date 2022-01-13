@@ -1,4 +1,5 @@
-import { Component, EventDispatcher } from '@ribajs/core';
+import { Component } from '@ribajs/core';
+import { EventDispatcher } from '@ribajs/events';
 import { getViewportDimensions } from '@ribajs/utils/src/dom';
 import { JQuery } from '@ribajs/jquery';
 import Debug from 'debug';
