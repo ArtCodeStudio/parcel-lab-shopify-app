@@ -339,7 +339,17 @@ export class ParcelLabTrackingService {
           }"`,
         );
       }
-      result = await api.createTracking(tracking, this.testMode);
+      try {
+        const exists = await api.getTracking({
+          courier: tracking.courier,
+          tracking_number: tracking.tracking_number,
+        });
+        this.logger.debug('getTracking result', exists);
+        result = await api.createTracking(tracking, this.testMode);
+      } catch (error) {
+        this.logger.error('[createTracking] Error with data', tracking);
+        throw error;
+      }
     } else {
       result = ['Missing data.'];
     }
@@ -499,7 +509,7 @@ export class ParcelLabTrackingService {
       //   shopifyOrder,
       //   shopifyFulfillment.line_items,
       // ),
-      branchDelivery: false, // TODO set this true of this is a store / branch delivery (Filiallieferung)
+      branchDelivery: false, // TODO set this true if this is a store / branch delivery (Filiallieferung)
       courier: await this.getCourier(
         parcelLabSettings,
         shopifyFulfillment,
@@ -598,7 +608,6 @@ export class ParcelLabTrackingService {
      * * return
      * * send_date
      * * upgrade
-     * * announced_delivery_date
      *
      * The following are set on tracking, so not necessary here
      * * branchDelivery
