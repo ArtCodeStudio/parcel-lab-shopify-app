@@ -646,7 +646,6 @@ export class ParcelLabTrackingService {
         ? shopifyOrder?.location_id.toString()
         : undefined,
       weight: shopifyOrder?.total_weight.toString(),
-      xid: shopifyOrder?.id.toString(), // TODO CHECKME
       zip_code: shopifyOrder?.shipping_address?.zip,
       customFields: {
         customer: {
