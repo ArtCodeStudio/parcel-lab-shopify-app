@@ -6,6 +6,7 @@ import {
   ParcellabArticle,
   ParcellabSearchResponse,
   ParcellabTracking,
+  LogLevel,
 } from 'parcellab';
 import {
   ParcelLabSettings,
@@ -83,7 +84,12 @@ export class ParcelLabTrackingService {
       this.logger.debug(`[${myshopifyDomain}] No parcelLab settings found.`);
       return;
     }
-    const api = new ParcelLabApi(settings.user, settings.token);
+    const api = new ParcelLabApi(
+      settings.user,
+      settings.token,
+      true,
+      LogLevel.Debug,
+    );
     return api.search(search, page, size);
   }
 
@@ -143,6 +149,7 @@ export class ParcelLabTrackingService {
       this.logger.error(`[${myshopifyDomain}] onOrderCancelled error`, error);
     }
   }
+
   protected async onOrderCreate(
     myshopifyDomain: string,
     data: Interfaces.WebhookOrdersCreate,
@@ -160,6 +167,7 @@ export class ParcelLabTrackingService {
       this.logger.error(`[${myshopifyDomain}] onOrderCreate error`, error);
     }
   }
+
   protected async onOrderFulfilled(
     myshopifyDomain: string,
     data: Interfaces.WebhookOrdersFulfilled,
@@ -177,6 +185,7 @@ export class ParcelLabTrackingService {
       this.logger.error(`[${myshopifyDomain}] onOrderFulfilled error`, error);
     }
   }
+
   protected async onOrderPaid(
     myshopifyDomain: string,
     data: Interfaces.WebhookOrdersPaid,
@@ -194,6 +203,7 @@ export class ParcelLabTrackingService {
       this.logger.error(`[${myshopifyDomain}] onOrderPaid error`, error);
     }
   }
+
   protected async onOrderPartiallyFulfilled(
     myshopifyDomain: string,
     data: Interfaces.WebhookOrdersPartiallyFulfilled,
@@ -214,6 +224,7 @@ export class ParcelLabTrackingService {
       );
     }
   }
+
   protected async onOrderUpdated(
     myshopifyDomain: string,
     data: Interfaces.WebhookOrdersUpdated,
@@ -231,6 +242,7 @@ export class ParcelLabTrackingService {
       this.logger.error(`[${myshopifyDomain}] onOrderUpdated error:`, error);
     }
   }
+
   protected async onOrderDelete(
     myshopifyDomain: string,
     data: Interfaces.WebhookOrdersCreate,
@@ -254,7 +266,10 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookFulfillmentCreate,
   ) {
     try {
-      const result = await this.createTracking(myshopifyDomain, data);
+      const result = await this.createTrackingIfNotExists(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onFulfillmentsCreate result: %O`,
         result,
@@ -266,12 +281,16 @@ export class ParcelLabTrackingService {
       );
     }
   }
+
   protected async onFulfillmentsUpdate(
     myshopifyDomain: string,
     data: Interfaces.WebhookFulfillmentUpdate,
   ) {
     try {
-      const result = await this.createTracking(myshopifyDomain, data);
+      const result = await this.createTrackingIfNotExists(
+        myshopifyDomain,
+        data,
+      );
       this.logger.debug(
         `[${myshopifyDomain}] onFulfillmentsUpdate result: %O`,
         result,
@@ -295,9 +314,9 @@ export class ParcelLabTrackingService {
     return settings;
   }
 
-  protected async createTracking(
+  protected async createTrackingIfNotExists(
     myshopifyDomain: string,
-    shopifyFulfillment: AnyWebhookFulfillment,
+    shopifyFulfillment: AnyWebhookFulfillment | Interfaces.Fulfillment,
     overwrite: Partial<ParcellabOrder> = {},
   ) {
     const settings = await this.getSettings(myshopifyDomain);
@@ -320,109 +339,79 @@ export class ParcelLabTrackingService {
 
     tracking = { ...tracking, ...overwrite, customFields };
 
-    let result: string[] = [];
-    if (
-      tracking.orderNo &&
-      tracking.street &&
-      tracking.city &&
-      tracking.zip_code
-    ) {
-      if (!tracking.language_iso3) {
-        this.logger.warn(
-          `[${myshopifyDomain}] [${
-            tracking.client
-          }] Locale code is missing for order with order name: "${
-            shopifyFulfillment?.name ||
-            shopifyFulfillment?.order_id ||
-            tracking?.customFields?.order_id
-          }"`,
-        );
-      }
-      try {
-        const exists: string[] = [];
-        try {
-          const res = await api.getTracking({
-            courier: tracking.courier,
-            tracking_number: tracking.tracking_number,
-          });
-          exists.push(
-            ...res
-              .filter((exist) => !!exist.tracking_number)
-              .map((exist) => exist.tracking_number),
-          );
-        } catch (error) {}
+    tracking = clearObject(tracking);
 
-        if (
-          typeof tracking.tracking_number === 'string' &&
-          exists.includes(tracking.tracking_number)
-        ) {
-          this.logger.warn(
-            '[createTracking] Tracking already exists!',
-            tracking.tracking_number,
-          );
-          result = ['Already exists.'];
-        } else {
-          result = await api.createTracking(tracking, this.testMode);
-        }
-      } catch (error) {
-        this.logger.error('[createTracking] Error with data', tracking);
-        throw error;
-      }
-    } else {
-      result = ['Missing data.'];
+    let result: string[] = [];
+
+    if (!tracking.tracking_number) {
+      result = ['Missing tracking_number.'];
+      return result;
     }
 
-    return result;
-  }
+    if (!tracking.orderNo) {
+      result = ['Missing orderNo.'];
+      return result;
+    }
 
-  /**
-   * Update tracking is not supported by parcellab, we can only submit a tracking number once
-   * This method only updates the order
-   */
-  protected async updateTracking(
-    myshopifyDomain: string,
-    shopifyFulfillment: AnyWebhookFulfillment,
-    overwrite: Partial<ParcellabOrder> = {},
-  ) {
-    const settings = await this.getSettings(myshopifyDomain);
-    const shopifyAuth = await this.getShopifyAuth(myshopifyDomain);
-    const api = new ParcelLabApi(settings.user, settings.token);
-    let tracking = await this.transformTracking(
-      settings,
-      shopifyAuth,
-      shopifyFulfillment,
-    );
-    const customFields = {
-      ...(tracking?.customFields || {}),
-      ...(overwrite?.customFields || {}),
-      ...(settings?.customFields || {}),
-    };
+    if (!tracking.street) {
+      result = ['Missing street.'];
+      return result;
+    }
 
-    this.transformCustomFields(customFields);
+    if (!tracking.city) {
+      result = ['Missing city.'];
+      return result;
+    }
 
-    tracking = { ...tracking, ...overwrite, customFields };
+    if (!tracking.zip_code) {
+      result = ['Missing zip_code.'];
+      return result;
+    }
 
-    let result: string[] = [];
-    if (
-      tracking.orderNo &&
-      tracking.street &&
-      tracking.city &&
-      tracking.zip_code
-    ) {
-      if (!tracking.language_iso3) {
-        this.logger.warn(
-          `[${
-            tracking.client
-          }] Locale code is missing for order with order name: "${
-            shopifyFulfillment?.name ||
-            shopifyFulfillment?.order_id ||
-            tracking?.customFields?.order_id
-          }"`,
+    if (!tracking.language_iso3) {
+      this.logger.warn(
+        `[${myshopifyDomain}] [${
+          tracking.client
+        }] Locale code is missing for order with order name: "${
+          shopifyFulfillment?.name ||
+          shopifyFulfillment?.order_id ||
+          tracking?.customFields?.order_id
+        }"`,
+      );
+    }
+
+    try {
+      const exists: string[] = [];
+      try {
+        const res = await api.getTracking({
+          courier: tracking.courier,
+          tracking_number: tracking.tracking_number,
+        });
+        exists.push(
+          ...res
+            .filter((exist) => !!exist.tracking_number)
+            .map((exist) => exist.tracking_number),
         );
+      } catch (error) {}
+
+      if (
+        typeof tracking.tracking_number === 'string' &&
+        exists.includes(tracking.tracking_number)
+      ) {
+        this.logger.warn(
+          '[createTrackingIfNotExists] Tracking already exists!',
+          tracking.tracking_number,
+        );
+        result = ['Already exists.'];
+      } else {
+        result = await api.createTracking(tracking, this.testMode);
       }
-      result = await api.createOrUpdateOrder(tracking, this.testMode);
-    } else {
-      result = ['Missing data.'];
+    } catch (error) {
+      this.logger.error(
+        '[createTrackingIfNotExists] Error with data',
+        tracking,
+      );
+      throw error;
     }
 
     return result;
@@ -444,7 +433,8 @@ export class ParcelLabTrackingService {
     );
 
     order = { ...order, ...overwrite };
-    let orderResults: string[] = [];
+    const orderResults: string[] = [];
+    const trackingResults: string[] = [];
     order = clearObject(order);
     if (order.orderNo && order.street && order.city && order.zip_code) {
       if (!order.language_iso3) {
@@ -461,7 +451,8 @@ export class ParcelLabTrackingService {
       }
 
       try {
-        orderResults = await api.createOrUpdateOrder(order, this.testMode);
+        const orderResult = await api.createOrUpdateOrder(order, this.testMode);
+        orderResults.push(...orderResult);
       } catch (error) {
         this.logger.error(
           `[${myshopifyDomain}] updateOrCreateOrder createOrUpdateOrder error`,
@@ -474,8 +465,21 @@ export class ParcelLabTrackingService {
       orderResults.push('Missing data.');
     }
 
+    // If the order has fulfillments we can create tracking of them and not only a order
+    if (shopifyOrder.fulfillments && shopifyOrder.fulfillments.length > 0) {
+      for (const shopifyFulfillment of shopifyOrder.fulfillments) {
+        const trackingResult = await this.createTrackingIfNotExists(
+          myshopifyDomain,
+          shopifyFulfillment,
+          overwrite,
+        );
+        trackingResults.push(...trackingResult);
+      }
+    }
+
     return {
       orderResults,
+      trackingResults,
       order,
     };
   }
@@ -639,7 +643,7 @@ export class ParcelLabTrackingService {
         shopifyOrder.line_items,
         shopifyOrder.refunds,
       ),
-      city: shopifyOrder?.shipping_address?.city,
+      city: shopifyOrder?.shipping_address?.city?.trim(),
       client: await this.getClient(shopifyAuth),
       orderNo: await this.getOrderNo(shopifyOrder),
       cancelled: this.getCancelled(shopifyOrder),
