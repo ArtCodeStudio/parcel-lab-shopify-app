@@ -271,7 +271,6 @@ export class ParcelLabTrackingService {
     data: Interfaces.WebhookFulfillmentUpdate,
   ) {
     try {
-      // const result = await this.updateTracking(myshopifyDomain, data);
       const result = await this.createTracking(myshopifyDomain, data);
       this.logger.debug(
         `[${myshopifyDomain}] onFulfillmentsUpdate result: %O`,
@@ -340,12 +339,31 @@ export class ParcelLabTrackingService {
         );
       }
       try {
-        const exists = await api.getTracking({
-          courier: tracking.courier,
-          tracking_number: tracking.tracking_number,
-        });
-        this.logger.debug('getTracking result', exists);
-        result = await api.createTracking(tracking, this.testMode);
+        const exists: string[] = [];
+        try {
+          const res = await api.getTracking({
+            courier: tracking.courier,
+            tracking_number: tracking.tracking_number,
+          });
+          exists.push(
+            ...res
+              .filter((exist) => !!exist.tracking_number)
+              .map((exist) => exist.tracking_number),
+          );
+        } catch (error) {}
+
+        if (
+          typeof tracking.tracking_number === 'string' &&
+          exists.includes(tracking.tracking_number)
+        ) {
+          this.logger.warn(
+            '[createTracking] Tracking already exists!',
+            tracking.tracking_number,
+          );
+          result = ['Already exists.'];
+        } else {
+          result = await api.createTracking(tracking, this.testMode);
+        }
       } catch (error) {
         this.logger.error('[createTracking] Error with data', tracking);
         throw error;
@@ -643,9 +661,12 @@ export class ParcelLabTrackingService {
       statuslink: shopifyOrder?.order_status_url,
       street: shopifyOrder?.shipping_address?.address1,
       warehouse: shopifyOrder?.location_id
-        ? shopifyOrder?.location_id.toString()
+        ? shopifyOrder.location_id.toString()
         : undefined,
-      weight: shopifyOrder?.total_weight.toString(),
+      weight: shopifyOrder?.total_weight
+        ? shopifyOrder.total_weight.toString()
+        : undefined,
+      xid: shopifyOrder?.id ? shopifyOrder.id.toString() : undefined,
       zip_code: shopifyOrder?.shipping_address?.zip,
       customFields: {
         customer: {
@@ -767,11 +788,14 @@ export class ParcelLabTrackingService {
     if (order?.orderNo) {
       return order.orderNo;
     }
+    if (!shopifyOrder?.name) {
+      return undefined;
+    }
     let prefix = '';
     if (this.shopifyModuleOptions.app.environment !== 'production') {
       prefix = 'dev_';
     }
-    return prefix + shopifyOrder?.name?.toString();
+    return prefix + shopifyOrder.name.toString();
   }
 
   protected getCancelled(
