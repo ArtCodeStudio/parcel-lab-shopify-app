@@ -339,6 +339,9 @@ export class ParcelLabTrackingService {
 
     tracking = { ...tracking, ...overwrite, customFields };
 
+    // Invalid request with xid
+    delete tracking.xid;
+
     tracking = clearObject(tracking);
 
     let result: string[] = [];
@@ -557,15 +560,15 @@ export class ParcelLabTrackingService {
       customFields: {},
     };
 
-    // Invalid request with xid
-    delete tracking.xid;
-
     const customFields = {
       ...(tracking?.customFields || {}),
       ...(order?.customFields || {}),
       ...(parcelLabSettings?.customFields || {}),
       notify_customer: shopifyFulfillment.notify_customer || false,
     };
+
+    // Delete xid (comes from order object) otherwise this will create a bad request 400
+    delete (tracking as any).xid;
 
     this.transformCustomFields(customFields);
 
