@@ -537,8 +537,10 @@ export class ParcelLabTrackingService {
         shopifyFulfillment,
         order,
       ),
-      client: (await this.getClient(shopifyAuth)) || order?.client,
-      orderNo: await this.getOrderNo(shopifyOrder, shopifyFulfillment, order),
+      client: order?.client || this.getClient(shopifyAuth),
+      orderNo:
+        order?.orderNo ||
+        this.getOrderNo(shopifyOrder, shopifyFulfillment, order),
       cancelled: this.getCancelled(shopifyOrder, shopifyFulfillment, order),
       complete:
         shopifyFulfillment.shipment_status === 'delivered' || order?.complete,
@@ -552,16 +554,17 @@ export class ParcelLabTrackingService {
       warehouse: shopifyFulfillment.location_id
         ? shopifyFulfillment.location_id?.toString()
         : undefined,
-      customFields: {
-        notify_customer: shopifyFulfillment.notify_customer || false,
-        line_items: shopifyFulfillment.line_items,
-      },
+      customFields: {},
     };
+
+    // Invalid request with xid
+    delete tracking.xid;
 
     const customFields = {
       ...(tracking?.customFields || {}),
       ...(order?.customFields || {}),
       ...(parcelLabSettings?.customFields || {}),
+      notify_customer: shopifyFulfillment.notify_customer || false,
     };
 
     this.transformCustomFields(customFields);
@@ -645,6 +648,7 @@ export class ParcelLabTrackingService {
       ),
       city: shopifyOrder?.shipping_address?.city?.trim(),
       client: await this.getClient(shopifyAuth),
+      // Displayed as "Bestellung" in parcelLab Dashboard
       orderNo: await this.getOrderNo(shopifyOrder),
       cancelled: this.getCancelled(shopifyOrder),
       complete: shopifyOrder?.fulfillment_status === 'fulfilled',
@@ -670,7 +674,7 @@ export class ParcelLabTrackingService {
       weight: shopifyOrder?.total_weight
         ? shopifyOrder.total_weight.toString()
         : undefined,
-      xid: shopifyOrder?.id ? shopifyOrder.id.toString() : undefined,
+      xid: this.getXid(shopifyOrder),
       zip_code: shopifyOrder?.shipping_address?.zip,
       customFields: {
         customer: {
@@ -780,11 +784,11 @@ export class ParcelLabTrackingService {
     return refundLineItems;
   }
 
-  protected async getClient(shopifyAuth: IShopifyConnect) {
+  protected getClient(shopifyAuth: IShopifyConnect) {
     return shopifyAuth.shop.name;
   }
 
-  protected async getOrderNo(
+  protected getOrderNo(
     shopifyOrder: Partial<Interfaces.Order>,
     shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment,
     order?: ParcellabOrder,
@@ -792,14 +796,39 @@ export class ParcelLabTrackingService {
     if (order?.orderNo) {
       return order.orderNo;
     }
-    if (!shopifyOrder?.name) {
-      return undefined;
-    }
+
     let prefix = '';
     if (this.shopifyModuleOptions.app.environment !== 'production') {
       prefix = 'dev_';
     }
-    return prefix + shopifyOrder.name.toString();
+    if (shopifyOrder?.name) {
+      return prefix + shopifyOrder.name.toString();
+    }
+  }
+
+  /**
+   * id of delivery before tracking number
+   * Displayed as "Lieferung" in parcelLab Dashboard
+   */
+  protected getXid(
+    shopifyOrder: Partial<Interfaces.Order>,
+    shopifyFulfillment?: AnyWebhookFulfillment | Interfaces.Fulfillment,
+    order?: ParcellabOrder,
+  ) {
+    if (order?.xid) {
+      return order.xid;
+    }
+
+    let prefix = '';
+    if (this.shopifyModuleOptions.app.environment !== 'production') {
+      prefix = 'dev_';
+    }
+    if (shopifyOrder?.id) {
+      return prefix + shopifyOrder.id.toString();
+    }
+    if (shopifyFulfillment?.order_id) {
+      return prefix + shopifyFulfillment.order_id.toString();
+    }
   }
 
   protected getCancelled(
