@@ -339,9 +339,6 @@ export class ParcelLabTrackingService {
 
     tracking = { ...tracking, ...overwrite, customFields };
 
-    // Invalid request with xid
-    delete tracking.xid;
-
     tracking = clearObject(tracking);
 
     let result: string[] = [];
