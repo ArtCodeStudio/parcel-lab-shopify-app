@@ -667,7 +667,7 @@ export class ParcelLabTrackingService {
       recipient: this.getName(shopifyOrder),
       recipient_notification: this.getName(shopifyOrder),
       statuslink: shopifyOrder?.order_status_url,
-      street: `${shopifyOrder?.shipping_address?.address1}\n${shopifyOrder?.shipping_address?.address2}`,
+      street: shopifyOrder?.shipping_address?.address1 + (shopifyOrder?.shipping_address?.address2?.trim() ? `\n${shopifyOrder?.shipping_address?.address2}` : ''),
       warehouse: shopifyOrder?.location_id
         ? shopifyOrder.location_id.toString()
         : undefined,
