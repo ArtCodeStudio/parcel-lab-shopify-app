@@ -582,7 +582,7 @@ export class ParcelLabTrackingService {
         shopifyFulfillment.destination.name || order?.recipient_notification;
       tracking.recipient_notification =
         shopifyFulfillment.destination.name || order?.recipient_notification;
-      tracking.street = this.getStreet(shopifyFulfillment?.destination?.address1, shopifyFulfillment?.destination?.address1);
+      tracking.street = this.getStreet(shopifyFulfillment?.destination?.address1, shopifyFulfillment?.destination?.address2);
       tracking.zip_code = shopifyFulfillment.destination.zip;
 
       tracking.email = shopifyFulfillment?.email || order?.email;
