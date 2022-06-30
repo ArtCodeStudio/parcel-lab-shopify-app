@@ -582,7 +582,7 @@ export class ParcelLabTrackingService {
         shopifyFulfillment.destination.name || order?.recipient_notification;
       tracking.recipient_notification =
         shopifyFulfillment.destination.name || order?.recipient_notification;
-      tracking.street = shopifyFulfillment.destination.address1;
+      tracking.street = this.getStreet(shopifyFulfillment?.destination?.address1, shopifyFulfillment?.destination?.address1);
       tracking.zip_code = shopifyFulfillment.destination.zip;
 
       tracking.email = shopifyFulfillment?.email || order?.email;
@@ -667,12 +667,7 @@ export class ParcelLabTrackingService {
       recipient: this.getName(shopifyOrder),
       recipient_notification: this.getName(shopifyOrder),
       statuslink: shopifyOrder?.order_status_url,
-      street: shopifyOrder?.shipping_address?.address1
-        + (
-          shopifyOrder?.shipping_address?.address2?.trim()
-            ? `\n${shopifyOrder?.shipping_address?.address2}`
-            : ''
-        ),
+      street: this.getStreet(shopifyOrder?.shipping_address?.address1, shopifyOrder?.shipping_address?.address2),
       warehouse: shopifyOrder?.location_id
         ? shopifyOrder.location_id.toString()
         : undefined,
@@ -1002,6 +997,16 @@ export class ParcelLabTrackingService {
       }
     }
     return undefined;
+  }
+  
+  protected getStreet(
+    address1: string | undefined,
+    address2: string | undefined
+  ): string | undefined {
+    return [address1, address2]
+      .map(addressLine => addressLine?.trim())
+      .filter(addressLine => !!addressline)
+      .join('\n');
   }
 
   protected transformCustomFields(
