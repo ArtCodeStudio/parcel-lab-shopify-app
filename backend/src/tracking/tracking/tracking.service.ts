@@ -1005,7 +1005,7 @@ export class ParcelLabTrackingService {
   ): string | undefined {
     return [address1, address2]
       .map(addressLine => addressLine?.trim())
-      .filter(addressLine => !!addressline)
+      .filter(addressLine => !!addressLine)
       .join('\n');
   }
 
